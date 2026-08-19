@@ -1991,7 +1991,7 @@ function GiudizioAccordion({note}) {
 function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavigateTab, pgTrim}) {
   const [giornoSel, setGiornoSel] = useState(todayISO());
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(false);
+
   const [menuTabOpen, setMenuTabOpen] = useState(false);
   const menuTabRef = useRef(null);
   useEffect(()=>{
