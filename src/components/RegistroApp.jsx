@@ -2129,6 +2129,20 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
     return t.length > max ? t.slice(0,max).trimEnd()+"…" : t;
   };
 
+  // Ora di lezione ricavata dalle firme del giorno (per ordinare come nel pannello Firme)
+  const firmeGiorno = ((contDB[`${classe}||__firme__`]||{}).firme||[]).filter(f=>toISO(f.data||"")===giornoSel);
+  const oraPerMateria = {};
+  firmeGiorno.forEach(f=>{
+    const m=(f.materia||f.materiaFirma||"").toLowerCase().trim();
+    const n=parseInt(f.oraInizioNum||f.oraInizio)||null;
+    if(m&&n&&(oraPerMateria[m]==null||n<oraPerMateria[m])) oraPerMateria[m]=n;
+  });
+  const oraDiEvento = ev => {
+    if(ev.tipo==="assenza"){ const n=parseInt(ev.oraLezione); return isNaN(n)?99:n; }
+    const m=(ev.mat||"").toLowerCase().trim();
+    return oraPerMateria[m]||99;
+  };
+
   // Ordine fisso richiesto: Comunicazioni → Assenze/Ritardi/Uscite/Fuori aula → Voti → Note/Annotazioni → Argomenti svolti → Compiti
   const PRIORITA_TIPO = {
     comunicazione: 0,
@@ -2139,23 +2153,12 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
     argomento: 4,
     compito: 5,
   };
-  eventiGiorno.sort((a,b)=>(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99));
+  eventiGiorno.sort((a,b)=>{
+    const p=(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99);
+    if(p!==0) return p;
+    return oraDiEvento(a)-oraDiEvento(b);
+  });
 
-  // ── Orario del giorno selezionato (dall'Orario settimanale) ──
-  const nomeGiornoSel = (()=>{
-    try{ const d=new Date(giornoSel+"T00:00:00"); return ["","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"][d.getDay()]||""; }
-    catch{ return ""; }
-  })();
-  const orarioGiorno = (()=>{
-    if(!nomeGiornoSel) return [];
-    const tutti = [];
-    ORE_ORARIO.forEach(ora=>{
-      const slot = (orarioSett||{})[`${nomeGiornoSel}|${ora}`];
-      if(slot&&slot.materia) tutti.push({ora, materia:slot.materia, nota:slot.nota||"", classe:slot.classe||""});
-    });
-    const dellaClasse = tutti.filter(o=>!o.classe||o.classe===classe);
-    return dellaClasse.length?dellaClasse:tutti;
-  })();
 
 
   // Conteggi totali (per i 4 box in alto)
