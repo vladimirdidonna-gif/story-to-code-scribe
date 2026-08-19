@@ -1990,8 +1990,8 @@ function GiudizioAccordion({note}) {
 // ══════════════════════════════════════════════════════
 function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavigateTab, pgTrim}) {
   const [giornoSel, setGiornoSel] = useState(todayISO());
-  const [orarioSett] = useLocal("orario",{});
   const [pickerOpen, setPickerOpen] = useState(false);
+
   const [menuTabOpen, setMenuTabOpen] = useState(false);
   const menuTabRef = useRef(null);
   useEffect(()=>{
@@ -2129,6 +2129,20 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
     return t.length > max ? t.slice(0,max).trimEnd()+"…" : t;
   };
 
+  // Ora di lezione ricavata dalle firme del giorno (per ordinare come nel pannello Firme)
+  const firmeGiorno = ((contDB[`${classe}||__firme__`]||{}).firme||[]).filter(f=>toISO(f.data||"")===giornoSel);
+  const oraPerMateria = {};
+  firmeGiorno.forEach(f=>{
+    const m=(f.materia||f.materiaFirma||"").toLowerCase().trim();
+    const n=parseInt(f.oraInizioNum||f.oraInizio)||null;
+    if(m&&n&&(oraPerMateria[m]==null||n<oraPerMateria[m])) oraPerMateria[m]=n;
+  });
+  const oraDiEvento = ev => {
+    if(ev.tipo==="assenza"){ const n=parseInt(ev.oraLezione); return isNaN(n)?99:n; }
+    const m=(ev.mat||"").toLowerCase().trim();
+    return oraPerMateria[m]||99;
+  };
+
   // Ordine fisso richiesto: Comunicazioni → Assenze/Ritardi/Uscite/Fuori aula → Voti → Note/Annotazioni → Argomenti svolti → Compiti
   const PRIORITA_TIPO = {
     comunicazione: 0,
@@ -2139,23 +2153,12 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
     argomento: 4,
     compito: 5,
   };
-  eventiGiorno.sort((a,b)=>(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99));
+  eventiGiorno.sort((a,b)=>{
+    const p=(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99);
+    if(p!==0) return p;
+    return oraDiEvento(a)-oraDiEvento(b);
+  });
 
-  // ── Orario del giorno selezionato (dall'Orario settimanale) ──
-  const nomeGiornoSel = (()=>{
-    try{ const d=new Date(giornoSel+"T00:00:00"); return ["","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"][d.getDay()]||""; }
-    catch{ return ""; }
-  })();
-  const orarioGiorno = (()=>{
-    if(!nomeGiornoSel) return [];
-    const tutti = [];
-    ORE_ORARIO.forEach(ora=>{
-      const slot = (orarioSett||{})[`${nomeGiornoSel}|${ora}`];
-      if(slot&&slot.materia) tutti.push({ora, materia:slot.materia, nota:slot.nota||"", classe:slot.classe||""});
-    });
-    const dellaClasse = tutti.filter(o=>!o.classe||o.classe===classe);
-    return dellaClasse.length?dellaClasse:tutti;
-  })();
 
 
   // Conteggi totali (per i 4 box in alto)
@@ -2264,23 +2267,8 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
         </div>
       )}
 
-      {/* Orario del giorno — collegato all'Orario settimanale */}
-      {orarioGiorno.length>0&&(
-        <div style={{borderBottom:"6px solid #f3f4f6"}}>
-          <div style={{background:"#0d9488",color:"#fff",padding:"8px 18px",fontWeight:700,fontSize:13,letterSpacing:0.3}}>
-            📅 Orario di {nomeGiornoSel}
-          </div>
-          {orarioGiorno.map(o=>(
-            <div key={o.ora} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 18px",borderBottom:"1px solid #f0ece6",background:"#fff"}}>
-              <div style={{width:26,height:26,borderRadius:"50%",background:"#0d9488",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{o.ora}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:700,fontSize:14,color:"#1f2937"}}>{o.materia}</div>
-                <div style={{fontSize:12,color:"#9ca3af"}}>{o.ora}ª ora{o.nota?` — ${o.nota}`:""}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
+
 
       {/* Feed eventi del giorno */}
       <div>
@@ -2323,7 +2311,10 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                         ? <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>{oraNum}</div>
                         : <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",flexShrink:0,marginTop:2}}/>
                       )
-                    : <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,flexShrink:0,marginTop:4}}/>
+                    : (ev.tipo==="argomento" && oraDiEvento(ev)!==99
+                        ? <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:4}}>{oraDiEvento(ev)}</div>
+                        : <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,flexShrink:0,marginTop:4}}/>)
+
                   }
                   <div style={{flex:1,minWidth:0}}>
                     {(ev.tipo==="nota"||ev.tipo==="annotazione")
