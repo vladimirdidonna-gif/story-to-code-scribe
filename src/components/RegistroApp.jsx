@@ -2267,23 +2267,8 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
         </div>
       )}
 
-      {/* Orario del giorno — collegato all'Orario settimanale */}
-      {orarioGiorno.length>0&&(
-        <div style={{borderBottom:"6px solid #f3f4f6"}}>
-          <div style={{background:"#0d9488",color:"#fff",padding:"8px 18px",fontWeight:700,fontSize:13,letterSpacing:0.3}}>
-            📅 Orario di {nomeGiornoSel}
-          </div>
-          {orarioGiorno.map(o=>(
-            <div key={o.ora} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 18px",borderBottom:"1px solid #f0ece6",background:"#fff"}}>
-              <div style={{width:26,height:26,borderRadius:"50%",background:"#0d9488",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{o.ora}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:700,fontSize:14,color:"#1f2937"}}>{o.materia}</div>
-                <div style={{fontSize:12,color:"#9ca3af"}}>{o.ora}ª ora{o.nota?` — ${o.nota}`:""}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
+
 
       {/* Feed eventi del giorno */}
       <div>
