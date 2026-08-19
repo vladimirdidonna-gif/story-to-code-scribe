@@ -2141,6 +2141,23 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   };
   eventiGiorno.sort((a,b)=>(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99));
 
+  // ── Orario del giorno selezionato (dall'Orario settimanale) ──
+  const nomeGiornoSel = (()=>{
+    try{ const d=new Date(giornoSel+"T00:00:00"); return ["","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"][d.getDay()]||""; }
+    catch{ return ""; }
+  })();
+  const orarioGiorno = (()=>{
+    if(!nomeGiornoSel) return [];
+    const tutti = [];
+    ORE_ORARIO.forEach(ora=>{
+      const slot = (orarioSett||{})[`${nomeGiornoSel}|${ora}`];
+      if(slot&&slot.materia) tutti.push({ora, materia:slot.materia, nota:slot.nota||"", classe:slot.classe||""});
+    });
+    const dellaClasse = tutti.filter(o=>!o.classe||o.classe===classe);
+    return dellaClasse.length?dellaClasse:tutti;
+  })();
+
+
   // Conteggi totali (per i 4 box in alto)
   const tuttiAss = assenzeDB[classe]?.[s.id]||[];
   const cntAssenze = tuttiAss.filter(a=>a.tipo==="assente"&&a.concorreCalcolo!==false).length;
