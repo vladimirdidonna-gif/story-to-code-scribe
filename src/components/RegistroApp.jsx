@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, Trash2, Pencil, Users, BookOpen, Search } from "lucide-react";
 
