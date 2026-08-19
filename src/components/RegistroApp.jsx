@@ -1990,6 +1990,7 @@ function GiudizioAccordion({note}) {
 // ══════════════════════════════════════════════════════
 function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavigateTab, pgTrim}) {
   const [giornoSel, setGiornoSel] = useState(todayISO());
+  const [orarioSett] = useLocal("orario",{});
   const [pickerOpen, setPickerOpen] = useState(false);
   const [menuTabOpen, setMenuTabOpen] = useState(false);
   const menuTabRef = useRef(null);
@@ -2140,6 +2141,23 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   };
   eventiGiorno.sort((a,b)=>(PRIORITA_TIPO[a.tipo]??99)-(PRIORITA_TIPO[b.tipo]??99));
 
+  // ── Orario del giorno selezionato (dall'Orario settimanale) ──
+  const nomeGiornoSel = (()=>{
+    try{ const d=new Date(giornoSel+"T00:00:00"); return ["","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"][d.getDay()]||""; }
+    catch{ return ""; }
+  })();
+  const orarioGiorno = (()=>{
+    if(!nomeGiornoSel) return [];
+    const tutti = [];
+    ORE_ORARIO.forEach(ora=>{
+      const slot = (orarioSett||{})[`${nomeGiornoSel}|${ora}`];
+      if(slot&&slot.materia) tutti.push({ora, materia:slot.materia, nota:slot.nota||"", classe:slot.classe||""});
+    });
+    const dellaClasse = tutti.filter(o=>!o.classe||o.classe===classe);
+    return dellaClasse.length?dellaClasse:tutti;
+  })();
+
+
   // Conteggi totali (per i 4 box in alto)
   const tuttiAss = assenzeDB[classe]?.[s.id]||[];
   const cntAssenze = tuttiAss.filter(a=>a.tipo==="assente"&&a.concorreCalcolo!==false).length;
@@ -2246,8 +2264,27 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
         </div>
       )}
 
+      {/* Orario del giorno — collegato all'Orario settimanale */}
+      {orarioGiorno.length>0&&(
+        <div style={{borderBottom:"6px solid #f3f4f6"}}>
+          <div style={{background:"#0d9488",color:"#fff",padding:"8px 18px",fontWeight:700,fontSize:13,letterSpacing:0.3}}>
+            📅 Orario di {nomeGiornoSel}
+          </div>
+          {orarioGiorno.map(o=>(
+            <div key={o.ora} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 18px",borderBottom:"1px solid #f0ece6",background:"#fff"}}>
+              <div style={{width:26,height:26,borderRadius:"50%",background:"#0d9488",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{o.ora}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:14,color:"#1f2937"}}>{o.materia}</div>
+                <div style={{fontSize:12,color:"#9ca3af"}}>{o.ora}ª ora{o.nota?` — ${o.nota}`:""}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Feed eventi del giorno */}
       <div>
+
         {eventiGiorno.length===0
           ? <div style={{padding:"40px 20px",textAlign:"center",color:"#9ca3af",fontSize:14}}>Nessun evento in questa data</div>
           : eventiGiorno.map((ev,i)=>{
