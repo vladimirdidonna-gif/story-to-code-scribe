@@ -2129,32 +2129,45 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
     return t.length > max ? t.slice(0,max).trimEnd()+"…" : t;
   };
 
-  // Ora di lezione ricavata dalle firme del giorno (per ordinare come nel pannello Firme)
+  // Dati delle firme del giorno (per ordinare come nel pannello Firme e per il pallino blu)
   const firmeGiorno = ((contDB[`${classe}||__firme__`]||{}).firme||[]).filter(f=>toISO(f.data||"")===giornoSel);
-  const orePerMateria = {};
+  const firmePerMateria = {};
   firmeGiorno.forEach(f=>{
     const m=(f.materia||f.materiaFirma||"").toLowerCase().trim();
     const n=parseInt(f.oraInizioNum||f.oraInizio)||null;
+    const dur=parseInt(f.nOre)||1;
     if(m&&n){
-      if(!orePerMateria[m]) orePerMateria[m]=[];
-      orePerMateria[m].push(n);
+      if(!firmePerMateria[m]) firmePerMateria[m]=[];
+      firmePerMateria[m].push({ora:n, durata:dur});
     }
   });
-  Object.keys(orePerMateria).forEach(k=>orePerMateria[k].sort((a,b)=>a-b));
+  Object.keys(firmePerMateria).forEach(k=>firmePerMateria[k].sort((a,b)=>a.ora-b.ora));
+
+  const firmaPerEvento = ev => {
+    if(ev.tipo!=="argomento" && ev.tipo!=="compito") return null;
+    const m=(ev.mat||"").toLowerCase().trim();
+    const lista=firmePerMateria[m];
+    if(!lista || lista.length===0) return null;
+    if(lista.length===1) return lista[0];
+    // Se ci sono piu' firme per la stessa materia, assegna l'ora in base all'ordine di inserimento
+    const stessoTipoEMateria = eventiGiorno.filter(e=>e.tipo===ev.tipo && (e.mat||"").toLowerCase().trim()===m);
+    const idx = stessoTipoEMateria.findIndex(e=>e.id===ev.id);
+    return lista[Math.min(Math.max(idx,0), lista.length-1)] || lista[0];
+  };
 
   const oraDiEvento = ev => {
     if(ev.tipo==="assenza"){ const n=parseInt(ev.oraLezione); return isNaN(n)?99:n; }
-    if(ev.tipo==="argomento" || ev.tipo==="compito"){
-      const m=(ev.mat||"").toLowerCase().trim();
-      const ore = orePerMateria[m];
-      if(!ore || ore.length===0) return 99;
-      if(ore.length===1) return ore[0];
-      // Se ci sono piu' firme per la stessa materia, assegna l'ora in base all'ordine di inserimento
-      const stessoTipoEMateria = eventiGiorno.filter(e=>e.tipo===ev.tipo && (e.mat||"").toLowerCase().trim()===m);
-      const idx = stessoTipoEMateria.findIndex(e=>e.id===ev.id);
-      return ore[Math.min(Math.max(idx,0), ore.length-1)] || ore[0];
-    }
-    return 99;
+    const f=firmaPerEvento(ev);
+    return f ? f.ora : 99;
+  };
+
+  const numeroPallinoEvento = ev => {
+    if(ev.tipo!=="argomento") return null;
+    const f=firmaPerEvento(ev);
+    if(!f) return null;
+    // Se la firma dura 2 o piu' ore, il pallino blu resta vuoto
+    if(f.durata>=2) return null;
+    return f.ora;
   };
 
   // Ordine fisso richiesto: Comunicazioni → Assenze/Ritardi/Uscite/Fuori aula → Voti → Note/Annotazioni → Argomenti svolti → Compiti
