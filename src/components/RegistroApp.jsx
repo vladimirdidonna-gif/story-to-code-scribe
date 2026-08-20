@@ -2131,16 +2131,30 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
 
   // Ora di lezione ricavata dalle firme del giorno (per ordinare come nel pannello Firme)
   const firmeGiorno = ((contDB[`${classe}||__firme__`]||{}).firme||[]).filter(f=>toISO(f.data||"")===giornoSel);
-  const oraPerMateria = {};
+  const orePerMateria = {};
   firmeGiorno.forEach(f=>{
     const m=(f.materia||f.materiaFirma||"").toLowerCase().trim();
     const n=parseInt(f.oraInizioNum||f.oraInizio)||null;
-    if(m&&n&&(oraPerMateria[m]==null||n<oraPerMateria[m])) oraPerMateria[m]=n;
+    if(m&&n){
+      if(!orePerMateria[m]) orePerMateria[m]=[];
+      orePerMateria[m].push(n);
+    }
   });
+  Object.keys(orePerMateria).forEach(k=>orePerMateria[k].sort((a,b)=>a-b));
+
   const oraDiEvento = ev => {
     if(ev.tipo==="assenza"){ const n=parseInt(ev.oraLezione); return isNaN(n)?99:n; }
-    const m=(ev.mat||"").toLowerCase().trim();
-    return oraPerMateria[m]||99;
+    if(ev.tipo==="argomento" || ev.tipo==="compito"){
+      const m=(ev.mat||"").toLowerCase().trim();
+      const ore = orePerMateria[m];
+      if(!ore || ore.length===0) return 99;
+      if(ore.length===1) return ore[0];
+      // Se ci sono piu' firme per la stessa materia, assegna l'ora in base all'ordine di inserimento
+      const stessoTipoEMateria = eventiGiorno.filter(e=>e.tipo===ev.tipo && (e.mat||"").toLowerCase().trim()===m);
+      const idx = stessoTipoEMateria.findIndex(e=>e.id===ev.id);
+      return ore[Math.min(Math.max(idx,0), ore.length-1)] || ore[0];
+    }
+    return 99;
   };
 
   // Ordine fisso richiesto: Comunicazioni → Assenze/Ritardi/Uscite/Fuori aula → Voti → Note/Annotazioni → Argomenti svolti → Compiti
