@@ -1475,13 +1475,12 @@ function VotoCerchio({voto, faMedia, peso}) {
     }
   }
   const fontSize = s.length > 3 ? 18 : s.length === 3 ? 22 : s.length === 2 ? 26 : 32;
-  const isVerde = bg === VERDE;
   return (
     <div style={{
       width:64, height:64, borderRadius:"50%",
       background:bg, color:"#fff",
       fontWeight:900, fontSize,
-      fontFamily: isVerde ? FF : undefined,
+      fontFamily: FF,
       display:"flex", alignItems:"center", justifyContent:"center",
       flexShrink:0, boxShadow:"0 2px 8px rgba(0,0,0,0.22)",
       letterSpacing:-0.5,
