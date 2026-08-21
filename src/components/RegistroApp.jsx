@@ -2098,7 +2098,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   // Assenze/eventi presenza del giorno
   (assenzeDB[classe]?.[s.id]||[]).forEach(a=>{
     if(toISO(a.data||"")===giornoSel){
-      eventiGiorno.push({tipo:"assenza", subTipo:a.tipo, testo:a.motivo||"", id:"as"+a.id});
+      eventiGiorno.push({tipo:"assenza", subTipo:a.tipo, testo:a.motivo||"", oraOrologio:a.oraOrologio, oraLezione:a.oraLezione, id:"as"+a.id});
     }
   });
 
