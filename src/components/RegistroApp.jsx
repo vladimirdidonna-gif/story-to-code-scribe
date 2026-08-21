@@ -464,6 +464,7 @@ function votoColor(raw, faMedia) {
   const s = String(raw);
   if(s === " ") return "#3b82f6";
   if(s === "") return "#3b82f6";
+  if(s === "💬") return "#e5e7eb"; // voto solo commento: grigio chiaro
   const cleaned = stripAnnotations(s);
   const numericPart = cleaned.replace(/[+\-]+$/,"");
   const isNumeric = numericPart.trim() !== "" && !isNaN(Number(numericPart.replace(",",".")));
