@@ -443,6 +443,7 @@ function votoDisplay(raw) {
   const s = String(raw);
   if(s === " ") return "";
   if(s === "") return "";
+  if(s === "💬") return ""; // voto solo commento: cerchietto vuoto
   return s;
 }
 function parseVoto(raw) {
