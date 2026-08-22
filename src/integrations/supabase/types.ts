@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      registro_condiviso: {
+        Row: {
+          k: string
+          updated_at: string
+          v: string | null
+        }
+        Insert: {
+          k: string
+          updated_at?: string
+          v?: string | null
+        }
+        Update: {
+          k?: string
+          updated_at?: string
+          v?: string | null
+        }
+        Relationships: []
+      }
+      registro_dati: {
+        Row: {
+          k: string
+          updated_at: string
+          user_id: string
+          v: string | null
+        }
+        Insert: {
+          k: string
+          updated_at?: string
+          user_id: string
+          v?: string | null
+        }
+        Update: {
+          k?: string
+          updated_at?: string
+          user_id?: string
+          v?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
