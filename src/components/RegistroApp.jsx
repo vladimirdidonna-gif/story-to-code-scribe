@@ -5277,6 +5277,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   const setClasseMeta=v=>{setClasseMetaRaw(v);try{localStorage.setItem(`reg:${_doc}:classeMeta`,JSON.stringify(v));}catch{}};
   const getMeta=nome=>classeMeta[nome]||{coordinatore:false,materie:[]};
   const setMeta=(nome,patch)=>setClasseMeta({...classeMeta,[nome]:{...getMeta(nome),...patch}});
+  const isMobile = useIsMobile();
   const toggleMateria=(nome,mat)=>{
     const cur=getMeta(nome).materie||[];
     const next=cur.includes(mat)?cur.filter(m=>m!==mat):[...cur,mat];
