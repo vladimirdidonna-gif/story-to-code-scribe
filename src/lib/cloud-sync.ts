@@ -14,6 +14,8 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 const pending = new Map<string, string | null>();
 let channel: ReturnType<typeof supabase.channel> | null = null;
 let onRemoteChange: (() => void) | null = null;
+let lifecycleBound = false;
+
 
 const rawSet = typeof window !== "undefined" ? localStorage.setItem.bind(localStorage) : null;
 const rawRemove =
@@ -104,33 +106,69 @@ export function startCloudSync(userId: string, onRemote: () => void) {
     };
   }
 
-  if (channel) supabase.removeChannel(channel);
   let remoteTimer: ReturnType<typeof setTimeout> | null = null;
-  channel = supabase
-    .channel("registro-sync")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "registro_dati", filter: `user_id=eq.${userId}` },
-      (payload) => {
-        const row = (payload.new ?? payload.old) as { k?: string; v?: string | null };
-        if (!row?.k || shouldSkip(row.k)) return;
-        const incoming = payload.eventType === "DELETE" ? null : (row.v ?? null);
-        if (localStorage.getItem(row.k) === incoming) return;
-        applyingRemote = true;
-        try {
-          if (incoming === null) rawRemove?.(row.k);
-          else rawSet?.(row.k, incoming);
-        } catch {
-          /* quota */
-        } finally {
-          applyingRemote = false;
-        }
-        if (remoteTimer) clearTimeout(remoteTimer);
-        remoteTimer = setTimeout(() => onRemoteChange?.(), 600);
-      },
-    )
-    .subscribe();
+
+  const subscribe = () => {
+    if (channel) supabase.removeChannel(channel);
+    channel = supabase
+      .channel(`registro-sync-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "registro_dati", filter: `user_id=eq.${userId}` },
+        (payload) => {
+          const row = (payload.new ?? payload.old) as { k?: string; v?: string | null };
+          if (!row?.k || shouldSkip(row.k)) return;
+          const incoming = payload.eventType === "DELETE" ? null : (row.v ?? null);
+          if (localStorage.getItem(row.k) === incoming) return;
+          applyingRemote = true;
+          try {
+            if (incoming === null) rawRemove?.(row.k);
+            else rawSet?.(row.k, incoming);
+          } catch {
+            /* quota */
+          } finally {
+            applyingRemote = false;
+          }
+          if (remoteTimer) clearTimeout(remoteTimer);
+          remoteTimer = setTimeout(() => {
+            // Aggiornamento "morbido": i componenti rileggono i dati
+            // senza rimontare l'app (nessun ritorno alla Home).
+            window.dispatchEvent(new CustomEvent("registro-cloud-update"));
+            onRemoteChange?.();
+          }, 300);
+        },
+      )
+      .subscribe();
+  };
+
+  subscribe();
+
+  // Riallinea e riconnette quando il dispositivo torna online o l'app
+  // ritorna in primo piano: la sincronizzazione non resta mai bloccata.
+  if (!lifecycleBound) {
+    lifecycleBound = true;
+    const resync = async () => {
+      if (!currentUser) return;
+      await flush();
+      await hydrateFromCloud(currentUser);
+      window.dispatchEvent(new CustomEvent("registro-cloud-update"));
+    };
+    const onVisible = () => {
+      if (document.visibilityState !== "visible" || !currentUser) return;
+      const state = channel?.state;
+      if (state !== "joined") subscribe();
+      void resync();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("online", () => {
+      if (!currentUser) return;
+      subscribe();
+      void resync();
+    });
+    window.addEventListener("focus", onVisible);
+  }
 }
+
 
 export async function stopCloudSync() {
   await flush();

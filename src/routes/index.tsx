@@ -39,9 +39,10 @@ function Index() {
 
   return (
     <AuthGate>
-      {({ syncKey, signOut, email }) => (
+      {({ signOut, email }) => (
         <Suspense fallback={<Loader />}>
-          <RegistroApp key={syncKey} />
+          <RegistroApp />
+
           <button
             onClick={signOut}
             title={email}
