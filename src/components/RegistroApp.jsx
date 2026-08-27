@@ -5337,7 +5337,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   return (
     <div style={{fontFamily:FF,display:"flex",flexDirection:"column",height:"100vh",background:"#f9fafb"}}>
       {toast&&<Toast msg="Salvato" onDone={()=>setToast(false)}/>}
-      <div style={{background:"#0f766e",color:"#fff",padding:"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={22}/><span style={{fontWeight:700,fontSize:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:16,cursor:"pointer"}}>Salva e torna</button></div>
+      <div style={{background:"#0f766e",color:"#fff",padding:isMobile?"10px 12px":"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={isMobile?18:22}/><span style={{fontWeight:700,fontSize:isMobile?15:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:isMobile?11:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:isMobile?"6px 12px":"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:isMobile?13:16,cursor:"pointer"}}>Salva e torna</button></div>
       <div style={{flex:1,display:"flex",overflow:"hidden"}}>
         <div style={{width:260,background:"#fff",borderRight:"2px solid #e5e7eb",display:"flex",flexDirection:"column",flexShrink:0}}>
           <div style={{padding:"12px 14px 4px"}}>
