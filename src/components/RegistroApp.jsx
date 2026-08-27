@@ -406,6 +406,20 @@ function useLocal(key, def) {
     });
   }, []);
 
+  // Aggiornamento live quando arrivano dati dal cloud (altro dispositivo):
+  // ri-legge il valore senza rimontare l'app (così non si torna alla Home).
+  useEffect(() => {
+    const h = () => {
+      try {
+        const v = cGet(key);
+        if(v !== null) setVal(p => (JSON.stringify(p) === JSON.stringify(v) ? p : v));
+      } catch {}
+    };
+    window.addEventListener("registro-cloud-update", h);
+    return () => window.removeEventListener("registro-cloud-update", h);
+  }, [key]);
+
+
   const save = u => setVal(p => {
     const n = typeof u==="function" ? u(p) : u;
     // Salva su TUTTI i livelli immediatamente (sincrono)
