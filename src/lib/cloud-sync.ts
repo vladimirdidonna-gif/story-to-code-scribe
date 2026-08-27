@@ -14,6 +14,8 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 const pending = new Map<string, string | null>();
 let channel: ReturnType<typeof supabase.channel> | null = null;
 let onRemoteChange: (() => void) | null = null;
+let lifecycleBound = false;
+
 
 const rawSet = typeof window !== "undefined" ? localStorage.setItem.bind(localStorage) : null;
 const rawRemove =
