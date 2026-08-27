@@ -5346,14 +5346,14 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
           </div>
           <div style={{padding:isMobile?"8px 10px 6px":"12px 16px 8px",fontWeight:700,fontSize:isMobile?13:15,color:"#0f766e"}}>Classi ({list.length})</div>
           <div style={{padding:"0 12px 12px",display:"flex",gap:6}}><Inp value={nuova} onChange={e=>setNuova(e.target.value)} placeholder="es. 4A" style={{flex:1}} onKeyDown={e=>e.key==="Enter"&&addClasse()}/><button onClick={addClasse} style={{padding:isMobile?"6px 10px":"8px 14px",background:"#0f766e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:isMobile?16:20}}>+</button></div>
-          <div style={{flex:1,overflowY:"auto"}}>{list.map(nome=>{const isCoord=getMeta(nome).coordinatore;const nMat=(getMeta(nome).materie||[]).length;return(<div key={nome} onClick={()=>{setSel(nome);setEditId(null);setForm({nome:"",cognome:""}); }} style={{display:"flex",alignItems:"center",padding:"12px 16px",cursor:"pointer",background:sel===nome?"#ccfbf1":"transparent",borderLeft:sel===nome?"4px solid #0f766e":"4px solid transparent",borderBottom:"1px solid #f3f4f6"}}>
+          <div style={{flex:1,overflowY:"auto"}}>{list.map(nome=>{const isCoord=getMeta(nome).coordinatore;const nMat=(getMeta(nome).materie||[]).length;return(<div key={nome} onClick={()=>{setSel(nome);setEditId(null);setForm({nome:"",cognome:""}); }} style={{display:"flex",alignItems:"center",padding:isMobile?"8px 10px":"12px 16px",cursor:"pointer",background:sel===nome?"#ccfbf1":"transparent",borderLeft:sel===nome?"4px solid #0f766e":"4px solid transparent",borderBottom:"1px solid #f3f4f6"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontWeight:700,fontSize:15}}>{nome}</div>
-              <div style={{fontSize:11,color:"#6b7280"}}>{nMat>0?`${nMat} mater${nMat===1?"ia":"ie"}`:""}{isCoord?` ⭐`:""}</div>
+              <div style={{fontWeight:700,fontSize:isMobile?13:15}}>{nome}</div>
+              <div style={{fontSize:11,color:"#6b7280",display:isMobile?"none":"block"}}>{nMat>0?`${nMat} mater${nMat===1?"ia":"ie"}`:""}{isCoord?` ⭐`:""}</div>
             </div>
-            <span style={{fontSize:12,color:"#9ca3af",marginRight:8}}>{(classi[nome]||[]).length} al.</span>
-            <button onClick={e=>{e.stopPropagation();setRinominaClasse({nome, nuovoNome:nome});}} style={{background:"#dbeafe",color:"#2563eb",border:"none",borderRadius:4,padding:"4px 7px",cursor:"pointer",marginRight:4}}><Pencil size={13}/></button>
-            <button onClick={e=>{e.stopPropagation();setConfirmDel({type:"classe",id:nome});}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:4,padding:"4px 7px",cursor:"pointer"}}><Trash2 size={13}/></button>
+            <span style={{fontSize:12,color:"#9ca3af",marginRight:8,display:isMobile?"none":"inline"}}>{(classi[nome]||[]).length} al.</span>
+            <button onClick={e=>{e.stopPropagation();setRinominaClasse({nome, nuovoNome:nome});}} style={{background:"#dbeafe",color:"#2563eb",border:"none",borderRadius:4,padding:isMobile?"3px 5px":"4px 7px",cursor:"pointer",marginRight:4}}><Pencil size={isMobile?11:13}/></button>
+            <button onClick={e=>{e.stopPropagation();setConfirmDel({type:"classe",id:nome});}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:4,padding:isMobile?"3px 5px":"4px 7px",cursor:"pointer"}}><Trash2 size={isMobile?11:13}/></button>
           </div>);})}</div>
         </div>
         <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
