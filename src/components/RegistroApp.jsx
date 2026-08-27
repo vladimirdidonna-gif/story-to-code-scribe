@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 import { Plus, Trash2, Pencil, Users, BookOpen, Search } from "lucide-react";
 
 const MATERIE = ["Arte","Ed. Fisica","Francese","Geografia","Inglese","Italiano","Matematica","Musica","Religione","Scienze","Storia","Tecnologia"];
