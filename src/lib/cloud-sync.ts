@@ -25,7 +25,7 @@ function queue(k: string, v: string | null) {
   if (!currentUser || applyingRemote || shouldSkip(k)) return;
   pending.set(k, v);
   if (flushTimer) clearTimeout(flushTimer);
-  flushTimer = setTimeout(flush, 700);
+  flushTimer = setTimeout(flush, 300);
 }
 
 async function flush() {
@@ -43,29 +43,45 @@ async function flush() {
     for (let i = 0; i < rows.length; i += 25) {
       const chunk = rows.slice(i, i + 25);
       const { error } = await supabase.from("registro_dati").upsert(chunk, { onConflict: "user_id,k" });
-      if (error) console.warn("[sync] upsert", error.message);
+      if (error) {
+        console.warn("[sync] upsert", error.message);
+        // Rimetti in coda: il dato non deve andare perso.
+        for (const r of chunk) if (!pending.has(r.k)) pending.set(r.k, r.v);
+      }
     }
     if (removed.length) {
       await supabase.from("registro_dati").delete().eq("user_id", currentUser).in("k", removed);
     }
   } catch (e) {
     console.warn("[sync] flush", e);
+    for (const [k, v] of entries) if (!pending.has(k)) pending.set(k, v);
   }
 }
 
-/** Scarica tutti i dati dell'account nel dispositivo corrente. */
-export async function hydrateFromCloud(userId: string) {
+/** Salvataggio immediato (usato alla chiusura/uscita dall'app). */
+export async function flushNow() {
+  if (flushTimer) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  await flush();
+}
+
+/** Scarica tutti i dati dell'account nel dispositivo corrente. Ritorna le chiavi già presenti nel cloud. */
+export async function hydrateFromCloud(userId: string): Promise<Set<string>> {
+  const keys = new Set<string>();
   const { data, error } = await supabase
     .from("registro_dati")
     .select("k,v")
     .eq("user_id", userId);
   if (error) {
     console.warn("[sync] hydrate", error.message);
-    return;
+    return keys;
   }
   applyingRemote = true;
   try {
     for (const row of data ?? []) {
+      keys.add(row.k);
       if (row.v === null || shouldSkip(row.k)) continue;
       try {
         rawSet?.(row.k, row.v);
@@ -76,18 +92,25 @@ export async function hydrateFromCloud(userId: string) {
   } finally {
     applyingRemote = false;
   }
+  return keys;
 }
 
-/** Invia al cloud tutto ciò che è già presente sul dispositivo (primo accesso). */
-export async function pushLocalToCloud(userId: string) {
+/**
+ * Invia al cloud solo ciò che il cloud non ha ancora.
+ * Così i dati salvati da un altro dispositivo non vengono mai sovrascritti
+ * da copie vecchie presenti su questo dispositivo.
+ */
+export async function pushLocalToCloud(userId: string, cloudKeys?: Set<string>) {
   currentUser = userId;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (!k || shouldSkip(k)) continue;
+    if (cloudKeys && cloudKeys.has(k)) continue;
     pending.set(k, localStorage.getItem(k));
   }
   await flush();
 }
+
 
 /** Attiva la sincronizzazione continua + realtime. */
 export function startCloudSync(userId: string, onRemote: () => void) {
