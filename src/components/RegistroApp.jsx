@@ -534,10 +534,10 @@ function Toast({msg,onDone}) {
   useEffect(()=>{
     // Trigger l'animazione di entrata
     const t1 = setTimeout(()=>setVisible(true), 10);
-    // Dopo 3 secondi esce
-    const t2 = setTimeout(()=>{ setVisible(false); }, 3000);
+    // Dopo 2 secondi esce
+    const t2 = setTimeout(()=>{ setVisible(false); }, 2000);
     // Dopo l'uscita rimuove il componente
-    const t3 = setTimeout(onDone, 3400);
+    const t3 = setTimeout(onDone, 2400);
     return()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   },[]);
   return (
