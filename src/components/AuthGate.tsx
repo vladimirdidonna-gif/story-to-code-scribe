@@ -37,13 +37,17 @@ export default function AuthGate({ children }: Props) {
       setSyncing(true);
       const uid = session.user.id;
       installCloudStorage(uid);
-      await hydrateFromCloud(uid);
-      await pushLocalToCloud(uid);
+      // Il cloud ha sempre la precedenza: si inviano solo le chiavi che il
+      // cloud non conosce ancora, così un dispositivo non sovrascrive i dati
+      // salvati poco prima da un altro.
+      const cloudKeys = await hydrateFromCloud(uid);
+      await pushLocalToCloud(uid, cloudKeys);
       startCloudSync(uid, () => setSyncKey((k) => k + 1));
       if (!alive) return;
       setSyncing(false);
       setSyncKey((k) => k + 1);
     })();
+
     return () => {
       alive = false;
     };
