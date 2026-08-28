@@ -177,18 +177,25 @@ export function startCloudSync(userId: string, onRemote: () => void) {
       window.dispatchEvent(new CustomEvent("registro-cloud-update"));
     };
     const onVisible = () => {
-      if (document.visibilityState !== "visible" || !currentUser) return;
+      if (!currentUser) return;
+      if (document.visibilityState !== "visible") {
+        // App messa in background (o chiusa sul telefono): salva subito.
+        void flushNow();
+        return;
+      }
       const state = channel?.state;
       if (state !== "joined") subscribe();
       void resync();
     };
     document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pagehide", () => void flushNow());
     window.addEventListener("online", () => {
       if (!currentUser) return;
       subscribe();
       void resync();
     });
     window.addEventListener("focus", onVisible);
+
   }
 }
 
