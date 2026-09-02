@@ -3091,10 +3091,10 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       if(!items.length) return <EmptyMsg msg="Nessuna nota disciplinare"/>;
       return items.map((n,i)=>(
         <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
-          {/* Riga superiore: data + badge Studente */}
+          {/* Riga superiore: data + destinatario */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
             <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif"}}>{fmtD(n.data||"")}</div>
-            <span style={{background:"#f97316",color:"#fff",borderRadius:4,padding:"2px 12px",fontWeight:700,fontSize:12,fontFamily:"Helvetica,Arial,sans-serif"}}>Studente</span>
+            <span style={{background:"#f97316",color:"#fff",borderRadius:4,padding:"2px 12px",fontWeight:700,fontSize:12,fontFamily:"Helvetica,Arial,sans-serif"}}>{n.destinatariTutti ? "Classe" : "Studente"}</span>
           </div>
           {/* Cognome Nome docente */}
           <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif",marginBottom:6,textTransform:"uppercase"}}>
