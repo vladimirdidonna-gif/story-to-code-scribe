@@ -4186,8 +4186,13 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
     });
     return all.sort((a,b)=>toISOFast(b.data).localeCompare(toISOFast(a.data)));
   };
-  const noteStudente = (contDB[`__class__${classe}`]?.note||[]).filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id));
-  const annotStudente = (contDB[`__class__${classe}`]?.annotazioni||[]).filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id));
+  // Note disciplinari + annotazioni confluiscono nella stessa tabella "Note disciplinari" della scheda alunno
+  const noteStudente = [
+    ...(contDB[`__class__${classe}`]?.note||[]).map(n=>({...n,_tipo:"note"})),
+    ...(contDB[`__class__${classe}`]?.annotazioni||[]).map(a=>({...a,_tipo:"annotazioni"})),
+  ]
+    .filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id))
+    .sort((a,b)=>toISOFast(b.data).localeCompare(toISOFast(a.data)));
   const argomenti = getContenuti("lezioni");
   const compiti   = getContenuti("compiti");
 
@@ -4469,12 +4474,12 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                       </td>
                       <td style={{padding:"10px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{n.testo}</td>
                       <td style={{padding:"10px 14px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
-                        <span style={{background:HDR,color:"#fff",borderRadius:4,padding:"2px 10px",fontWeight:700,fontSize:12}}>{n.gravita||"—"}</span>
+                        <span style={{background:HDR,color:"#fff",borderRadius:4,padding:"2px 10px",fontWeight:700,fontSize:12}}>{(n._tipo==="annotazioni"?n.gravitaAnnot:n.gravita)||"—"}</span>
                       </td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
                         <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>onOpenNota&&onOpenNota(s.id, n)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("note", n.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                          <button onClick={()=>n._tipo==="annotazioni"?onOpenAnnotazione&&onOpenAnnotazione(s.id, n):onOpenNota&&onOpenNota(s.id, n)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
+                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto(n._tipo, n.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
                         </div>
                       </td>
                     </tr>
@@ -4484,49 +4489,8 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             </table>
           </div>
 
-          {/* ── ANNOTAZIONI GIORNALIERE ── */}
-          <div>
-            <SezioneHdr label="Annotazioni giornaliere (Alunno)" onAdd={()=>onOpenAnnotazione&&onOpenAnnotazione(s.id)}/>
-            <table style={{width:"100%",borderCollapse:"collapse"}}>
-              {annotStudente.length>0 && (
-                <thead>
-                  <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
-                    {["Alunno","Docente","Annotazione","Gravità","Comandi"].map(h=>(
-                      <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-              )}
-              <tbody>
-                {annotStudente.length===0
-                  ?<tr><td colSpan={5} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
-                  :annotStudente.map((a,i)=>(
-                    <tr key={a.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
-                      <td style={{padding:"9px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
-                        {s.cognome} {s.nome}
-                      </td>
-                      <td style={{padding:"9px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
-                        {cognomeNome(a.inseritoDa||docente).toUpperCase()}
-                      </td>
-                      <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{a.testo}</td>
-                      <td style={{padding:"9px 14px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
-                        {a.gravitaAnnot
-                          ? <span style={{background:HDR,color:"#fff",borderRadius:4,padding:"2px 10px",fontWeight:700,fontSize:12}}>{a.gravitaAnnot}</span>
-                          : <span style={{color:"#9ca3af",fontSize:12}}>—</span>
-                        }
-                      </td>
-                      <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
-                        <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>onOpenAnnotazione&&onOpenAnnotazione(s.id, a)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("annotazioni", a.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+
+
 
         </div>
       </div>
