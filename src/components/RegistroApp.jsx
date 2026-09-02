@@ -4450,7 +4450,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
               {noteStudente.length>0 && (
                 <thead>
                   <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
-                    {["Docente","Nota disciplinare","Gravità","Comandi"].map(h=>(
+                    {["Alunno","Docente","Nota disciplinare","Gravità","Comandi"].map(h=>(
                       <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                     ))}
                   </tr>
@@ -4458,9 +4458,12 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
               )}
               <tbody>
                 {noteStudente.length===0
-                  ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
+                  ?<tr><td colSpan={5} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :noteStudente.map((n,i)=>(
                     <tr key={n.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
+                      <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
+                        {(n.destinatariTutti||!(n.destinatari||[]).length)?"Classe":`${s.cognome} ${s.nome}`}
+                      </td>
                       <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
                         {cognomeNome(n.inseritoDa||docente).toUpperCase()}
                       </td>
