@@ -4450,7 +4450,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
               {noteStudente.length>0 && (
                 <thead>
                   <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
-                    {["Docente","Nota disciplinare","Gravità","Comandi"].map(h=>(
+                    {["Alunno","Docente","Nota disciplinare","Gravità","Comandi"].map(h=>(
                       <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                     ))}
                   </tr>
@@ -4458,9 +4458,12 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
               )}
               <tbody>
                 {noteStudente.length===0
-                  ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
+                  ?<tr><td colSpan={5} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :noteStudente.map((n,i)=>(
                     <tr key={n.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
+                      <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
+                        {(n.destinatariTutti||!(n.destinatari||[]).length)?"Classe":`${s.cognome} ${s.nome}`}
+                      </td>
                       <td style={{padding:"10px 14px",fontWeight:700,fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb",color:"#1f2937"}}>
                         {cognomeNome(n.inseritoDa||docente).toUpperCase()}
                       </td>
@@ -11742,7 +11745,11 @@ function Registro({docente,onCambia}) {
             </div>
             <div style={{flex:1}}>
               <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
-              <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);const disabled=contForm.destinatariTutti;return(<div key={s.id} onClick={()=>!disabled&&setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:disabled?"default":"pointer",background:disabled||sel?TEAL_LIGHT:"transparent",borderRadius:3,opacity:disabled?0.6:1}}><div style={{width:15,height:15,border:"2px solid "+(disabled||sel?TEAL:"#bbb"),borderRadius:2,background:disabled||sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{(disabled||sel)&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
+              {contForm.destinatariTutti
+                ? /* Tutta la classe attiva: box completamente vuoto, come le altre sezioni */
+                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
+                : <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);return(<div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
+              }
             </div>
           </div>}
 
