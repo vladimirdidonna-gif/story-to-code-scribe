@@ -11742,7 +11742,11 @@ function Registro({docente,onCambia}) {
             </div>
             <div style={{flex:1}}>
               <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
-              <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);const disabled=contForm.destinatariTutti;return(<div key={s.id} onClick={()=>!disabled&&setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:disabled?"default":"pointer",background:disabled||sel?TEAL_LIGHT:"transparent",borderRadius:3,opacity:disabled?0.6:1}}><div style={{width:15,height:15,border:"2px solid "+(disabled||sel?TEAL:"#bbb"),borderRadius:2,background:disabled||sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{(disabled||sel)&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
+              {contForm.destinatariTutti
+                ? /* Tutta la classe attiva: box completamente vuoto, come le altre sezioni */
+                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
+                : <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);return(<div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
+              }
             </div>
           </div>}
 
