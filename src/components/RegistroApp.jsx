@@ -4186,8 +4186,13 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
     });
     return all.sort((a,b)=>toISOFast(b.data).localeCompare(toISOFast(a.data)));
   };
-  const noteStudente = (contDB[`__class__${classe}`]?.note||[]).filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id));
-  const annotStudente = (contDB[`__class__${classe}`]?.annotazioni||[]).filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id));
+  // Note disciplinari + annotazioni confluiscono nella stessa tabella "Note disciplinari" della scheda alunno
+  const noteStudente = [
+    ...(contDB[`__class__${classe}`]?.note||[]).map(n=>({...n,_tipo:"note"})),
+    ...(contDB[`__class__${classe}`]?.annotazioni||[]).map(a=>({...a,_tipo:"annotazioni"})),
+  ]
+    .filter(n=>n.destinatariTutti||(n.destinatari||[]).includes(s.id))
+    .sort((a,b)=>toISOFast(b.data).localeCompare(toISOFast(a.data)));
   const argomenti = getContenuti("lezioni");
   const compiti   = getContenuti("compiti");
 
