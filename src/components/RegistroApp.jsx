@@ -2336,7 +2336,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     : ""
                   )
                 : (ev.mat||"");
-              const targetTab = ev.tipo==="voto"?"voti":ev.tipo==="compito"?"compiti":ev.tipo==="argomento"?"lezioni":ev.tipo==="annotazione"?"annotazioni":ev.tipo==="nota"?"note":ev.tipo==="assenza"?"assenze":ev.tipo==="comunicazione"?"comunicazioni":null;
+              const targetTab = ev.tipo==="voto"?"voti":ev.tipo==="compito"?"compiti":ev.tipo==="argomento"?"lezioni":ev.tipo==="annotazione"?"note":ev.tipo==="nota"?"note":ev.tipo==="assenza"?"assenze":ev.tipo==="comunicazione"?"comunicazioni":null;
               // Numero ora nel pallino: SOLO per ritardo/uscita. Per assenza e fuori_aula il pallino resta vuoto.
               const mostraNumeroPallino = ev.subTipo==="ritardo" || ev.subTipo==="uscita";
               const oraNum = mostraNumeroPallino
@@ -2379,8 +2379,8 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     )}
                     {ev.tipo==="comunicazione"&&(
                       <>
+                        {/* Solo il titolo della comunicazione */}
                         {ev.testo&&<div style={{fontSize:15,color:"#1f2937",marginTop:1}}>{troncaTesto(ev.testo,40)}</div>}
-                        {ev.sub&&<div style={{fontSize:13,color:"#6b7280",marginTop:2,lineHeight:1.4}}>{troncaTesto(ev.sub)}</div>}
                       </>
                     )}
                     {ev.tipo!=="voto"&&ev.tipo!=="comunicazione"&&ev.testo&&<div style={{fontSize:13,color:"#6b7280",marginTop:2,lineHeight:1.4}}>{ev._isVerifica&&<b style={{color:"#1f2937"}}>Verifica </b>}{troncaTesto(ev.testo)}</div>}
