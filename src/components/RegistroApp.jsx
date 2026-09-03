@@ -2724,7 +2724,6 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
     {id:"compiti", lbl:"📝 Compiti", color:"#f97316"},
     {id:"lezioni", lbl:"📚 Lezioni", color:TEAL},
     {id:"assenze", lbl:"🔴 Assenze", color:"#ef4444"},
-    {id:"annotazioni", lbl:"📌 Annotazioni", color:"#6b7280"},
     {id:"comunicazioni", lbl:"📢 Comunicazioni", color:"#5b9bd5"},
   ];
 
@@ -3087,7 +3086,11 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       );
     }
     if(tab==="note"){
-      const items = getNoteStudente();
+      // Note disciplinari + annotazioni confluiscono nella stessa sezione "Note"
+      const items = [
+        ...getNoteStudente().map(n=>({...n,_isAnnot:false})),
+        ...getAnnotStudente().map(a=>({...a,_isAnnot:true})),
+      ].sort((a,b)=>toISO(b.data||"").localeCompare(toISO(a.data||"")));
       if(!items.length) return <EmptyMsg msg="Nessuna nota disciplinare"/>;
       return items.map((n,i)=>(
         <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
