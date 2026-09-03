@@ -3103,9 +3103,9 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
           <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif",marginBottom:6,textTransform:"uppercase"}}>
             {cognomeNome(n.inseritoDa||docente)}
           </div>
-          {/* Badge Nota disciplinare + testo */}
+          {/* Badge Nota disciplinare / Annotazione + testo */}
           <div style={{display:"flex",alignItems:"flex-start",gap:8}}>
-            <span style={{background:"#dc2626",color:"#fff",borderRadius:3,padding:"2px 8px",fontWeight:700,fontSize:11,whiteSpace:"nowrap",fontFamily:"Helvetica,Arial,sans-serif",flexShrink:0}}>Nota disciplinare</span>
+            <span style={{background:n._isAnnot?"#6b7280":"#dc2626",color:"#fff",borderRadius:3,padding:"2px 8px",fontWeight:700,fontSize:11,whiteSpace:"nowrap",fontFamily:"Helvetica,Arial,sans-serif",flexShrink:0}}>{n._isAnnot?"Annotazione":"Nota disciplinare"}</span>
             <span style={{fontSize:13,color:"#374151",lineHeight:1.6,fontFamily:"Helvetica,Arial,sans-serif",whiteSpace:"pre-wrap"}}>{n.testo||"—"}</span>
           </div>
         </div>
@@ -3319,28 +3319,6 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
           ))}
         </div>
       );
-    }
-    if(tab==="annotazioni"){
-      const items = getAnnotStudente();
-      if(!items.length) return <EmptyMsg msg="Nessuna annotazione"/>;
-      return items.map((a,i)=>(
-        <div key={a.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
-          {/* Riga superiore: data + classe */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
-            <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif"}}>{fmtD(a.data||"")}</div>
-            <span style={{background:"#f97316",color:"#fff",borderRadius:4,padding:"2px 12px",fontWeight:700,fontSize:12,fontFamily:"Helvetica,Arial,sans-serif"}}>Classe</span>
-          </div>
-          {/* Cognome Nome docente */}
-          <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif",marginBottom:6,textTransform:"uppercase"}}>
-            {cognomeNome(a.inseritoDa||docente)}
-          </div>
-          {/* Badge Annotazione + testo */}
-          <div style={{display:"flex",alignItems:"flex-start",gap:8}}>
-            <span style={{background:"#6b7280",color:"#fff",borderRadius:3,padding:"2px 8px",fontWeight:700,fontSize:11,whiteSpace:"nowrap",fontFamily:"Helvetica,Arial,sans-serif",flexShrink:0}}>Annotazione</span>
-            <span style={{fontSize:13,color:"#374151",lineHeight:1.6,fontFamily:"Helvetica,Arial,sans-serif",whiteSpace:"pre-wrap"}}>{a.testo||"—"}</span>
-          </div>
-        </div>
-      ));
     }
     if(tab==="verifiche"){
       const items = getVerifiche();
