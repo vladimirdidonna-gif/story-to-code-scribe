@@ -5908,7 +5908,7 @@ function SistemaColleghi({docente, classiList, classi, votiDB, contDB, assenzeDB
                     })()}
                     {(d.comunicazioni||[]).length>0&&<div>
                       <div style={{fontWeight:700,fontSize:12,color:"#0891b2",marginBottom:4}}>📢 Comunicazioni ({d.comunicazioni.length})</div>
-                      {d.comunicazioni.slice(0,3).map((c,i)=><div key={i} style={{fontSize:12,color:"#374151",marginBottom:2}}>• {c.oggetto||c.testo?.slice(0,60)||"—"}</div>)}
+                      {d.comunicazioni.slice(0,3).map((c,i)=><div key={i} style={{fontSize:12,color:"#000",fontWeight:"bold",marginBottom:2}}>• {c.oggetto||c.testo?.slice(0,60)||"—"}</div>)}
                     </div>}
                     {(d.colloqui||[]).length>0&&<div>
                       <div style={{fontWeight:700,fontSize:12,color:"#8b5cf6",marginBottom:4}}>📅 Colloqui ({d.colloqui.length})</div>
