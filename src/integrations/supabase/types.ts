@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      condivisione_dati: {
+        Row: {
+          classe: string
+          owner_id: string
+          owner_nome: string | null
+          payload: Json
+          updated_at: string
+        }
+        Insert: {
+          classe: string
+          owner_id: string
+          owner_nome?: string | null
+          payload?: Json
+          updated_at?: string
+        }
+        Update: {
+          classe?: string
+          owner_id?: string
+          owner_nome?: string | null
+          payload?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      condivisioni: {
+        Row: {
+          classe: string
+          created_at: string
+          destinatario_email: string
+          destinatario_id: string | null
+          id: string
+          messaggio: string | null
+          mittente_email: string
+          mittente_id: string
+          stato: string
+          studenti: Json
+          updated_at: string
+        }
+        Insert: {
+          classe: string
+          created_at?: string
+          destinatario_email: string
+          destinatario_id?: string | null
+          id?: string
+          messaggio?: string | null
+          mittente_email: string
+          mittente_id: string
+          stato?: string
+          studenti?: Json
+          updated_at?: string
+        }
+        Update: {
+          classe?: string
+          created_at?: string
+          destinatario_email?: string
+          destinatario_id?: string | null
+          id?: string
+          messaggio?: string | null
+          mittente_email?: string
+          mittente_id?: string
+          stato?: string
+          studenti?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      docenti_rubrica: {
+        Row: {
+          email: string
+          nome: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          email: string
+          nome?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          email?: string
+          nome?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       registro_condiviso: {
         Row: {
           k: string
@@ -58,7 +145,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      ha_condivisione: {
+        Args: { _classe: string; _owner: string }
+        Returns: boolean
+      }
+      mia_email: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
