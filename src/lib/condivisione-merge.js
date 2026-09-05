@@ -24,14 +24,7 @@ const chiaviClasse = (contDB, classe) =>
   );
 
 /** Costruisce il pacchetto dati da pubblicare per una classe. */
-export function estraiPayloadClasse(opts) => {
-  classe;
-  contDB;
-  assenzeDB;
-  classi;
-  prog?;
-  autore;
-}) {
+export function estraiPayloadClasse(opts) {
   const { classe, contDB = {}, assenzeDB = {}, classi = {}, prog = {}, autore } = opts;
   const cont = {};
   chiaviClasse(contDB, classe).forEach((k) => {
@@ -78,7 +71,7 @@ const marca = (item, autore, tag) =>
  * Fonde i dati dei colleghi nelle strutture locali (solo per la lettura).
  * `righe` = elenco di { owner_id, owner_nome, classe, payload }.
  */
-export function fondiEsterni(opts) => { contDB; assenzeDB; classi; prog?; righe[] }) {
+export function fondiEsterni(opts) {
   const { righe } = opts;
   if (!righe?.length) return { contDB: opts.contDB, assenzeDB: opts.assenzeDB, prog: opts.prog || {} };
 
@@ -94,24 +87,24 @@ export function fondiEsterni(opts) => { contDB; assenzeDB; classi; prog?; righe[
 
     // mappa nome → id locale
     const idMap = new Map();
-    const locali = (opts.classi?.[classe] || []) as Any[];
+    const locali = (opts.classi?.[classe] || []);
     const perNome = new Map(locali.map((a) => [norm(nomeAlunno(a)), a.id]));
     (p.roster || []).forEach((a) => {
       const own = perNome.get(norm(a.nome));
       if (own !== undefined && String(own) !== String(a.id)) idMap.set(String(a.id), own);
     });
 
-    const cont = remap(p.cont || {}, idMap) as Any;
+    const cont = remap(p.cont || {}, idMap);
     Object.entries(cont).forEach(([k, sezioni]) => {
       const base = { ...(contDB[k] || {}) };
-      Object.entries((sezioni as Any) || {}).forEach(([sez, arr]) => {
+      Object.entries((sezioni) || {}).forEach(([sez, arr]) => {
         if (!Array.isArray(arr)) return;
         base[sez] = [...(Array.isArray(base[sez]) ? base[sez] : []), ...arr.map((it) => marca(it, autore, tag))];
       });
       contDB[k] = base;
     });
 
-    const comun = remap(p.comunicazioni || [], idMap) as Any[];
+    const comun = remap(p.comunicazioni || [], idMap);
     if (comun.length) {
       const cur = contDB["__comunicazioni__"]?.comunicazioni || [];
       contDB["__comunicazioni__"] = {
@@ -120,7 +113,7 @@ export function fondiEsterni(opts) => { contDB; assenzeDB; classi; prog?; righe[
       };
     }
 
-    const ass = remap(p.assenze || {}, idMap) as Any;
+    const ass = remap(p.assenze || {}, idMap);
     if (Object.keys(ass).length) {
       const cur = { ...(assenzeDB[classe] || {}) };
       Object.entries(ass).forEach(([sid, arr]) => {
