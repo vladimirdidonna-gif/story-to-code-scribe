@@ -2,18 +2,18 @@
 // I dati del collega vengono marcati con `_ext` così restano in sola lettura
 // e non vengono mai salvati nel registro personale.
 
-type Any = Record<string, any>;
 
-const norm = (s: unknown) =>
+
+const norm = (s) =>
   String(s ?? "")
     .toLowerCase()
     .replace(/\s+/g, " ")
     .trim();
 
-export const nomeAlunno = (a: Any) => `${a?.cognome ?? ""} ${a?.nome ?? ""}`.trim();
+export const nomeAlunno = (a) => `${a?.cognome ?? ""} ${a?.nome ?? ""}`.trim();
 
 /** Chiavi di contDB che appartengono a una classe. */
-const chiaviClasse = (contDB: Any, classe: string) =>
+const chiaviClasse = (contDB, classe) =>
   Object.keys(contDB || {}).filter(
     (k) =>
       k === `__class__${classe}` ||
@@ -24,25 +24,25 @@ const chiaviClasse = (contDB: Any, classe: string) =>
   );
 
 /** Costruisce il pacchetto dati da pubblicare per una classe. */
-export function estraiPayloadClasse(opts: {
-  classe: string;
-  contDB: Any;
-  assenzeDB: Any;
-  classi: Any;
-  prog?: Any;
-  autore: string;
+export function estraiPayloadClasse(opts) => {
+  classe;
+  contDB;
+  assenzeDB;
+  classi;
+  prog?;
+  autore;
 }) {
   const { classe, contDB = {}, assenzeDB = {}, classi = {}, prog = {}, autore } = opts;
-  const cont: Any = {};
+  const cont = {};
   chiaviClasse(contDB, classe).forEach((k) => {
     cont[k] = contDB[k];
   });
   const comunicazioni = (contDB["__comunicazioni__"]?.comunicazioni || []).filter(
-    (c: Any) => !c?.classiCom?.length || c.classiCom.includes(classe),
+    (c) => !c?.classiCom?.length || c.classiCom.includes(classe),
   );
-  const roster = (classi[classe] || []).map((a: Any) => ({ id: a.id, nome: nomeAlunno(a) }));
-  const teams = (prog?.teams || []).filter((t: Any) => !t?.classiSel?.length || t.classiSel.includes(classe));
-  const verbali = (prog?.verbali || []).filter((v: Any) => !v?.classiSel?.length || v?.classe === classe || !v?.classe);
+  const roster = (classi[classe] || []).map((a) => ({ id: a.id, nome: nomeAlunno(a) }));
+  const teams = (prog?.teams || []).filter((t) => !t?.classiSel?.length || t.classiSel.includes(classe));
+  const verbali = (prog?.verbali || []).filter((v) => !v?.classiSel?.length || v?.classe === classe || !v?.classe);
   return {
     autore,
     roster,
@@ -54,10 +54,10 @@ export function estraiPayloadClasse(opts: {
 }
 
 /** Sostituisce gli id alunno del collega con gli id locali (stessi nomi). */
-function remap(value: any, idMap: Map<string, any>): any {
+function remap(value, idMap) {
   if (Array.isArray(value)) return value.map((v) => remap(v, idMap));
   if (value && typeof value === "object") {
-    const out: Any = {};
+    const out = {};
     for (const [k, v] of Object.entries(value)) {
       const nk = idMap.has(String(k)) ? String(idMap.get(String(k))) : k;
       out[nk] = remap(v, idMap);
@@ -69,7 +69,7 @@ function remap(value: any, idMap: Map<string, any>): any {
   return value;
 }
 
-const marca = (item: Any, autore: string, tag: string) =>
+const marca = (item, autore, tag) =>
   item && typeof item === "object"
     ? { ...item, id: `ext${tag}_${item.id ?? Math.random().toString(36).slice(2)}`, _ext: true, _autore: autore }
     : item;
@@ -78,13 +78,13 @@ const marca = (item: Any, autore: string, tag: string) =>
  * Fonde i dati dei colleghi nelle strutture locali (solo per la lettura).
  * `righe` = elenco di { owner_id, owner_nome, classe, payload }.
  */
-export function fondiEsterni(opts: { contDB: Any; assenzeDB: Any; classi: Any; prog?: Any; righe: Any[] }) {
+export function fondiEsterni(opts) => { contDB; assenzeDB; classi; prog?; righe[] }) {
   const { righe } = opts;
   if (!righe?.length) return { contDB: opts.contDB, assenzeDB: opts.assenzeDB, prog: opts.prog || {} };
 
-  const contDB: Any = { ...(opts.contDB || {}) };
-  const assenzeDB: Any = { ...(opts.assenzeDB || {}) };
-  const prog: Any = { ...(opts.prog || {}) };
+  const contDB = { ...(opts.contDB || {}) };
+  const assenzeDB = { ...(opts.assenzeDB || {}) };
+  const prog = { ...(opts.prog || {}) };
 
   righe.forEach((r) => {
     const classe = r.classe;
@@ -93,20 +93,20 @@ export function fondiEsterni(opts: { contDB: Any; assenzeDB: Any; classi: Any; p
     const tag = String(r.owner_id || "x").slice(0, 6);
 
     // mappa nome → id locale
-    const idMap = new Map<string, any>();
+    const idMap = new Map();
     const locali = (opts.classi?.[classe] || []) as Any[];
     const perNome = new Map(locali.map((a) => [norm(nomeAlunno(a)), a.id]));
-    (p.roster || []).forEach((a: Any) => {
+    (p.roster || []).forEach((a) => {
       const own = perNome.get(norm(a.nome));
       if (own !== undefined && String(own) !== String(a.id)) idMap.set(String(a.id), own);
     });
 
     const cont = remap(p.cont || {}, idMap) as Any;
     Object.entries(cont).forEach(([k, sezioni]) => {
-      const base: Any = { ...(contDB[k] || {}) };
+      const base = { ...(contDB[k] || {}) };
       Object.entries((sezioni as Any) || {}).forEach(([sez, arr]) => {
         if (!Array.isArray(arr)) return;
-        base[sez] = [...(Array.isArray(base[sez]) ? base[sez] : []), ...arr.map((it: Any) => marca(it, autore, tag))];
+        base[sez] = [...(Array.isArray(base[sez]) ? base[sez] : []), ...arr.map((it) => marca(it, autore, tag))];
       });
       contDB[k] = base;
     });
@@ -122,28 +122,28 @@ export function fondiEsterni(opts: { contDB: Any; assenzeDB: Any; classi: Any; p
 
     const ass = remap(p.assenze || {}, idMap) as Any;
     if (Object.keys(ass).length) {
-      const cur: Any = { ...(assenzeDB[classe] || {}) };
+      const cur = { ...(assenzeDB[classe] || {}) };
       Object.entries(ass).forEach(([sid, arr]) => {
         if (!Array.isArray(arr)) return;
-        cur[sid] = [...(Array.isArray(cur[sid]) ? cur[sid] : []), ...arr.map((a: Any) => marca(a, autore, tag))];
+        cur[sid] = [...(Array.isArray(cur[sid]) ? cur[sid] : []), ...arr.map((a) => marca(a, autore, tag))];
       });
       assenzeDB[classe] = cur;
     }
 
     const pt = p.prog || {};
-    if (pt.teams?.length) prog.teams = [...(prog.teams || []), ...pt.teams.map((t: Any) => marca(t, autore, tag))];
+    if (pt.teams?.length) prog.teams = [...(prog.teams || []), ...pt.teams.map((t) => marca(t, autore, tag))];
     if (pt.verbali?.length)
-      prog.verbali = [...(prog.verbali || []), ...pt.verbali.map((v: Any) => marca(v, autore, tag))];
+      prog.verbali = [...(prog.verbali || []), ...pt.verbali.map((v) => marca(v, autore, tag))];
   });
 
   return { contDB, assenzeDB, prog };
 }
 
 /** Rimuove ricorsivamente gli elementi del collega prima di salvare. */
-export function togliEsterni(value: any): any {
+export function togliEsterni(value) {
   if (Array.isArray(value)) return value.filter((v) => !(v && typeof v === "object" && v._ext)).map(togliEsterni);
   if (value && typeof value === "object") {
-    const out: Any = {};
+    const out = {};
     for (const [k, v] of Object.entries(value)) out[k] = togliEsterni(v);
     return out;
   }
