@@ -2179,10 +2179,10 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   };
 
   const numeroPallinoEvento = ev => {
-    if(ev.tipo!=="argomento") return null;
+    if(ev.tipo!=="argomento" && ev.tipo!=="compito") return null;
     const f=firmaPerEvento(ev);
     if(!f) return null;
-    // Se la firma dura 2 o piu' ore, il pallino blu resta vuoto
+    // Se la firma dura 2 o piu' ore, il pallino resta vuoto
     if(f.durata>=2) return null;
     return f.ora;
   };
