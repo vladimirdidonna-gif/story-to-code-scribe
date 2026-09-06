@@ -3217,7 +3217,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         }catch{return iso;}
       };
 
-      // Calcola label ore: "1" oppure "1-3" senza <<
+      // Calcola label ore: "0" se nessuna firma, "1" oppure "1-3" se presente
       const oreLabel = (l) => {
         const raw = l.ore||"";
         // Rimuovi qualsiasi << o testo spurio
@@ -3227,9 +3227,10 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(match) return `${match[1]}-${match[2]}`;
         const single = clean.match(/(\d+)/);
         if(single) return single[1];
-        // Fallback da oraInizio + nOre
-        const inizio = parseInt(l.oraInizio||l.oraInizioNum||1);
+        // Fallback da oraInizio + nOre; se manca del tutto mostra 0
+        const inizio = parseInt(l.oraInizio||l.oraInizioNum||0);
         const nOre = parseInt(l.nOre||1);
+        if(inizio===0) return "0";
         if(nOre>1) return `${inizio}-${inizio+nOre-1}`;
         return String(inizio);
       };
