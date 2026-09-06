@@ -2379,8 +2379,8 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     )}
                     {ev.tipo==="comunicazione"&&(
                       <>
-                        {/* Solo il titolo della comunicazione — nero grassetto */}
-                        {ev.testo&&<div style={{fontSize:15,fontWeight:700,color:"#000",marginTop:1}}>{troncaTesto(ev.testo,40)}</div>}
+                        {/* Solo il titolo della comunicazione — nero testo normale */}
+                        {ev.testo&&<div style={{fontSize:15,fontWeight:400,color:"#000",marginTop:1}}>{troncaTesto(ev.testo,40)}</div>}
                       </>
                     )}
                     {ev.tipo!=="voto"&&ev.tipo!=="comunicazione"&&ev.testo&&<div style={{fontSize:13,color:"#6b7280",marginTop:2,lineHeight:1.4}}>{ev._isVerifica&&<b style={{color:"#1f2937"}}>Verifica </b>}{troncaTesto(ev.testo)}</div>}
