@@ -2179,10 +2179,10 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   };
 
   const numeroPallinoEvento = ev => {
-    if(ev.tipo!=="argomento") return null;
+    if(ev.tipo!=="argomento" && ev.tipo!=="compito") return null;
     const f=firmaPerEvento(ev);
     if(!f) return null;
-    // Se la firma dura 2 o piu' ore, il pallino blu resta vuoto
+    // Se la firma dura 2 o piu' ore, il pallino resta vuoto
     if(f.durata>=2) return null;
     return f.ora;
   };
@@ -2355,7 +2355,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                         ? <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>{oraNum}</div>
                         : <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",flexShrink:0,marginTop:2}}/>
                       )
-                    : (ev.tipo==="argomento"
+                    : ((ev.tipo==="argomento" || ev.tipo==="compito")
                         ? (numeroPallinoEvento(ev)!==null
                             ? <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:4}}>{numeroPallinoEvento(ev)}</div>
                             : <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,flexShrink:0,marginTop:4}}/>)
@@ -2379,8 +2379,8 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     )}
                     {ev.tipo==="comunicazione"&&(
                       <>
-                        {/* Solo il titolo della comunicazione — nero grassetto */}
-                        {ev.testo&&<div style={{fontSize:15,fontWeight:700,color:"#000",marginTop:1}}>{troncaTesto(ev.testo,40)}</div>}
+                        {/* Solo il titolo della comunicazione — nero testo normale */}
+                        {ev.testo&&<div style={{fontSize:15,fontWeight:400,color:"#000",marginTop:1}}>{troncaTesto(ev.testo,40)}</div>}
                       </>
                     )}
                     {ev.tipo!=="voto"&&ev.tipo!=="comunicazione"&&ev.testo&&<div style={{fontSize:13,color:"#6b7280",marginTop:2,lineHeight:1.4}}>{ev._isVerifica&&<b style={{color:"#1f2937"}}>Verifica </b>}{troncaTesto(ev.testo)}</div>}
