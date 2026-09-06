@@ -3217,7 +3217,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         }catch{return iso;}
       };
 
-      // Calcola label ore: "1" oppure "1-3" senza <<
+      // Calcola label ore: "0" se nessuna firma, "1" oppure "1-3" se presente
       const oreLabel = (l) => {
         const raw = l.ore||"";
         // Rimuovi qualsiasi << o testo spurio
@@ -3227,9 +3227,10 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(match) return `${match[1]}-${match[2]}`;
         const single = clean.match(/(\d+)/);
         if(single) return single[1];
-        // Fallback da oraInizio + nOre
-        const inizio = parseInt(l.oraInizio||l.oraInizioNum||1);
+        // Fallback da oraInizio + nOre; se manca del tutto mostra 0
+        const inizio = parseInt(l.oraInizio||l.oraInizioNum||0);
         const nOre = parseInt(l.nOre||1);
+        if(inizio===0) return "0";
         if(nOre>1) return `${inizio}-${inizio+nOre-1}`;
         return String(inizio);
       };
@@ -12090,7 +12091,7 @@ function Registro({docente,onCambia}) {
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="1" max="200" value={votoForm.peso} onChange={e=>setVotoForm({...votoForm,peso:parseFloat(e.target.value)||100})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
+            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="200" value={votoForm.peso} onChange={e=>setVotoForm({...votoForm,peso:parseFloat(e.target.value)||100})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
           </div>
@@ -12141,7 +12142,7 @@ function Registro({docente,onCambia}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:10}}>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={mpForm.data} onChange={e=>setMpForm({...mpForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={mpForm.tipo} onChange={e=>setMpForm({...mpForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="1" max="200" value={mpForm.peso} onChange={e=>setMpForm({...mpForm,peso:parseFloat(e.target.value)||100})} style={{flex:1,border:"1px solid #ccc",borderRadius:4,padding:"7px 6px",fontSize:13,fontFamily:FF}}/><span style={{fontSize:11,color:"#888"}}>%</span></div></div>
+            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="200" value={mpForm.peso} onChange={e=>setMpForm({...mpForm,peso:parseFloat(e.target.value)||100})} style={{flex:1,border:"1px solid #ccc",borderRadius:4,padding:"7px 6px",fontSize:13,fontFamily:FF}}/><span style={{fontSize:11,color:"#888"}}>%</span></div></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={mpForm.faMedia} onChange={v=>setMpForm({...mpForm,faMedia:v})}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={mpForm.visFam!==false} onChange={v=>setMpForm(f=>({...f,visFam:v}))}/></div>
           </div>
