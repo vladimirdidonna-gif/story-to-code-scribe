@@ -2355,7 +2355,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                         ? <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>{oraNum}</div>
                         : <div style={{width:24,height:24,borderRadius:"50%",background:"#ef4444",flexShrink:0,marginTop:2}}/>
                       )
-                    : (ev.tipo==="argomento"
+                    : ((ev.tipo==="argomento" || ev.tipo==="compito")
                         ? (numeroPallinoEvento(ev)!==null
                             ? <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,color:"#fff",fontWeight:700,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:4}}>{numeroPallinoEvento(ev)}</div>
                             : <div style={{width:24,height:24,borderRadius:"50%",background:st.bg,flexShrink:0,marginTop:4}}/>)
