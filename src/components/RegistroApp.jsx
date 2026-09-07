@@ -474,6 +474,10 @@ function parseVoto(raw) {
   const n = Number(r.replace(",","."));
   return isNaN(n) ? NaN : n+b;
 }
+function pesoValutazione(raw) {
+  const n = Number(raw);
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100;
+}
 function votoColor(raw, faMedia) {
   if(raw===null||raw===undefined) return "#3b82f6";
   const s = String(raw);
@@ -1249,7 +1253,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
 
   const perMedia = votiMateria.filter(v=>v.faMedia&&v.voto&&v.voto!==" "&&!isNaN(parseVoto(v.voto)));
   let media = null;
-  if(perMedia.length){ let sp=0,sv=0; perMedia.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; }); if(sp>0) media=sv/sp; }
+  if(perMedia.length){ let sp=0,sv=0; perMedia.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoValutazione(v.peso); sv+=n*w; sp+=w; }); if(sp>0) media=sv/sp; }
 
   const TIPO_BADGE = {orale:"#5b9bd5",scritto:"#22c55e",grafico:"#f97316",pratico:"#8b5cf6",unico:"#64748b"};
 
@@ -1277,7 +1281,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
   const mediaPerMat = (mat) => {
     const vv = (votiDB[`${classe}||${mat}`]?.[s.id]||[]).filter(v=>(v.trimestre||TRIMESTRI[0])===pgTrim).filter(v=>v.faMedia&&v.voto&&v.voto!==" "&&!isNaN(parseVoto(v.voto)));
     if(!vv.length) return null;
-    let sp=0,sv=0; vv.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+    let sp=0,sv=0; vv.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoValutazione(v.peso); sv+=n*w; sp+=w; });
     return sp>0 ? sv/sp : null;
   };
 
@@ -2224,7 +2228,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   let mediaGen = null;
   if(perMediaGen.length){
     let sp=0,sv=0;
-    perMediaGen.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+    perMediaGen.forEach(v=>{const w=pesoValutazione(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
     if(sp>0) mediaGen = sv/sp;
   }
 
@@ -2833,7 +2837,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       let mediaGlobale = null;
       if(perMediaGlobale.length) {
         let sp=0, sv=0;
-        perMediaGlobale.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+        perMediaGlobale.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoValutazione(v.peso); sv+=n*w; sp+=w; });
         if(sp>0) mediaGlobale = sv/sp;
       }
 
@@ -2847,7 +2851,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       Object.entries(materieConVotiMap).forEach(([mat, vv])=>{
         const pm = vv.filter(v=>v.faMedia && !isNaN(parseVoto(v.voto)));
         if(!pm.length){ mediaPerMateria[mat]=null; return; }
-        let sp=0,sv=0; pm.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+        let sp=0,sv=0; pm.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoValutazione(v.peso); sv+=n*w; sp+=w; });
         mediaPerMateria[mat] = sp>0 ? sv/sp : null;
       });
 
@@ -2910,7 +2914,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(perMediaMat.length){
           mediaAritMat = perMediaMat.reduce((s,v)=>s+parseVoto(v.voto),0) / perMediaMat.length;
           let sp=0,sv=0;
-          perMediaMat.forEach(v=>{ const w=parseFloat(v.peso)||100; sv+=parseVoto(v.voto)*w; sp+=w; });
+          perMediaMat.forEach(v=>{ const w=pesoValutazione(v.peso); sv+=parseVoto(v.voto)*w; sp+=w; });
           mediaPondMat = sp>0 ? sv/sp : null;
         }
         const colMedia = m => m===null ? "#9ca3af" : (m<6 ? "#ef4444" : "#16a34a");
@@ -3227,12 +3231,8 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(match) return `${match[1]}-${match[2]}`;
         const single = clean.match(/(\d+)/);
         if(single) return single[1];
-        // Fallback da oraInizio + nOre; se manca del tutto mostra 0
-        const inizio = parseInt(l.oraInizio||l.oraInizioNum||0);
-        const nOre = parseInt(l.nOre||1);
-        if(inizio===0) return "0";
-        if(nOre>1) return `${inizio}-${inizio+nOre-1}`;
-        return String(inizio);
+        // Senza una firma collegata non deve essere dedotta un'ora dal modulo.
+        return "0";
       };
 
       const RigaLezione = ({l}) => (
@@ -9208,7 +9208,7 @@ function Registro({docente,onCambia}) {
     });
     if(!voti.length)return null;
     let sp=0,sv=0;
-    voti.forEach(v=>{const n=parseVoto(v.voto);const w=parseFloat(v.peso)||100;sv+=n*w;sp+=w;});
+    voti.forEach(v=>{const n=parseVoto(v.voto);const w=pesoValutazione(v.peso);sv+=n*w;sp+=w;});
     return sp>0?sv/sp:null;
   };
   const mediaStr=sid=>{const m=calcMedia(sid,materia,classe,pgTrim);return m===null?"-":m.toFixed(2);};
@@ -10542,7 +10542,7 @@ function Registro({docente,onCambia}) {
       const vv = (tuttiVotiDK[sid]||[]).filter(v=>v.faMedia && v.voto && !isNaN(parseVoto(v.voto)));
       if(!vv.length) return null;
       let sp=0,sv=0;
-      vv.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+      vv.forEach(v=>{const w=pesoValutazione(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
       return sp>0?sv/sp:null;
     };
 
@@ -10835,7 +10835,8 @@ function Registro({docente,onCambia}) {
     const statsAlunno = (sid, tipo) => {
       const vv = (votiDB[dk]?.[sid]||[]).filter(v=>v.tipo===tipo && v.voto && v.voto!==" " && !isNaN(parseVoto(v.voto)));
       const count = vv.length;
-      const media = count ? vv.reduce((s,v)=>{const w=parseFloat(v.peso)||100;return s+parseVoto(v.voto)*w;},0) / vv.reduce((s,v)=>s+(parseFloat(v.peso)||100),0) : null;
+      const pesoTotale=vv.reduce((s,v)=>s+pesoValutazione(v.peso),0);
+      const media = count && pesoTotale>0 ? vv.reduce((s,v)=>s+parseVoto(v.voto)*pesoValutazione(v.peso),0) / pesoTotale : null;
       return {count, media};
     };
 
@@ -10844,7 +10845,7 @@ function Registro({docente,onCambia}) {
       const vv = (votiDB[dk]?.[sid]||[]).filter(v=>v.faMedia && v.voto && v.voto!==" " && !isNaN(parseVoto(v.voto)));
       if(!vv.length) return null;
       let sp=0,sv=0;
-      vv.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+      vv.forEach(v=>{const w=pesoValutazione(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
       return sp>0?sv/sp:null;
     };
 
@@ -12091,7 +12092,7 @@ function Registro({docente,onCambia}) {
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="200" value={votoForm.peso} onChange={e=>setVotoForm({...votoForm,peso:parseFloat(e.target.value)||100})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
+            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={votoForm.peso} onChange={e=>setVotoForm({...votoForm,peso:e.target.value===""?"":pesoValutazione(e.target.value)})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
           </div>
@@ -12142,7 +12143,7 @@ function Registro({docente,onCambia}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:10}}>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={mpForm.data} onChange={e=>setMpForm({...mpForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={mpForm.tipo} onChange={e=>setMpForm({...mpForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="200" value={mpForm.peso} onChange={e=>setMpForm({...mpForm,peso:parseFloat(e.target.value)||100})} style={{flex:1,border:"1px solid #ccc",borderRadius:4,padding:"7px 6px",fontSize:13,fontFamily:FF}}/><span style={{fontSize:11,color:"#888"}}>%</span></div></div>
+            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={mpForm.peso} onChange={e=>setMpForm({...mpForm,peso:e.target.value===""?"":pesoValutazione(e.target.value)})} style={{flex:1,border:"1px solid #ccc",borderRadius:4,padding:"7px 6px",fontSize:13,fontFamily:FF}}/><span style={{fontSize:11,color:"#888"}}>%</span></div></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={mpForm.faMedia} onChange={v=>setMpForm({...mpForm,faMedia:v})}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={mpForm.visFam!==false} onChange={v=>setMpForm(f=>({...f,visFam:v}))}/></div>
           </div>
