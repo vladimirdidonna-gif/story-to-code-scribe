@@ -4815,7 +4815,6 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
   );
 
   const lezioniTutte = getItemsAllMaterie("lezioni");
-  const compitiTutti = getItemsAllMaterie("compiti");
 
   return (
     <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
