@@ -32,6 +32,7 @@ const BTN_GREEN = "#5cb85c";
 const BTN_BLUE = "#337ab7";
 
 let _doc = "";
+const pesoVal = (p) => { const n = parseFloat(p); return isNaN(n) ? 100 : n; };
 
 // ═══════════════════════════════════════════════════════════════
 // SISTEMA COLLEGHI — storage condiviso via window.storage (shared=true)
