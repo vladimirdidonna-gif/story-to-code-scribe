@@ -32,6 +32,7 @@ const BTN_GREEN = "#5cb85c";
 const BTN_BLUE = "#337ab7";
 
 let _doc = "";
+const pesoVal = (p) => { const n = parseFloat(p); return isNaN(n) ? 100 : n; };
 
 // ═══════════════════════════════════════════════════════════════
 // SISTEMA COLLEGHI — storage condiviso via window.storage (shared=true)
@@ -1249,7 +1250,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
 
   const perMedia = votiMateria.filter(v=>v.faMedia&&v.voto&&v.voto!==" "&&!isNaN(parseVoto(v.voto)));
   let media = null;
-  if(perMedia.length){ let sp=0,sv=0; perMedia.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; }); if(sp>0) media=sv/sp; }
+  if(perMedia.length){ let sp=0,sv=0; perMedia.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoVal(v.peso); sv+=n*w; sp+=w; }); if(sp>0) media=sv/sp; }
 
   const TIPO_BADGE = {orale:"#5b9bd5",scritto:"#22c55e",grafico:"#f97316",pratico:"#8b5cf6",unico:"#64748b"};
 
@@ -1277,7 +1278,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
   const mediaPerMat = (mat) => {
     const vv = (votiDB[`${classe}||${mat}`]?.[s.id]||[]).filter(v=>(v.trimestre||TRIMESTRI[0])===pgTrim).filter(v=>v.faMedia&&v.voto&&v.voto!==" "&&!isNaN(parseVoto(v.voto)));
     if(!vv.length) return null;
-    let sp=0,sv=0; vv.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+    let sp=0,sv=0; vv.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoVal(v.peso); sv+=n*w; sp+=w; });
     return sp>0 ? sv/sp : null;
   };
 
@@ -2224,7 +2225,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   let mediaGen = null;
   if(perMediaGen.length){
     let sp=0,sv=0;
-    perMediaGen.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+    perMediaGen.forEach(v=>{const w=pesoVal(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
     if(sp>0) mediaGen = sv/sp;
   }
 
@@ -2833,7 +2834,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       let mediaGlobale = null;
       if(perMediaGlobale.length) {
         let sp=0, sv=0;
-        perMediaGlobale.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+        perMediaGlobale.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoVal(v.peso); sv+=n*w; sp+=w; });
         if(sp>0) mediaGlobale = sv/sp;
       }
 
@@ -2847,7 +2848,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       Object.entries(materieConVotiMap).forEach(([mat, vv])=>{
         const pm = vv.filter(v=>v.faMedia && !isNaN(parseVoto(v.voto)));
         if(!pm.length){ mediaPerMateria[mat]=null; return; }
-        let sp=0,sv=0; pm.forEach(v=>{ const n=parseVoto(v.voto); const w=parseFloat(v.peso)||100; sv+=n*w; sp+=w; });
+        let sp=0,sv=0; pm.forEach(v=>{ const n=parseVoto(v.voto); const w=pesoVal(v.peso); sv+=n*w; sp+=w; });
         mediaPerMateria[mat] = sp>0 ? sv/sp : null;
       });
 
@@ -2910,7 +2911,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(perMediaMat.length){
           mediaAritMat = perMediaMat.reduce((s,v)=>s+parseVoto(v.voto),0) / perMediaMat.length;
           let sp=0,sv=0;
-          perMediaMat.forEach(v=>{ const w=parseFloat(v.peso)||100; sv+=parseVoto(v.voto)*w; sp+=w; });
+          perMediaMat.forEach(v=>{ const w=pesoVal(v.peso); sv+=parseVoto(v.voto)*w; sp+=w; });
           mediaPondMat = sp>0 ? sv/sp : null;
         }
         const colMedia = m => m===null ? "#9ca3af" : (m<6 ? "#ef4444" : "#16a34a");
@@ -9210,7 +9211,7 @@ function Registro({docente,onCambia}) {
     });
     if(!voti.length)return null;
     let sp=0,sv=0;
-    voti.forEach(v=>{const n=parseVoto(v.voto);const w=parseFloat(v.peso)||100;sv+=n*w;sp+=w;});
+    voti.forEach(v=>{const n=parseVoto(v.voto);const w=pesoVal(v.peso);sv+=n*w;sp+=w;});
     return sp>0?sv/sp:null;
   };
   const mediaStr=sid=>{const m=calcMedia(sid,materia,classe,pgTrim);return m===null?"-":m.toFixed(2);};
@@ -10548,7 +10549,7 @@ function Registro({docente,onCambia}) {
       const vv = (tuttiVotiDK[sid]||[]).filter(v=>v.faMedia && v.voto && !isNaN(parseVoto(v.voto)));
       if(!vv.length) return null;
       let sp=0,sv=0;
-      vv.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+      vv.forEach(v=>{const w=pesoVal(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
       return sp>0?sv/sp:null;
     };
 
@@ -10841,7 +10842,7 @@ function Registro({docente,onCambia}) {
     const statsAlunno = (sid, tipo) => {
       const vv = (votiDB[dk]?.[sid]||[]).filter(v=>v.tipo===tipo && v.voto && v.voto!==" " && !isNaN(parseVoto(v.voto)));
       const count = vv.length;
-      const media = count ? vv.reduce((s,v)=>{const w=parseFloat(v.peso)||100;return s+parseVoto(v.voto)*w;},0) / vv.reduce((s,v)=>s+(parseFloat(v.peso)||100),0) : null;
+      const media = count ? vv.reduce((s,v)=>{const w=pesoVal(v.peso);return s+parseVoto(v.voto)*w;},0) / vv.reduce((s,v)=>s+(pesoVal(v.peso)),0) : null;
       return {count, media};
     };
 
@@ -10850,7 +10851,7 @@ function Registro({docente,onCambia}) {
       const vv = (votiDB[dk]?.[sid]||[]).filter(v=>v.faMedia && v.voto && v.voto!==" " && !isNaN(parseVoto(v.voto)));
       if(!vv.length) return null;
       let sp=0,sv=0;
-      vv.forEach(v=>{const w=parseFloat(v.peso)||100;sv+=parseVoto(v.voto)*w;sp+=w;});
+      vv.forEach(v=>{const w=pesoVal(v.peso);sv+=parseVoto(v.voto)*w;sp+=w;});
       return sp>0?sv/sp:null;
     };
 
