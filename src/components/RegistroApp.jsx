@@ -3227,7 +3227,9 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         if(match) return `${match[1]}-${match[2]}`;
         const single = clean.match(/(\d+)/);
         if(single) return single[1];
-        // Fallback da oraInizio + nOre; se manca del tutto mostra 0
+        // Se non c'è alcuna informazione di firma (ore vuoto), forza 0
+        if(!raw) return "0";
+        // Fallback da oraInizio + nOre
         const inizio = parseInt(l.oraInizio||l.oraInizioNum||0);
         const nOre = parseInt(l.nOre||1);
         if(inizio===0) return "0";
@@ -9295,7 +9297,11 @@ function Registro({docente,onCambia}) {
         ore=ultima.ore||"";
       }
     }
-    const item={...contForm,materiaLezione:matSave,ore,data:dataLezione,inseritoDa:firmaAttiva};
+    let item={...contForm,materiaLezione:matSave,ore,data:dataLezione,inseritoDa:firmaAttiva};
+    // Se si inserisce un argomento senza firma, l'ora deve essere 0 (non il default 1 del form)
+    if(contOpen==="lezioni" && !ore){
+      item={...item,oraInizio:"0",nOre:"0"};
+    }
 
     if((contOpen==="lezioni"||contOpen==="compiti") && editCont){
       // Modifica: potrebbe aver cambiato materia → rimuovi da TUTTE le chiavi e salva nella corretta
