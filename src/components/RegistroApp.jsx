@@ -26,8 +26,9 @@ const FF = "Helvetica,Arial,sans-serif";
 const VERDE = "#1d9e52";
 const VERDE_LIGHT = "#e6f7ee";
 const VERDE_BORDER = "#7fd4a8";
-const TEAL = "#4e9fa0";
-const TEAL_LIGHT = "#e8f5f5";
+const TEAL = "#12406f";
+const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
+const TEAL_LIGHT = "#e9f2fb";
 const BTN_GREEN = "#5cb85c";
 const BTN_BLUE = "#337ab7";
 
@@ -1043,9 +1044,9 @@ function NomeDocente({onEntra}) {
   };
 
   return (
-    <div style={{fontFamily:FF,minHeight:"100vh",background:`linear-gradient(135deg,#0e7490,${TEAL},#67e8f9)`,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+    <div style={{fontFamily:FF,minHeight:"100vh",background:`linear-gradient(135deg,#0a2c52 0%,#134a7c 45%,#2e6cb0 75%,#eaf4ff 100%)`,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div style={{background:"#fff",borderRadius:12,boxShadow:"0 24px 64px rgba(0,0,0,0.28)",width:420,maxWidth:"94vw",overflow:"hidden"}}>
-        <div style={{background:TEAL,padding:"28px 32px",textAlign:"center"}}>
+        <div style={{background:TEAL_GRAD,padding:"28px 32px",textAlign:"center"}}>
           <div style={{color:"#fff",fontWeight:700,fontSize:24}}>📚 Registro Elettronico</div>
           <div style={{color:"rgba(255,255,255,0.8)",fontSize:14,marginTop:6}}>Il tuo registro personale</div>
         </div>
@@ -1056,7 +1057,7 @@ function NomeDocente({onEntra}) {
               <div style={{padding:"24px 28px",display:"flex",flexDirection:"column",gap:12}}>
                 <div style={{fontSize:14,color:"#6b7280",fontWeight:600}}>Seleziona il tuo profilo</div>
                 {docenti.map(d=>(
-                  <button key={d} onClick={()=>entra(d)} style={{padding:"13px 18px",background:d===nome?"#e8f5f5":"#f9fafb",border:"2px solid "+(d===nome?TEAL:"#e5e7eb"),borderRadius:8,fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"left",color:"#1f2937",display:"flex",alignItems:"center",gap:10}}>
+                  <button key={d} onClick={()=>entra(d)} style={{padding:"13px 18px",background:d===nome?"#e9f2fb":"#f9fafb",border:"2px solid "+(d===nome?TEAL:"#e5e7eb"),borderRadius:8,fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"left",color:"#1f2937",display:"flex",alignItems:"center",gap:10}}>
                     <span style={{fontSize:20}}>👤</span> {d}
                   </button>
                 ))}
@@ -1066,13 +1067,13 @@ function NomeDocente({onEntra}) {
               </div>
             ):(
               <div style={{padding:"28px 32px",display:"flex",flexDirection:"column",gap:16}}>
-                {docenti.length>0&&<button onClick={()=>setModalita("lista")} style={{padding:"8px 14px",background:"#f0f9f9",border:"1px solid #d1d5db",borderRadius:6,fontWeight:600,fontSize:13,cursor:"pointer",color:TEAL,textAlign:"left"}}>← Torna ai profili</button>}
+                {docenti.length>0&&<button onClick={()=>setModalita("lista")} style={{padding:"8px 14px",background:"#f0f6fc",border:"1px solid #d1d5db",borderRadius:6,fontWeight:600,fontSize:13,cursor:"pointer",color:TEAL,textAlign:"left"}}>← Torna ai profili</button>}
                 <div>
                   <div style={{fontSize:13,color:TEAL,fontWeight:700,marginBottom:6}}>Nome docente</div>
                   <input value={nome} onChange={e=>{setNome(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&entra()} placeholder="es. Mario Rossi" autoFocus style={{width:"100%",border:"2px solid #e5e7eb",borderRadius:6,padding:"12px 14px",fontSize:16,fontFamily:FF,boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=TEAL} onBlur={e=>e.target.style.borderColor="#e5e7eb"}/>
                 </div>
                 {err&&<div style={{background:"#fef2f2",border:"2px solid #fecaca",borderRadius:6,padding:"10px 14px",color:"#dc2626",fontSize:13,fontWeight:600}}>{err}</div>}
-                <button onClick={()=>entra()} style={{padding:"13px",background:TEAL,color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:16,cursor:"pointer",fontFamily:FF}}>
+                <button onClick={()=>entra()} style={{padding:"13px",background:TEAL_GRAD,color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:16,cursor:"pointer",fontFamily:FF}}>
                   Entra nel Registro →
                 </button>
               </div>
@@ -1222,7 +1223,7 @@ function MateriaSelector({value,onChange}) {
     }
     onChange(m);setCustom("");setOpen(false);
   };
-  return (<div ref={ref} style={{position:"relative"}}><button type="button" onClick={()=>setOpen(v=>!v)} style={{background:"#fff",color:"#1f2937",padding:"4px 12px 4px 10px",borderRadius:4,fontWeight:700,border:"none",display:"flex",alignItems:"center",gap:6,fontSize:14,fontFamily:FF,cursor:"pointer"}}>{value} ▾</button>{open&&(<div style={{position:"absolute",top:"110%",left:0,background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.18)",borderRadius:6,zIndex:300,minWidth:220,border:"1px solid #e5e7eb",overflow:"hidden"}}><div style={{maxHeight:280,overflowY:"auto"}}>{tutteMaterie.map(m=><div key={m} onClick={()=>{onChange(m);setOpen(false);}} style={{padding:"10px 16px",cursor:"pointer",background:value===m?"#e8f5f5":"#fff",color:value===m?TEAL:"#1f2937",fontWeight:value===m?700:400,fontSize:14,fontFamily:FF,borderBottom:"1px solid #f3f4f6",display:"flex",alignItems:"center",justifyContent:"space-between"}}><span>{m}</span>{materieExtra.includes(m)&&<button onClick={e=>{e.stopPropagation();const nuove=materieExtra.filter(x=>x!==m);setMaterieExtra(nuove);try{localStorage.setItem("reg:materieExtra",JSON.stringify(nuove));}catch{}if(value===m)onChange(MATERIE[0]);}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:3,padding:"1px 6px",cursor:"pointer",fontSize:11,fontWeight:700}}>✕</button>}</div>)}</div><div style={{padding:"8px 10px",borderTop:"2px solid #e5e7eb",display:"flex",gap:6}}><input value={custom} onChange={e=>setCustom(e.target.value)} onKeyDown={e=>e.key==="Enter"&&aggiungiCustom()} placeholder="Altra materia..." style={{flex:1,border:"2px solid #d1d5db",borderRadius:4,padding:"6px 8px",fontSize:13,fontFamily:FF}}/><button onClick={aggiungiCustom} style={{padding:"6px 12px",background:"#2563eb",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:13}}>+</button></div></div>)}</div>);
+  return (<div ref={ref} style={{position:"relative"}}><button type="button" onClick={()=>setOpen(v=>!v)} style={{background:"#fff",color:"#1f2937",padding:"4px 12px 4px 10px",borderRadius:4,fontWeight:700,border:"none",display:"flex",alignItems:"center",gap:6,fontSize:14,fontFamily:FF,cursor:"pointer"}}>{value} ▾</button>{open&&(<div style={{position:"absolute",top:"110%",left:0,background:"#fff",boxShadow:"0 8px 30px rgba(0,0,0,0.18)",borderRadius:6,zIndex:300,minWidth:220,border:"1px solid #e5e7eb",overflow:"hidden"}}><div style={{maxHeight:280,overflowY:"auto"}}>{tutteMaterie.map(m=><div key={m} onClick={()=>{onChange(m);setOpen(false);}} style={{padding:"10px 16px",cursor:"pointer",background:value===m?"#e9f2fb":"#fff",color:value===m?TEAL:"#1f2937",fontWeight:value===m?700:400,fontSize:14,fontFamily:FF,borderBottom:"1px solid #f3f4f6",display:"flex",alignItems:"center",justifyContent:"space-between"}}><span>{m}</span>{materieExtra.includes(m)&&<button onClick={e=>{e.stopPropagation();const nuove=materieExtra.filter(x=>x!==m);setMaterieExtra(nuove);try{localStorage.setItem("reg:materieExtra",JSON.stringify(nuove));}catch{}if(value===m)onChange(MATERIE[0]);}} style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:3,padding:"1px 6px",cursor:"pointer",fontSize:11,fontWeight:700}}>✕</button>}</div>)}</div><div style={{padding:"8px 10px",borderTop:"2px solid #e5e7eb",display:"flex",gap:6}}><input value={custom} onChange={e=>setCustom(e.target.value)} onKeyDown={e=>e.key==="Enter"&&aggiungiCustom()} placeholder="Altra materia..." style={{flex:1,border:"2px solid #d1d5db",borderRadius:4,padding:"6px 8px",fontSize:13,fontFamily:FF}}/><button onClick={aggiungiCustom} style={{padding:"6px 12px",background:"#2563eb",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:13}}>+</button></div></div>)}</div>);
 }
 
 function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
@@ -1306,7 +1307,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
             animation:phase==="closing"?"schedaUp 0.26s cubic-bezier(.4,0,.6,1) forwards":"schedaDown 0.38s cubic-bezier(.2,.9,.25,1) forwards"}}>
 
           {/* Header */}
-          <div style={{background:TEAL,color:"#fff",padding:"14px 24px",display:"flex",alignItems:"center",gap:14,flexShrink:0}}>
+          <div style={{background:TEAL_GRAD,color:"#fff",padding:"14px 24px",display:"flex",alignItems:"center",gap:14,flexShrink:0}}>
             <div style={{width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,0.22)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:20,flexShrink:0}}>
               {(s.cognome||"?")[0].toUpperCase()}
             </div>
@@ -1398,9 +1399,9 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
                 ?<div style={{textAlign:"center",padding:"60px 0",color:"#9ca3af",fontSize:14}}>Nessun voto registrato</div>
                 :<table style={{borderCollapse:"collapse",minWidth:"100%"}}>
                   <thead>
-                    <tr style={{background:"#f0fdfa"}}>
+                    <tr style={{background:"#eef4fb"}}>
                       {/* Intestazione materia */}
-                      <th style={{padding:"10px 16px",textAlign:"left",color:TEAL,fontWeight:700,fontSize:13,borderRight:"2px solid #e5e7eb",borderBottom:"2px solid #bbf7d0",whiteSpace:"nowrap",minWidth:140,position:"sticky",left:0,background:"#f0fdfa",zIndex:2}}>
+                      <th style={{padding:"10px 16px",textAlign:"left",color:TEAL,fontWeight:700,fontSize:13,borderRight:"2px solid #e5e7eb",borderBottom:"2px solid #bbf7d0",whiteSpace:"nowrap",minWidth:140,position:"sticky",left:0,background:"#eef4fb",zIndex:2}}>
                         Materia
                       </th>
                       {/* Una colonna per ogni data */}
@@ -1410,7 +1411,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
                         </th>
                       ))}
                       {/* Media finale */}
-                      <th style={{padding:"10px 14px",textAlign:"center",color:TEAL,fontWeight:700,fontSize:13,borderLeft:"2px solid #bbf7d0",borderBottom:"2px solid #bbf7d0",whiteSpace:"nowrap",background:"#f0fdfa"}}>
+                      <th style={{padding:"10px 14px",textAlign:"center",color:TEAL,fontWeight:700,fontSize:13,borderLeft:"2px solid #bbf7d0",borderBottom:"2px solid #bbf7d0",whiteSpace:"nowrap",background:"#eef4fb"}}>
                         Media
                       </th>
                     </tr>
@@ -2254,7 +2255,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:0,width:"100%"}}>
         {[
-          {lbl:"Assenze", val:cntAssenze, bg:"#0d9488", badge:cntAssenze, target:"assenze"},
+          {lbl:"Assenze", val:cntAssenze, bg:"#1d5fa8", badge:cntAssenze, target:"assenze"},
           {lbl:"Ritardi", val:cntRitardi, bg:"#65a30d", badge:cntRitardi, target:"assenze"},
           {lbl:"Uscite", val:cntUscite>0?cntUscite:"-", bg:"#dc6b6b", badge:cntUscite, target:"assenze"},
           {lbl:"Media", val:mediaGen!==null?mediaGen.toFixed(2).replace(".",","):"0,00", bg:"#0f4c4c", badge:null, target:"voti"},
@@ -2718,7 +2719,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
   const TABS = [
     {id:"feed", lbl:"🏠 Home", color:"#d2531e"},
     {id:"anagrafica", lbl:"👤 Anagrafica", color:"#2563eb"},
-    {id:"voti", lbl:"⭐ Voti", color:"#4e9fa0"},
+    {id:"voti", lbl:"⭐ Voti", color:"#12406f"},
     {id:"pagella", lbl:"📋 Pagella", color:"#7c3aed"},
     {id:"curriculum", lbl:"🎓 Curriculum", color:"#059669"},
     {id:"note", lbl:"⚠️ Note", color:"#dc2626"},
@@ -3607,7 +3608,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
           }}>
 
           {/* Header */}
-          <div style={{background:TEAL,color:"#fff",padding:"18px 28px",display:"flex",alignItems:"center",gap:14,flexShrink:0}}>
+          <div style={{background:TEAL_GRAD,color:"#fff",padding:"18px 28px",display:"flex",alignItems:"center",gap:14,flexShrink:0}}>
             <div style={{width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.22)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:22,flexShrink:0,border:"2px solid rgba(255,255,255,0.4)"}}>
               {(s.cognome||"?")[0].toUpperCase()}
             </div>
@@ -3765,7 +3766,7 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
 
       {/* Pannello Firme — sinistra */}
       <div style={{width:240,flexShrink:0,display:"flex",flexDirection:"column",background:"#fff",borderRadius:8,border:"1px solid "+TEAL,overflow:"hidden"}}>
-        <div style={{background:TEAL,color:"#fff",padding:"8px 14px",fontWeight:700,fontSize:14}}>Firme</div>
+        <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",fontWeight:700,fontSize:14}}>Firme</div>
         <div style={{padding:10}}>
           <button style={{width:"100%",padding:"8px",background:"#22c55e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
             ✍ Nuova firma
@@ -3782,7 +3783,7 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
               <div key={ora} style={{display:"grid",gridTemplateColumns:"1fr 1fr",padding:"6px 14px",alignItems:"center",borderBottom:"1px solid #f3f4f6"}}>
                 <span style={{fontSize:13,color:"#374151"}}>{ora}</span>
                 {mat
-                  ? <span style={{background:TEAL,color:"#fff",borderRadius:10,padding:"2px 8px",fontSize:10,fontWeight:700,textTransform:"uppercase",display:"inline-block",width:"fit-content"}}>{mat.slice(0,3)}</span>
+                  ? <span style={{background:TEAL_GRAD,color:"#fff",borderRadius:10,padding:"2px 8px",fontSize:10,fontWeight:700,textTransform:"uppercase",display:"inline-block",width:"fit-content"}}>{mat.slice(0,3)}</span>
                   : <span/>
                 }
               </div>
@@ -3793,7 +3794,7 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
 
       {/* Tabella appello — destra */}
       <div style={{flex:1,display:"flex",flexDirection:"column",background:"#fff",borderRadius:8,border:"1px solid "+TEAL,overflow:"hidden"}}>
-        <div style={{background:TEAL,color:"#fff",padding:"8px 14px",fontWeight:700,fontSize:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",fontWeight:700,fontSize:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <span>Appello semplificato</span>
           <span style={{fontSize:12,fontWeight:400,opacity:0.9}}>{fmtDayLabel(regData)}</span>
         </div>
@@ -3801,7 +3802,7 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
         <div style={{flex:1,overflowY:"auto"}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
             <thead>
-              <tr style={{background:"#f0fdfa",borderBottom:"2px solid #c7e8e0"}}>
+              <tr style={{background:"#eef4fb",borderBottom:"2px solid #c7e8e0"}}>
                 <th style={{padding:"6px 8px",width:24,borderRight:"1px solid #e5e7eb"}}>
                   <input type="checkbox" checked={allSelected} onChange={()=>setSelRows(allSelected?[]:students.map(s=>s.id))} style={{cursor:"pointer"}}/>
                 </th>
@@ -3997,7 +3998,7 @@ function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editA
   };
 
   const TIPI = [
-    {id:"presente",   lbl:"Presente",            col:"#4e9fa0"},
+    {id:"presente",   lbl:"Presente",            col:"#12406f"},
     {id:"assente",    lbl:"Assente",              col:"#ef4444"},
     {id:"ritardo",    lbl:"Ritardo/Rientro",      col:"#f97316"},
     {id:"uscita",     lbl:"Uscita anticipata",    col:"#8b5cf6"},
@@ -4054,7 +4055,7 @@ function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editA
             :"piombaGiu 0.38s cubic-bezier(.2,.9,.25,1) forwards",
         }}>
           {/* Header teal — compatto */}
-          <div style={{background:TEAL,color:"#fff",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+          <div style={{background:TEAL_GRAD,color:"#fff",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
             <div>
               <div style={{fontWeight:700,fontSize:15}}>Nuovo evento — {s.cognome} {s.nome}</div>
               <div style={{fontSize:11,opacity:0.85}}>{fmtDayLabel(dataISO)}</div>
@@ -4185,7 +4186,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
   const TBL_BORDER = "1px solid #e8edf2";
 
   const SezioneHdr = ({label, onAdd}) => (
-    <div style={{background:"#4e9fa0",color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
       <span style={{fontWeight:700,fontSize:13}}>{label}</span>
       {onAdd&&(
         <button onClick={onAdd} style={{padding:"3px 10px",background:"#22c55e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
@@ -4242,7 +4243,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
 
           {/* ── ASSENZA/RITARDO/USCITA ── */}
           <div style={{borderBottom:"2px solid #f3f4f6"}}>
-            <div style={{background:"#4e9fa0",color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
               <span style={{fontWeight:700,fontSize:13}}>Assenza - Ritardo/Rientro - Uscita</span>
               <div style={{display:"flex",gap:6}}>
                 <button onClick={()=>setEventoOpen(true)}
@@ -4259,7 +4260,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             <div style={{overflowX:"auto"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead>
-                  <tr style={{background:"#f0fdfa",borderBottom:"2px solid #c7e8e0"}}>
+                  <tr style={{background:"#eef4fb",borderBottom:"2px solid #c7e8e0"}}>
                     {["Tipologia","Orario","Ora","Giustificato","Motivo","DaD","Comandi"].map(h=>(
                       <th key={h} style={{padding:"8px 12px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:TBL_BORDER}}>{h}</th>
                     ))}
@@ -4331,7 +4332,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                 <SezioneHdr label="Verifiche/Compiti in classe" onAdd={()=>onOpenVerifica&&onOpenVerifica(s.id)}/>
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   <thead>
-                    <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+                    <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                       {["Data","Tipo","Alunno","Materia","Argomento","Comandi"].map(h=>(
                         <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                       ))}
@@ -4374,7 +4375,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             <SezioneHdr label="Argomenti della lezione" onAdd={()=>onOpenContenuto&&onOpenContenuto("lezioni", s.id)}/>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
-                <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+                <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                   {["Materia","Docente","Argomento","Comandi"].map(h=>(
                     <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                   ))}
@@ -4406,7 +4407,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             <SezioneHdr label="Compiti assegnati (Alunno)" onAdd={()=>onOpenContenuto&&onOpenContenuto("compiti", s.id)}/>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
-                <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+                <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                   {["Materia","Docente","Compito assegnato","Comandi"].map(h=>(
                     <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                   ))}
@@ -4439,7 +4440,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               {noteStudente.length>0 && (
                 <thead>
-                  <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+                  <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                     {["Alunno","Docente","Nota disciplinare","Gravità","Comandi"].map(h=>(
                       <th key={h} style={{padding:"8px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:"1px solid #d1fae5"}}>{h}</th>
                     ))}
@@ -4823,7 +4824,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
   return (
     <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
       {/* Navigatore giorni + tab Firme */}
-      <div style={{background:TEAL,display:"flex",alignItems:"center",gap:8,padding:"6px 14px",flexShrink:0,borderRadius:"6px 6px 0 0"}}>
+      <div style={{background:TEAL_GRAD,display:"flex",alignItems:"center",gap:8,padding:"6px 14px",flexShrink:0,borderRadius:"6px 6px 0 0"}}>
         <button onClick={()=>{const d=new Date(regData+"T00:00:00");d.setDate(d.getDate()-1);setRegDataNav(d.toISOString().split("T")[0]);}} style={{background:"rgba(255,255,255,0.15)",border:"none",color:"#fff",borderRadius:4,padding:"4px 12px",fontSize:18,fontWeight:700,cursor:"pointer",lineHeight:1}}>‹</button>
         <div style={{flex:1,textAlign:"center"}}>
           {regData===todayISO()
@@ -5289,15 +5290,15 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   return (
     <div style={{fontFamily:FF,display:"flex",flexDirection:"column",height:"100vh",background:"#f9fafb"}}>
       {toast&&<Toast msg="Salvato" onDone={()=>setToast(false)}/>}
-      <div style={{background:"#0f766e",color:"#fff",padding:isMobile?"10px 12px":"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={isMobile?18:22}/><span style={{fontWeight:700,fontSize:isMobile?15:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:isMobile?11:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:isMobile?"6px 12px":"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:isMobile?13:16,cursor:"pointer"}}>Salva e torna</button></div>
+      <div style={{background:"#12406f",color:"#fff",padding:isMobile?"10px 12px":"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={isMobile?18:22}/><span style={{fontWeight:700,fontSize:isMobile?15:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:isMobile?11:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:isMobile?"6px 12px":"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:isMobile?13:16,cursor:"pointer"}}>Salva e torna</button></div>
       <div style={{flex:1,display:"flex",overflow:"hidden"}}>
         <div style={{width:isMobile?110:260,background:"#fff",borderRight:"2px solid #e5e7eb",display:"flex",flexDirection:"column",flexShrink:0}}>
           <div style={{padding:"12px 14px 4px"}}>
             <div style={{fontSize:11,color:"#6b7280",fontWeight:600,marginBottom:3}}>Nome scuola</div>
-            <input value={nomeScuola||""} onChange={e=>setNomeScuola(e.target.value)} placeholder="es. I.C. Manzoni" style={{width:"100%",border:"1px solid #e5e7eb",borderRadius:4,padding:isMobile?"4px 6px":"6px 8px",fontSize:isMobile?11:13,fontFamily:FF,boxSizing:"border-box",color:"#0f766e",fontWeight:600}}/>
+            <input value={nomeScuola||""} onChange={e=>setNomeScuola(e.target.value)} placeholder="es. I.C. Manzoni" style={{width:"100%",border:"1px solid #e5e7eb",borderRadius:4,padding:isMobile?"4px 6px":"6px 8px",fontSize:isMobile?11:13,fontFamily:FF,boxSizing:"border-box",color:"#12406f",fontWeight:600}}/>
           </div>
-          <div style={{padding:isMobile?"8px 10px 6px":"12px 16px 8px",fontWeight:700,fontSize:isMobile?13:15,color:"#0f766e"}}>Classi ({list.length})</div>
-          <div style={{padding:"0 12px 12px",display:"flex",gap:6}}><Inp value={nuova} onChange={e=>setNuova(e.target.value)} placeholder="es. 4A" style={{flex:1}} onKeyDown={e=>e.key==="Enter"&&addClasse()}/><button onClick={addClasse} style={{padding:isMobile?"6px 10px":"8px 14px",background:"#0f766e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:isMobile?16:20}}>+</button></div>
+          <div style={{padding:isMobile?"8px 10px 6px":"12px 16px 8px",fontWeight:700,fontSize:isMobile?13:15,color:"#12406f"}}>Classi ({list.length})</div>
+          <div style={{padding:"0 12px 12px",display:"flex",gap:6}}><Inp value={nuova} onChange={e=>setNuova(e.target.value)} placeholder="es. 4A" style={{flex:1}} onKeyDown={e=>e.key==="Enter"&&addClasse()}/><button onClick={addClasse} style={{padding:isMobile?"6px 10px":"8px 14px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:isMobile?16:20}}>+</button></div>
           <div style={{flex:1,overflowY:"auto"}}>{list.map(nome=>{const isCoord=getMeta(nome).coordinatore;const nMat=(getMeta(nome).materie||[]).length;return(<div key={nome} onClick={()=>{setSel(nome);setEditId(null);setForm({nome:"",cognome:""}); }} style={{display:"flex",alignItems:"center",padding:isMobile?"8px 10px":"12px 16px",cursor:"pointer",background:sel===nome?"#ccfbf1":"transparent",borderLeft:sel===nome?"4px solid #0f766e":"4px solid transparent",borderBottom:"1px solid #f3f4f6"}}>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontWeight:700,fontSize:isMobile?13:15}}>{nome}</div>
@@ -5311,9 +5312,9 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
         <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
           {!sel?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#9ca3af",flexDirection:"column",gap:12}}><BookOpen size={48} color="#d1d5db"/><div style={{fontSize:18,fontWeight:600}}>Seleziona una classe</div></div>:(
             <>
-              <div style={{background:"#f0fdfa",borderBottom:"2px solid #99f6e4",padding:"12px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-                <span style={{fontWeight:700,fontSize:18,color:"#0f766e"}}>Classe {sel}</span>
-                <span style={{background:"#0f766e",color:"#fff",borderRadius:12,padding:"2px 14px",fontWeight:700,fontSize:13}}>{alunni.length} alunni</span>
+              <div style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2",padding:"12px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                <span style={{fontWeight:700,fontSize:18,color:"#12406f"}}>Classe {sel}</span>
+                <span style={{background:"#12406f",color:"#fff",borderRadius:12,padding:"2px 14px",fontWeight:700,fontSize:13}}>{alunni.length} alunni</span>
                 <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:10}}>
                   <span style={{fontSize:13,fontWeight:600,color:"#374151"}}>Coordinatore?</span>
                   <div onClick={()=>setMeta(sel,{coordinatore:!getMeta(sel).coordinatore})} style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",background:getMeta(sel).coordinatore?"#f0fdf4":"#f9fafb",border:"2px solid "+(getMeta(sel).coordinatore?"#22c55e":"#d1d5db"),borderRadius:8,padding:"6px 14px"}}>
@@ -5384,8 +5385,8 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
                 )}
               </div>
 
-              <div style={{padding:"14px 24px",background:"#fff",borderBottom:"2px solid #e5e7eb",display:"flex",gap:10,alignItems:"flex-end",flexWrap:"wrap"}}><div style={{flex:1,minWidth:130}}><Lbl>Nome</Lbl><Inp value={form.nome} onChange={e=>setForm({...form,nome:e.target.value})} placeholder="Nome" onKeyDown={e=>e.key==="Enter"&&saveAlunno()}/></div><div style={{flex:1,minWidth:130}}><Lbl>Cognome</Lbl><Inp value={form.cognome} onChange={e=>setForm({...form,cognome:e.target.value})} placeholder="Cognome" onKeyDown={e=>e.key==="Enter"&&saveAlunno()}/></div><Btn color="#0f766e" onClick={saveAlunno}>{editId!==null?"Aggiorna":"Aggiungi"}</Btn>{editId!==null&&<Btn color="#6b7280" onClick={()=>{setEditId(null);setForm({nome:"",cognome:""});}}>Annulla</Btn>}</div>
-              <div style={{flex:1,overflowY:"auto",padding:"16px 24px"}}>{alunni.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#9ca3af"}}>Nessun alunno.</div>:(<table style={{width:"100%",borderCollapse:"collapse"}}><thead><tr style={{background:"#0f766e",color:"#fff"}}><th style={{padding:"10px 12px",textAlign:"left",width:40}}>#</th><th style={{padding:"10px 12px",textAlign:"left"}}>Cognome</th><th style={{padding:"10px 12px",textAlign:"left"}}>Nome</th><th style={{padding:"10px 12px",textAlign:"center",width:100}}>Azioni</th></tr></thead><tbody>{sorted.map((s,i)=>(<tr key={s.id} style={{borderBottom:"1px solid #f3f4f6",background:editId===s.id?"#fef9c3":i%2===0?"#fff":"#f9fafb"}}><td style={{padding:"10px 12px",color:"#9ca3af",fontSize:13}}>{i+1}</td><td style={{padding:"10px 12px",fontWeight:700}}>{s.cognome}</td><td style={{padding:"10px 12px"}}>{s.nome}</td><td style={{padding:"8px 12px",textAlign:"center"}}><div style={{display:"flex",gap:6,justifyContent:"center"}}><button onClick={()=>{setEditId(s.id);setForm({nome:s.nome,cognome:s.cognome});}} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:4,padding:"5px 8px",cursor:"pointer"}}><Pencil size={13}/></button><button onClick={()=>setConfirmDel({type:"alunno",id:s.id})} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:4,padding:"5px 8px",cursor:"pointer"}}><Trash2 size={13}/></button></div></td></tr>))}</tbody></table>)}</div>
+              <div style={{padding:"14px 24px",background:"#fff",borderBottom:"2px solid #e5e7eb",display:"flex",gap:10,alignItems:"flex-end",flexWrap:"wrap"}}><div style={{flex:1,minWidth:130}}><Lbl>Nome</Lbl><Inp value={form.nome} onChange={e=>setForm({...form,nome:e.target.value})} placeholder="Nome" onKeyDown={e=>e.key==="Enter"&&saveAlunno()}/></div><div style={{flex:1,minWidth:130}}><Lbl>Cognome</Lbl><Inp value={form.cognome} onChange={e=>setForm({...form,cognome:e.target.value})} placeholder="Cognome" onKeyDown={e=>e.key==="Enter"&&saveAlunno()}/></div><Btn color="#12406f" onClick={saveAlunno}>{editId!==null?"Aggiorna":"Aggiungi"}</Btn>{editId!==null&&<Btn color="#6b7280" onClick={()=>{setEditId(null);setForm({nome:"",cognome:""});}}>Annulla</Btn>}</div>
+              <div style={{flex:1,overflowY:"auto",padding:"16px 24px"}}>{alunni.length===0?<div style={{textAlign:"center",padding:"40px 0",color:"#9ca3af"}}>Nessun alunno.</div>:(<table style={{width:"100%",borderCollapse:"collapse"}}><thead><tr style={{background:"#12406f",color:"#fff"}}><th style={{padding:"10px 12px",textAlign:"left",width:40}}>#</th><th style={{padding:"10px 12px",textAlign:"left"}}>Cognome</th><th style={{padding:"10px 12px",textAlign:"left"}}>Nome</th><th style={{padding:"10px 12px",textAlign:"center",width:100}}>Azioni</th></tr></thead><tbody>{sorted.map((s,i)=>(<tr key={s.id} style={{borderBottom:"1px solid #f3f4f6",background:editId===s.id?"#fef9c3":i%2===0?"#fff":"#f9fafb"}}><td style={{padding:"10px 12px",color:"#9ca3af",fontSize:13}}>{i+1}</td><td style={{padding:"10px 12px",fontWeight:700}}>{s.cognome}</td><td style={{padding:"10px 12px"}}>{s.nome}</td><td style={{padding:"8px 12px",textAlign:"center"}}><div style={{display:"flex",gap:6,justifyContent:"center"}}><button onClick={()=>{setEditId(s.id);setForm({nome:s.nome,cognome:s.cognome});}} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:4,padding:"5px 8px",cursor:"pointer"}}><Pencil size={13}/></button><button onClick={()=>setConfirmDel({type:"alunno",id:s.id})} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:4,padding:"5px 8px",cursor:"pointer"}}><Trash2 size={13}/></button></div></td></tr>))}</tbody></table>)}</div>
             </>
           )}
         </div>
@@ -5441,7 +5442,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
 
 function EventoModal({sid,student,onSave,onClose,docente,dataDefault,editAssenza}) {
   const TIPI_EV=[
-    {id:"presente",label:"Presente",color:"#4e9fa0"},
+    {id:"presente",label:"Presente",color:"#12406f"},
     {id:"assente",label:"Assente",color:"#ef4444"},
     {id:"ritardo",label:"Ritardo",color:"#f97316"},
     {id:"uscita",label:"Uscita anticipata",color:"#8b5cf6"},
@@ -5817,7 +5818,7 @@ function SistemaColleghi({docente, classiList, classi, votiDB, contDB, assenzeDB
   };
   const fmtAgo = ts=>{ if(!ts)return"mai"; const s=Math.floor((Date.now()-ts)/1000); if(s<60)return s+"s fa"; if(s<3600)return Math.floor(s/60)+"min fa"; return Math.floor(s/3600)+"h fa"; };
   const fresco = ts=>ts&&(Date.now()-ts)<120000;
-  const HDR="#0f766e"; const oggi=todayISO();
+  const HDR="#12406f"; const oggi=todayISO();
 
   return(
     <div style={{display:"flex",flexDirection:"column",height:"100%",fontFamily:FF,overflow:"hidden"}}>
@@ -5958,7 +5959,7 @@ function SistemaColleghi({docente, classiList, classi, votiDB, contDB, assenzeDB
                   const giaCondiviso=colleghi.includes(codiceMap[n]);
                   return(
                     <div key={n} onClick={()=>!giaCondiviso&&setSelTeamCheck(p=>sel?p.filter(x=>x!==n):[...p,n])}
-                      style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",cursor:giaCondiviso?"default":"pointer",background:giaCondiviso?"#f0fdf4":sel?"#e8f5f5":i%2===0?"#fff":"#fafafa",borderBottom:i<colleghiTeam.length-1?"1px solid #f3f4f6":"none"}}>
+                      style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",cursor:giaCondiviso?"default":"pointer",background:giaCondiviso?"#f0fdf4":sel?"#e9f2fb":i%2===0?"#fff":"#fafafa",borderBottom:i<colleghiTeam.length-1?"1px solid #f3f4f6":"none"}}>
                       <div style={{width:18,height:18,border:"2px solid "+(giaCondiviso?"#22c55e":sel?HDR:"#bbb"),borderRadius:3,background:giaCondiviso?"#22c55e":sel?HDR:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                         {(giaCondiviso||sel)&&<span style={{color:"#fff",fontSize:11,fontWeight:900}}>✓</span>}
                       </div>
@@ -6108,7 +6109,7 @@ function DiarioDocente({docente, classe, materia, students, cGet, cSet, showToas
       <div style={{flex:1,overflowY:"auto",padding:20}}>
         <div style={{border:"1px solid #c7e0e0",borderRadius:6,overflow:"hidden",background:"#fff",maxWidth:980,margin:"0 auto"}}>
           {/* Header */}
-          <div style={{background:TEAL,color:"#fff",padding:"10px 16px",fontWeight:700,fontSize:15}}>Diario docente</div>
+          <div style={{background:TEAL_GRAD,color:"#fff",padding:"10px 16px",fontWeight:700,fontSize:15}}>Diario docente</div>
           {/* Totali + bottoni */}
           <div style={{padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #e5e7eb",background:"#fafafa",flexWrap:"wrap",gap:8}}>
             <div style={{fontSize:13,color:"#374151"}}>
@@ -6728,7 +6729,7 @@ function ProgrammazionePanel({docente, classi, classeAttiva, materie, contDB, se
     return [...found];
   };
 
-  const TEAL2 = "#4e9fa0";
+  const TEAL2 = "#12406f";
   const HDR = TEAL;
   const BtnRow = ({style,children,...p}) => (
     <button style={{padding:"6px 14px",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:13,fontFamily:FF,...style}} {...p}>{children}</button>
@@ -6771,7 +6772,7 @@ function ProgrammazionePanel({docente, classi, classeAttiva, materie, contDB, se
                 ?<div style={{padding:"16px 14px",fontSize:12,color:"#9ca3af"}}>Nessun team. Crea un team dalla scheda Team.</div>
                 :teams.map(t=>(
                   <div key={t.id} onClick={()=>setTeamSel(t.id)}
-                    style={{padding:"10px 14px",cursor:"pointer",background:teamSel===t.id?"#e8f5f5":"transparent",borderLeft:teamSel===t.id?"4px solid "+HDR:"4px solid transparent",borderBottom:"1px solid #f3f4f6",fontWeight:teamSel===t.id?700:400,color:teamSel===t.id?HDR:"#374151",fontSize:14}}>
+                    style={{padding:"10px 14px",cursor:"pointer",background:teamSel===t.id?"#e9f2fb":"transparent",borderLeft:teamSel===t.id?"4px solid "+HDR:"4px solid transparent",borderBottom:"1px solid #f3f4f6",fontWeight:teamSel===t.id?700:400,color:teamSel===t.id?HDR:"#374151",fontSize:14}}>
                     {t.descrizione}
                   </div>
                 ))
@@ -6863,7 +6864,7 @@ function ProgrammazionePanel({docente, classi, classeAttiva, materie, contDB, se
                 ?<div style={{padding:"16px 14px",fontSize:12,color:"#9ca3af"}}>Nessun team.</div>
                 :teams.map(t=>(
                   <div key={t.id} onClick={()=>{setTeamSel(t.id);}}
-                    style={{padding:"10px 14px",cursor:"pointer",background:teamSel===t.id?"#e8f5f5":"transparent",borderLeft:teamSel===t.id?"4px solid "+HDR:"4px solid transparent",borderBottom:"1px solid #f3f4f6",fontWeight:teamSel===t.id?700:400,color:teamSel===t.id?HDR:"#374151",fontSize:14}}>
+                    style={{padding:"10px 14px",cursor:"pointer",background:teamSel===t.id?"#e9f2fb":"transparent",borderLeft:teamSel===t.id?"4px solid "+HDR:"4px solid transparent",borderBottom:"1px solid #f3f4f6",fontWeight:teamSel===t.id?700:400,color:teamSel===t.id?HDR:"#374151",fontSize:14}}>
                     {t.descrizione}
                   </div>
                 ))
@@ -6911,7 +6912,7 @@ function ProgrammazionePanel({docente, classi, classeAttiva, materie, contDB, se
                     <div style={{fontWeight:700,fontSize:14,color:"#374151",marginBottom:8}}>👨‍🏫 Docenti</div>
                     <table style={{width:"100%",borderCollapse:"collapse",border:"1px solid #e5e7eb",borderRadius:6,overflow:"hidden"}}>
                       <thead>
-                        <tr style={{background:"#f0f9f9",borderBottom:"2px solid #e5e7eb"}}>
+                        <tr style={{background:"#f0f6fc",borderBottom:"2px solid #e5e7eb"}}>
                           {["Docente","Classe/Materia"].map(h=><th key={h} style={{padding:"9px 14px",textAlign:"left",color:HDR,fontWeight:700,fontSize:13}}>{h}</th>)}
                         </tr>
                       </thead>
@@ -7088,7 +7089,7 @@ function ProgrammazionePanel({docente, classi, classeAttiva, materie, contDB, se
                   const sel=(teamForm.classiSel||[]).includes(cl);
                   return(
                     <div key={cl} onClick={()=>setTeamForm(f=>({...f,classiSel:sel?(f.classiSel||[]).filter(x=>x!==cl):[...(f.classiSel||[]),cl]}))}
-                      style={{display:"grid",gridTemplateColumns:"40px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#e8f5f5":"#fff",cursor:"pointer"}}>
+                      style={{display:"grid",gridTemplateColumns:"40px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#e9f2fb":"#fff",cursor:"pointer"}}>
                       <div style={{padding:"9px",textAlign:"center",borderRight:"1px solid #eee",display:"flex",alignItems:"center",justifyContent:"center"}}>
                         <input type="checkbox" checked={sel} readOnly style={{cursor:"pointer",accentColor:HDR}}/>
                       </div>
@@ -7243,7 +7244,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
   };
 
   const TIPO_COL = {
-    lezione:      {bg:"#4e9fa0",color:"#fff",lbl:"Argomento"},
+    lezione:      {bg:"#12406f",color:"#fff",lbl:"Argomento"},
     compito:      {bg:"#f97316",color:"#fff",lbl:"Compito"},
     verifica:     {bg:"#dc2626",color:"#fff",lbl:"Verifica"},
     annotazione:  {bg:"#6b7280",color:"#fff",lbl:"Annotazione"},
@@ -7290,7 +7291,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
           <button onClick={()=>{ if(mese===11){setMese(0);setAnno(a=>a+1);}else setMese(m=>m+1); }}
             style={{padding:"4px 12px",background:"#e2eaf2",border:"none",borderRadius:3,cursor:"pointer",fontWeight:700,fontSize:15}}>›</button>
           <button onClick={()=>{setMese(oggi.getMonth());setAnno(oggi.getFullYear());}}
-            style={{padding:"4px 10px",background:TEAL,color:"#fff",border:"none",borderRadius:3,cursor:"pointer",fontWeight:700,fontSize:12}}>Oggi</button>
+            style={{padding:"4px 10px",background:TEAL_GRAD,color:"#fff",border:"none",borderRadius:3,cursor:"pointer",fontWeight:700,fontSize:12}}>Oggi</button>
         </div>
         {/* Nuovo */}
         <button onClick={()=>{
@@ -7311,7 +7312,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
         ))}
         <div style={{marginLeft:"auto",display:"flex",gap:10}}>
           <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:18,height:14,background:"#2563eb",borderRadius:2}}/><span style={{fontSize:11}}>Oggi</span></div>
-          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:18,height:14,background:"#4e9fa0",borderRadius:2}}/><span style={{fontSize:11}}>Giorno lavorativo</span></div>
+          <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:18,height:14,background:"#12406f",borderRadius:2}}/><span style={{fontSize:11}}>Giorno lavorativo</span></div>
           <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:18,height:14,background:"#dc2626",borderRadius:2}}/><span style={{fontSize:11}}>Chiusura</span></div>
         </div>
       </div>
@@ -7333,7 +7334,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
             const isOggi = iso===oggiISO;
             const isLav = iso&&isGiornoLavorativo(iso);
             const items = iso ? getItemsPerGiorno(iso) : [];
-            const colGiorno = isOggi ? "#dbeafe" : isLav ? "#e8f5f5" : isCurrentMonth ? "#fff" : "#f9f9f9";
+            const colGiorno = isOggi ? "#dbeafe" : isLav ? "#e9f2fb" : isCurrentMonth ? "#fff" : "#f9f9f9";
             const colBorder = isOggi ? "#2563eb" : isLav ? TEAL : "#e5e7eb";
             const numCol = isOggi ? "#2563eb" : isLav ? TEAL : "#9ca3af";
             const numBg = isOggi ? "#2563eb" : isLav ? TEAL : "transparent";
@@ -7402,7 +7403,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
             maxHeight:"90vh",display:"flex",flexDirection:"column",overflow:"hidden"
           }}>
             {/* Header verde */}
-            <div style={{background:TEAL,color:"#fff",padding:"12px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+            <div style={{background:TEAL_GRAD,color:"#fff",padding:"12px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
               <span style={{fontWeight:700,fontSize:16}}>Nuovo evento</span>
               <button onClick={()=>setNuovoEventoOpen(false)} style={{background:"rgba(0,0,0,0.2)",border:"none",color:"#fff",borderRadius:"50%",width:28,height:28,cursor:"pointer",fontWeight:900,fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
             </div>
@@ -7463,7 +7464,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
                           const sel=(nuovoEventoForm.alunniSel||[]).includes(s.id);
                           return(
                             <div key={s.id} onClick={()=>setNuovoEventoForm(f=>({...f,alunniSel:sel?(f.alunniSel||[]).filter(x=>x!==s.id):[...(f.alunniSel||[]),s.id]}))}
-                              style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?"#e8f5f5":"transparent",borderRadius:3}}>
+                              style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?"#e9f2fb":"transparent",borderRadius:3}}>
                               <div style={{width:14,height:14,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                                 {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
                               </div>
@@ -7545,7 +7546,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
           <div onClick={()=>setDettaglioGiorno(null)} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.4)"}}/>
           <div style={{position:"relative",zIndex:1,background:"#fff",borderRadius:8,boxShadow:"0 12px 48px rgba(0,0,0,0.28)",width:600,maxWidth:"96vw",maxHeight:"84vh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
             {/* Header */}
-            <div style={{background:TEAL,color:"#fff",padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+            <div style={{background:TEAL_GRAD,color:"#fff",padding:"14px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
               <div>
                 <div style={{fontWeight:700,fontSize:16}}>{(()=>{try{const d=new Date(dettaglioGiorno.iso+"T00:00:00");const GG=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];const MM=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];return `${GG[d.getDay()]} ${d.getDate()} ${MM[d.getMonth()]} ${d.getFullYear()}`;}catch{return dettaglioGiorno.iso;}})()}</div>
                 <div style={{fontSize:12,opacity:0.85}}>Classe {classe}</div>
@@ -7687,7 +7688,7 @@ function PermessiPanel({classe, classi, students, docente, contDB, setContDB, cS
           </div>
           <table style={{width:"100%",borderCollapse:"collapse"}}>
             <thead>
-              <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+              <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                 {["Tipo Permesso\nOra\nFino al","Alunni","Giorni","Motivo","Note","Calcolo","Giust.","Classe"].map(h=>(
                   <th key={h} style={{padding:"9px 12px",textAlign:"center",color:HDR,fontWeight:700,fontSize:12,borderRight:TBL_BORDER,whiteSpace:"pre-line",lineHeight:1.4}}>{h}</th>
                 ))}
@@ -7772,7 +7773,7 @@ function PermessiPanel({classe, classi, students, docente, contDB, setContDB, cS
           </div>
           <table style={{width:"100%",borderCollapse:"collapse"}}>
             <thead>
-              <tr style={{background:"#f0fdfa",borderBottom:"2px solid #bbf7d0"}}>
+              <tr style={{background:"#eef4fb",borderBottom:"2px solid #bbf7d0"}}>
                 <th style={{padding:"9px 10px",width:32,borderRight:TBL_BORDER}}>
                   <input type="checkbox"
                     checked={daAut.length>0&&daAut.every(x=>selDaAut.includes(x.id))}
@@ -7876,7 +7877,7 @@ function PermessiPanel({classe, classi, students, docente, contDB, setContDB, cS
                         const sel=(form.alunni||[]).includes(s.id);
                         return(
                           <div key={s.id} onClick={()=>setForm(f=>({...f,alunni:sel?(f.alunni||[]).filter(x=>x!==s.id):[...(f.alunni||[]),s.id]}))}
-                            style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?"#e8f5f5":"transparent",borderRadius:3}}>
+                            style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?"#e9f2fb":"transparent",borderRadius:3}}>
                             <div style={{width:14,height:14,border:"2px solid "+(sel?HDR:"#bbb"),borderRadius:2,background:sel?HDR:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                               {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
                             </div>
@@ -7958,7 +7959,7 @@ function PermessiPanel({classe, classi, students, docente, contDB, setContDB, cS
                     const sel=(form.giorni||[]).includes(g);
                     return(
                       <div key={g} onClick={()=>setForm(f=>({...f,giorni:sel?(f.giorni||[]).filter(x=>x!==g):[...(f.giorni||[]),g]}))}
-                        style={{display:"flex",alignItems:"center",gap:6,padding:"5px 12px",border:"2px solid "+(sel?HDR:"#d1d5db"),borderRadius:20,cursor:"pointer",background:sel?"#e8f5f5":"#fff",fontWeight:sel?700:400,fontSize:13,color:sel?HDR:"#374151"}}>
+                        style={{display:"flex",alignItems:"center",gap:6,padding:"5px 12px",border:"2px solid "+(sel?HDR:"#d1d5db"),borderRadius:20,cursor:"pointer",background:sel?"#e9f2fb":"#fff",fontWeight:sel?700:400,fontSize:13,color:sel?HDR:"#374151"}}>
                         {sel&&<span style={{color:HDR,fontSize:12}}>×</span>}
                         {g}
                       </div>
@@ -8026,7 +8027,7 @@ function PlanningEventoModal({onClose, children}) {
         {/* Pillola caricamento */}
         {phase==="loading"&&(
           <div style={{position:"relative",zIndex:2,background:"rgba(255,255,255,0.97)",borderRadius:20,padding:"10px 22px",boxShadow:"0 4px 20px rgba(0,0,0,0.12)",fontSize:13,color:"#6b7280",fontWeight:600,display:"flex",alignItems:"center",gap:10,pointerEvents:"none"}}>
-            <div style={{width:13,height:13,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:"#4e9fa0",animation:"planSpin 0.7s linear infinite"}}/>
+            <div style={{width:13,height:13,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:"#12406f",animation:"planSpin 0.7s linear infinite"}}/>
             Caricamento
           </div>
         )}
@@ -8066,7 +8067,7 @@ function PermessoModalAnimato({onClose, children}) {
         {/* Pillola caricamento */}
         {phase==="loading"&&(
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",background:"rgba(255,255,255,0.97)",borderRadius:20,padding:"10px 22px",boxShadow:"0 4px 20px rgba(0,0,0,0.12)",fontSize:13,color:"#6b7280",fontWeight:600,display:"flex",alignItems:"center",gap:10,pointerEvents:"none",zIndex:1}}>
-            <div style={{width:13,height:13,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:"#4e9fa0",animation:"spin2 0.7s linear infinite"}}/>
+            <div style={{width:13,height:13,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:"#12406f",animation:"spin2 0.7s linear infinite"}}/>
             Caricamento
           </div>
         )}
@@ -8108,7 +8109,7 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
   };
   const materieClDash = getMaterieClDash(dashClasse);
 
-  const HDR_COL = "#2d7d9a"; // stesso colore per entrambi i pannelli
+  const HDR_COL = "#12406f"; // stesso colore per entrambi i pannelli
 
   // Tutte le firme da contDB
   const tutteFirme = (() => {
@@ -10233,7 +10234,7 @@ function Registro({docente,onCambia}) {
               {classiList.map(cl=>{
                 const sel=(collForm.classiSel||[]).includes(cl);
                 return(
-                  <div key={cl} style={{display:"grid",gridTemplateColumns:"48px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#e8f5f5":"#fff",cursor:"pointer"}} onClick={()=>setCollForm(f=>({...f,classiSel:sel?(f.classiSel||[]).filter(x=>x!==cl):[...(f.classiSel||[]),cl]}))}>
+                  <div key={cl} style={{display:"grid",gridTemplateColumns:"48px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#e9f2fb":"#fff",cursor:"pointer"}} onClick={()=>setCollForm(f=>({...f,classiSel:sel?(f.classiSel||[]).filter(x=>x!==cl):[...(f.classiSel||[]),cl]}))}>
                     <div style={{padding:"8px",textAlign:"center",borderRight:"1px solid #eee",display:"flex",alignItems:"center",justifyContent:"center"}}>
                       <input type="checkbox" checked={sel} readOnly style={{cursor:"pointer"}}/>
                     </div>
@@ -10599,7 +10600,7 @@ function Registro({docente,onCambia}) {
           <div style={{background:"#fff",border:"2px solid "+TEAL,borderRadius:8,overflow:"hidden"}}>
 
             {/* Header verde "Registro completo" */}
-            <div style={{background:TEAL,color:"#fff",padding:"8px 16px",fontWeight:700,fontSize:15}}>
+            <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 16px",fontWeight:700,fontSize:15}}>
               Registro completo
             </div>
 
@@ -10972,7 +10973,7 @@ function Registro({docente,onCambia}) {
         </div>
 
         {/* Titolo sezione + selettore materia */}
-        <div style={{background:TEAL,color:"#fff",padding:"8px 18px",fontWeight:700,fontSize:15,flexShrink:0,display:"flex",alignItems:"center",gap:16}}>
+        <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 18px",fontWeight:700,fontSize:15,flexShrink:0,display:"flex",alignItems:"center",gap:16}}>
           <span>Quadro riepilogativo</span>
           <div style={{display:"flex",alignItems:"center",gap:8,marginLeft:"auto"}}>
             <span style={{fontSize:13,fontWeight:600,opacity:0.85}}>Materia:</span>
@@ -11211,7 +11212,7 @@ function Registro({docente,onCambia}) {
       {/* HEADER AXIOS stile originale */}
       <div style={{background:"#fff",borderBottom:"2px solid #e5e7eb",flexShrink:0}}>
         {/* Barra superiore teal con logo e info */}
-        <div style={{background:TEAL,padding:"6px 16px",display:"flex",alignItems:"center",gap:10,justifyContent:"space-between"}}>
+        <div style={{background:TEAL_GRAD,padding:"6px 16px",display:"flex",alignItems:"center",gap:10,justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <button onClick={()=>{setActiveTab(null);setSelStudent(null);}}
               style={{background:"rgba(0,0,0,0.2)",border:"none",color:"#fff",borderRadius:4,padding:"4px 12px",fontWeight:700,cursor:"pointer",fontSize:13}}>← Home</button>
@@ -11249,7 +11250,7 @@ function Registro({docente,onCambia}) {
           {[
             {id:"comunicazioni_tab", lbl:"📢 Comunicazioni", col:"#fff"},
             {id:"firme_tab",          lbl:"✍️ Firme",          col:"#f97316", active: showFirmePanel && classeInnerTab==="registro"},
-            {id:"classe_tab",         lbl:"👥 Classe",         col:"#4e9fa0", active: !showFirmePanel && classeInnerTab==="registro"},
+            {id:"classe_tab",         lbl:"👥 Classe",         col:"#12406f", active: !showFirmePanel && classeInnerTab==="registro"},
             {id:"alunno_tab",         lbl:"👤 Alunno",         col:"#fff"},
             {id:"permessi_tab",       lbl:"🕒 Permessi",       col:"#fff", active: classeInnerTab==="permessi"},
             {id:"collabora_tab",      lbl:"🔗 Collabora",      col:"#fff"},
@@ -11747,7 +11748,7 @@ function Registro({docente,onCambia}) {
                         const sel=(contForm.destinatari||[]).includes(s.id);
                         return(
                           <div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))}
-                            style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",cursor:"pointer",background:sel?"#e8f5f5":"#fff",borderBottom:"1px solid #f3f4f6",fontSize:13}}>
+                            style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",cursor:"pointer",background:sel?"#e9f2fb":"#fff",borderBottom:"1px solid #f3f4f6",fontSize:13}}>
                             <div style={{width:14,height:14,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
                               {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
                             </div>
@@ -12159,7 +12160,7 @@ function Registro({docente,onCambia}) {
           </div>
         </div>
         <div style={{background:"#f9f9f9",maxHeight:360,overflowY:"auto"}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 80px 1fr",padding:"7px 24px",fontWeight:700,color:TEAL,fontSize:12,borderBottom:"1px solid #eee",background:"#f0f9f9",position:"sticky",top:0}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 80px 1fr",padding:"7px 24px",fontWeight:700,color:TEAL,fontSize:12,borderBottom:"1px solid #eee",background:"#f0f6fc",position:"sticky",top:0}}>
             <span>Cognome e Nome</span>
             <span style={{textAlign:"center"}}>Voto</span>
             <span style={{paddingLeft:8}}>Commento personale <span style={{fontWeight:400,color:"#9ca3af"}}>(vuoto = usa commento classe)</span></span>
@@ -12282,7 +12283,7 @@ function Registro({docente,onCambia}) {
           </div>
         </>}
 
-        <button onClick={()=>setShowGestione(true)} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 14px",background:"#0f766e",color:"#fff",border:"none",borderRadius:4,cursor:"pointer",fontWeight:700,fontSize:13}}><Users size={14}/> Classi</button>
+        <button onClick={()=>setShowGestione(true)} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 14px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,cursor:"pointer",fontWeight:700,fontSize:13}}><Users size={14}/> Classi</button>
         <div style={{marginLeft:"auto",display:"flex",gap:8,flexWrap:"wrap"}}>
           <button onClick={esportaDati} style={{padding:"7px 14px",background:"#374151",color:"#d1d5db",border:"none",borderRadius:4,cursor:"pointer",fontWeight:600,fontSize:13}}>Esporta dati</button>
           <button onClick={()=>{setAzzeraOpen(true);setAzzeraScelta("tutto");setAzzeraConferma(false);}} style={{padding:"7px 14px",background:"#7f1d1d",color:"#fecaca",border:"none",borderRadius:4,cursor:"pointer",fontWeight:600,fontSize:13}}>🗑️ Azzera registro</button>
@@ -12297,7 +12298,7 @@ function Registro({docente,onCambia}) {
           <div style={{fontSize:48}}>📚</div>
           <div style={{fontWeight:700,fontSize:22,color:"#1f2937"}}>Benvenuto, {docente}!</div>
           <div style={{color:"#6b7280",fontSize:16}}>Prima di usare il registro crea almeno una classe.</div>
-          <button onClick={()=>setShowGestione(true)} style={{padding:"16px 40px",background:"#0f766e",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:20,cursor:"pointer"}}>Crea la prima classe</button>
+          <button onClick={()=>setShowGestione(true)} style={{padding:"16px 40px",background:"#12406f",color:"#fff",border:"none",borderRadius:8,fontWeight:700,fontSize:20,cursor:"pointer"}}>Crea la prima classe</button>
         </div>
       ):(
                   <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>

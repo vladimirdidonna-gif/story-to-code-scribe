@@ -10,7 +10,7 @@ import {
   stopCloudSync,
 } from "@/lib/cloud-sync";
 
-const TEAL = "#0d7d7d";
+const TEAL = "#12406f";
 const FF = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
 
 type Props = { children: (ctx: { syncKey: number; signOut: () => void; email: string }) => React.ReactNode };
@@ -124,7 +124,7 @@ function AuthForm() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f9f9", fontFamily: FF, padding: 16 }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f6fc", fontFamily: FF, padding: 16 }}>
       <div style={{ width: "100%", maxWidth: 380, background: "#fff", borderRadius: 12, boxShadow: "0 8px 30px rgba(0,0,0,0.12)", padding: 26 }}>
         <div style={{ fontSize: 22, fontWeight: 800, color: TEAL, marginBottom: 4 }}>Registro del Docente</div>
         <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 18 }}>

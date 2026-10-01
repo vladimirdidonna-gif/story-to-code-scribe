@@ -10,7 +10,7 @@ import {
   type Invito,
 } from "@/lib/condivisione";
 
-const TEAL = "#0d7d7d";
+const TEAL = "#12406f";
 const FF = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
 
 function leggiClassi(): Record<string, Array<{ cognome?: string; nome?: string }>> {
