@@ -2634,9 +2634,9 @@ function ComunicazioneSchedaRow({item}) {
             const url = item.urlEsterno.startsWith("http") ? item.urlEsterno : "https://"+item.urlEsterno;
             return (
               <a href={url} target="_blank" rel="noreferrer"
-                style={{display:"flex",alignItems:"center",gap:8,background:"#f0f9ff",border:"1px solid #bae6fd",borderRadius:6,padding:"10px 12px",marginBottom:(item.allegati||[]).length?10:0,textDecoration:"none"}}>
+                style={{display:"flex",alignItems:"center",gap:8,background:"#eef4fb",border:"1px solid #c5d9f2",borderRadius:6,padding:"10px 12px",marginBottom:(item.allegati||[]).length?10:0,textDecoration:"none"}}>
                 <span style={{fontSize:16}}>🔗</span>
-                <span style={{fontSize:12,color:"#0369a1",fontWeight:600,wordBreak:"break-all"}}>{url}</span>
+                <span style={{fontSize:12,color:"#12406f",fontWeight:600,wordBreak:"break-all"}}>{url}</span>
               </a>
             );
           })()}
@@ -3802,7 +3802,7 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
         <div style={{flex:1,overflowY:"auto"}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
             <thead>
-              <tr style={{background:"#eef4fb",borderBottom:"2px solid #c7e8e0"}}>
+              <tr style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2"}}>
                 <th style={{padding:"6px 8px",width:24,borderRight:"1px solid #e5e7eb"}}>
                   <input type="checkbox" checked={allSelected} onChange={()=>setSelRows(allSelected?[]:students.map(s=>s.id))} style={{cursor:"pointer"}}/>
                 </th>
@@ -4260,7 +4260,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
             <div style={{overflowX:"auto"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead>
-                  <tr style={{background:"#eef4fb",borderBottom:"2px solid #c7e8e0"}}>
+                  <tr style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2"}}>
                     {["Tipologia","Orario","Ora","Giustificato","Motivo","DaD","Comandi"].map(h=>(
                       <th key={h} style={{padding:"8px 12px",textAlign:"left",color:HDR,fontWeight:700,fontSize:12,borderRight:TBL_BORDER}}>{h}</th>
                     ))}
@@ -4492,7 +4492,7 @@ function StudentRow({s,i,isAssente,ng,onAssenzaChange,selezionato,onSelect,assen
   const infoBg = ritardo ? "#fff9c2" : uscita ? "#cfe8f3" : isAssente ? "#fce8e8" : "#fff";
   // Lettera da mostrare
   const infoLetter = ritardo ? "R" : uscita ? "U" : null;
-  const infoLetterColor = ritardo ? "#e6a817" : uscita ? "#4ab8d4" : null;
+  const infoLetterColor = ritardo ? "#e6a817" : uscita ? "#12406f" : null;
 
   return (
     <div
@@ -4527,7 +4527,7 @@ function StudentRow({s,i,isAssente,ng,onAssenzaChange,selezionato,onSelect,assen
       {/* Bottone ℹ */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderLeft:"1px solid #e5e7eb",marginRight:4}}>
         <button onClick={e=>{e.stopPropagation();onOpenScheda();}}
-          style={{width:26,height:26,background:"#29b6d8",border:"none",borderRadius:3,
+          style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,
             cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
             flexShrink:0,boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
           <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",
@@ -4658,13 +4658,13 @@ function ListaAlunniPanel({students,classe,TEAL,TEAL_LIGHT,isRegToday,regData,se
           <div/>
           <div/>
           {/* Info (bottone ℹ) */}
-          <div style={{textAlign:"center",fontSize:10,fontWeight:700,color:TEAL,borderLeft:"1px solid #c7e8e0",paddingRight:6}}>Info</div>
+          <div style={{textAlign:"center",fontSize:10,fontWeight:700,color:TEAL,borderLeft:"1px solid #c5d9f2",paddingRight:6}}>Info</div>
           {/* Ass. */}
           <div style={{textAlign:"center",fontSize:10,fontWeight:700,color:"#ef4444",paddingLeft:6}}>Ass.</div>
           {/* col vuota */}
-          <div style={{borderLeft:"1px solid #c7e8e0"}}/>
+          <div style={{borderLeft:"1px solid #c5d9f2"}}/>
           {/* Info (ultima col) */}
-          <div style={{textAlign:"center",fontSize:10,fontWeight:700,color:TEAL,borderLeft:"1px solid #c7e8e0"}}>Info</div>
+          <div style={{textAlign:"center",fontSize:10,fontWeight:700,color:TEAL,borderLeft:"1px solid #c5d9f2"}}>Info</div>
         </div>
       </div>
       
@@ -4935,7 +4935,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   {items.filter(item=>item.testo&&item.testo.trim()).length>0 && (
                     <thead>
-                      <tr style={{background:TBL_HDR_BG,borderBottom:"2px solid #c7e8e0"}}>
+                      <tr style={{background:TBL_HDR_BG,borderBottom:"2px solid #c5d9f2"}}>
                         {["Docente","Alunno","Nota disciplinare","Gravità","Comandi"].map(h=>(
                           <th key={h} style={{padding:"9px 14px",textAlign:"center",color:HDR,fontWeight:700,fontSize:13,borderRight:TBL_BORDER}}>{h}</th>
                         ))}
@@ -5006,7 +5006,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                 <table style={{width:"100%",borderCollapse:"collapse"}}>
                   {items.filter(item=>item.testo&&item.testo.trim()).length>0 && (
                     <thead>
-                      <tr style={{background:TBL_HDR_BG,borderBottom:"2px solid #c7e8e0"}}>
+                      <tr style={{background:TBL_HDR_BG,borderBottom:"2px solid #c5d9f2"}}>
                         {["Docente","Alunno","Annotazioni giornaliere","Visibile Famiglia","Comandi"].map(h=>(
                           <th key={h} style={{padding:"9px 14px",textAlign:"center",color:HDR,fontWeight:700,fontSize:13,borderRight:TBL_BORDER}}>{h}</th>
                         ))}
@@ -5912,7 +5912,7 @@ function SistemaColleghi({docente, classiList, classi, votiDB, contDB, assenzeDB
                           <span style={{color:"#374151",lineHeight:1.5}}>{c.testo}</span></div>)}</div>;
                     })()}
                     {(d.comunicazioni||[]).length>0&&<div>
-                      <div style={{fontWeight:700,fontSize:12,color:"#0891b2",marginBottom:4}}>📢 Comunicazioni ({d.comunicazioni.length})</div>
+                      <div style={{fontWeight:700,fontSize:12,color:"#12406f",marginBottom:4}}>📢 Comunicazioni ({d.comunicazioni.length})</div>
                       {d.comunicazioni.slice(0,3).map((c,i)=><div key={i} style={{fontSize:12,color:"#000",fontWeight:"bold",marginBottom:2}}>• {c.oggetto||c.testo?.slice(0,60)||"—"}</div>)}
                     </div>}
                     {(d.colloqui||[]).length>0&&<div>
@@ -6369,7 +6369,7 @@ function ComunicazioniListView({items, docente, classe, onOpen, onEdit, onDelete
               onClick={()=>onOpen(item)}
               style={{width:70,flexShrink:0,padding:"14px 10px",display:"flex",alignItems:"flex-start",justifyContent:"center",cursor:"pointer"}}
             >
-              <span style={{background:"#7ecfea",color:"#fff",borderRadius:20,padding:"3px 13px",fontWeight:700,fontSize:13,textAlign:"center"}}>{numero}</span>
+              <span style={{background:"#12406f",color:"#fff",borderRadius:20,padding:"3px 13px",fontWeight:700,fontSize:13,textAlign:"center"}}>{numero}</span>
             </div>
 
             {/* AZIONI — sempre visibili a destra */}
@@ -6508,7 +6508,7 @@ function ComunicazioneDettaglio({item, onClose, lightboxSet}) {
 
             {/* Numero */}
             <div style={{flexShrink:0}}>
-              <span style={{background:"#7ecfea",color:"#fff",borderRadius:20,padding:"4px 16px",fontWeight:700,fontSize:15}}>{numero}</span>
+              <span style={{background:"#12406f",color:"#fff",borderRadius:20,padding:"4px 16px",fontWeight:700,fontSize:15}}>{numero}</span>
             </div>
           </div>
 
@@ -6523,14 +6523,14 @@ function ComunicazioneDettaglio({item, onClose, lightboxSet}) {
               {item.urlEsterno&&(()=>{
                 const url = item.urlEsterno.startsWith("http") ? item.urlEsterno : "https://"+item.urlEsterno;
                 return (
-                  <div style={{border:"2px solid #bae6fd",borderRadius:8,padding:"16px 20px",background:"#f0f9ff",display:"flex",alignItems:"center",gap:14,marginTop:8}}>
+                  <div style={{border:"2px solid #c5d9f2",borderRadius:8,padding:"16px 20px",background:"#eef4fb",display:"flex",alignItems:"center",gap:14,marginTop:8}}>
                     <span style={{fontSize:28,flexShrink:0}}>🔗</span>
                     <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontWeight:700,fontSize:14,color:"#0369a1",marginBottom:4}}>Link allegato</div>
+                      <div style={{fontWeight:700,fontSize:14,color:"#12406f",marginBottom:4}}>Link allegato</div>
                       <div style={{fontSize:12,color:"#6b7280",wordBreak:"break-all"}}>{url}</div>
                     </div>
                     <a href={url} target="_blank" rel="noreferrer"
-                      style={{padding:"10px 22px",background:"#0891b2",color:"#fff",borderRadius:6,fontWeight:700,fontSize:14,cursor:"pointer",flexShrink:0,textDecoration:"none",display:"inline-block"}}>
+                      style={{padding:"10px 22px",background:"#12406f",color:"#fff",borderRadius:6,fontWeight:700,fontSize:14,cursor:"pointer",flexShrink:0,textDecoration:"none",display:"inline-block"}}>
                       Apri ↗
                     </a>
                   </div>
@@ -6544,7 +6544,7 @@ function ComunicazioneDettaglio({item, onClose, lightboxSet}) {
               {item.letta ? `Letta il ${item.dataLettura||item.data||""}` : ""}
             </div>
             <button onClick={close}
-              style={{padding:"8px 22px",background:"#0891b2",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+              style={{padding:"8px 22px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
               ⊗ Chiudi
             </button>
           </div>
@@ -6584,16 +6584,16 @@ function AllegatoThumb({allegato, onClick}) {
 
   return (
     <div onClick={()=>onClick({...allegato, data:src})}
-      style={{border:"2px solid #bae6fd",borderRadius:8,overflow:"hidden",cursor:"zoom-in",background:"#f0f9ff",transition:"transform 0.15s",maxWidth:120}}
+      style={{border:"2px solid #c5d9f2",borderRadius:8,overflow:"hidden",cursor:"zoom-in",background:"#eef4fb",transition:"transform 0.15s",maxWidth:120}}
       onMouseEnter={e=>e.currentTarget.style.transform="scale(1.05)"}
       onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
       {isImg && hasSrc
         ? <img src={src} alt={allegato.nome} style={{width:120,height:90,objectFit:"cover",display:"block"}}/>
         : isImg && !hasSrc
-          ? <div style={{width:120,height:90,display:"flex",alignItems:"center",justifyContent:"center",background:"#e0f2fe"}}>
-              <div style={{width:20,height:20,border:"3px solid #bae6fd",borderTop:"3px solid #0891b2",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/>
+          ? <div style={{width:120,height:90,display:"flex",alignItems:"center",justifyContent:"center",background:"#e9f2fb"}}>
+              <div style={{width:20,height:20,border:"3px solid #c5d9f2",borderTop:"3px solid #12406f",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/>
             </div>
-          : <div style={{width:120,height:90,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:4,background:"#e0f2fe"}}>
+          : <div style={{width:120,height:90,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:4,background:"#e9f2fb"}}>
               <span style={{fontSize:32}}>📄</span>
               <span style={{fontSize:10,color:TEAL,fontWeight:700}}>PDF</span>
             </div>
@@ -7249,7 +7249,7 @@ function PlanningPanel({docente, classe, classiList, classi, contDB, setContDB, 
     verifica:     {bg:"#dc2626",color:"#fff",lbl:"Verifica"},
     annotazione:  {bg:"#6b7280",color:"#fff",lbl:"Annotazione"},
     nota:         {bg:"#7c3aed",color:"#fff",lbl:"Nota"},
-    comunicazione:{bg:"#0891b2",color:"#fff",lbl:"Comunicazione"},
+    comunicazione:{bg:"#12406f",color:"#fff",lbl:"Comunicazione"},
   };
 
   const isGiornoLavorativo = (d) => {
@@ -7804,7 +7804,7 @@ function PermessiPanel({classe, classi, students, docente, contDB, setContDB, cS
                       </td>
                       {/* Info */}
                       <td style={{padding:"8px 6px",textAlign:"center",borderRight:TBL_BORDER}}>
-                        <div style={{width:26,height:26,background:"#29b6d8",borderRadius:3,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",cursor:"pointer"}}>
+                        <div style={{width:26,height:26,background:"#12406f",borderRadius:3,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",cursor:"pointer"}}>
                           <span style={{color:"#fff",fontWeight:900,fontSize:12,fontStyle:"italic",fontFamily:"Georgia"}}>i</span>
                         </div>
                       </td>
@@ -8164,7 +8164,7 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
       {/* ══ COLONNA SINISTRA — Oggi / Firme ══ */}
       <div style={{width:300, flexShrink:0, display:"flex", flexDirection:"column", borderRight:"1px solid #dde3ea", background:"#fff", overflow:"hidden"}}>
         {/* Header "Oggi" */}
-        <div style={{background:"#4ab8d4", color:"#fff", padding:"8px 14px", fontWeight:700, fontSize:14, flexShrink:0}}>Oggi</div>
+        <div style={{background:TEAL_GRAD, color:"#fff", padding:"8px 14px", fontWeight:700, fontSize:14, flexShrink:0}}>Oggi</div>
         {/* Nav giorno */}
         <div style={{padding:"6px 10px", background:"#f0f4f8", borderBottom:"1px solid #dde3ea", display:"flex", alignItems:"center", gap:4, flexShrink:0}}>
           <button onClick={()=>{const d=new Date((firmaData||todayISO())+"T00:00:00");d.setDate(d.getDate()-2);setFirmaData(d.toISOString().split("T")[0]);}}
@@ -8181,8 +8181,8 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
         </div>
         {/* Intestazione Ora / Lezioni */}
         <div style={{display:"grid",gridTemplateColumns:"40px 1fr",background:"#f8fafc",borderBottom:"1px solid #e5e7eb",flexShrink:0}}>
-          <div style={{padding:"6px 8px",fontSize:11,fontWeight:700,color:"#4ab8d4",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>Ora</div>
-          <div style={{padding:"6px 12px",fontSize:11,fontWeight:700,color:"#4ab8d4"}}>Lezioni</div>
+          <div style={{padding:"6px 8px",fontSize:11,fontWeight:700,color:"#12406f",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>Ora</div>
+          <div style={{padding:"6px 12px",fontSize:11,fontWeight:700,color:"#12406f"}}>Lezioni</div>
         </div>
         {/* Lista firme del giorno */}
         <div style={{flex:1,overflowY:"auto"}}>
@@ -8197,12 +8197,12 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
               return(
                 <div key={f.id} style={{display:"grid",gridTemplateColumns:"40px 1fr",borderBottom:"1px solid #f3f4f6",background:i%2===0?"#fff":"#f9fafb",alignItems:"center",minHeight:44}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderRight:"1px solid #f0f0f0",padding:"4px 0",height:"100%"}}>
-                    <div style={{width:24,height:24,borderRadius:"50%",                  background:"#4ab8d4",color:"#fff",fontWeight:900,fontSize:nOre>1?10:11,display:"flex",alignItems:"center",justifyContent:"center"}}>{oreLabel}</div>
+                    <div style={{width:24,height:24,borderRadius:"50%",                  background:"#12406f",color:"#fff",fontWeight:900,fontSize:nOre>1?10:11,display:"flex",alignItems:"center",justifyContent:"center"}}>{oreLabel}</div>
                   </div>
                   <div style={{padding:"6px 10px"}}>
                     <div style={{fontWeight:700,fontSize:12,color:"#1f2937"}}>{f._classe||""}</div>
-                    <div style={{fontSize:11,color:"#4ab8d4",fontWeight:700,textTransform:"uppercase",marginTop:1}}>
-                      <span style={{background:"#e0f2fe",color:"#0369a1",borderRadius:10,padding:"1px 7px",fontSize:10}}>{mat}</span>
+                    <div style={{fontSize:11,color:"#12406f",fontWeight:700,textTransform:"uppercase",marginTop:1}}>
+                      <span style={{background:"#e9f2fb",color:"#12406f",borderRadius:10,padding:"1px 7px",fontSize:10}}>{mat}</span>
                     </div>
                   </div>
                 </div>
@@ -8222,7 +8222,7 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
       {/* ══ COLONNA CENTRALE — Comunicazioni e bacheche ══ */}
       <div style={{flex:1, display:"flex", flexDirection:"column", overflow:"hidden", background:"#fff", borderRight:"1px solid #dde3ea"}}>
         {/* Header */}
-        <div style={{background:"#4ab8d4", color:"#fff", padding:"8px 14px", flexShrink:0, display:"flex", alignItems:"center", gap:8}}>
+        <div style={{background:TEAL_GRAD, color:"#fff", padding:"8px 14px", flexShrink:0, display:"flex", alignItems:"center", gap:8}}>
           <span style={{fontWeight:700, fontSize:14}}>Comunicazioni e bacheche</span>
           <div style={{marginLeft:"auto",display:"flex",gap:6}}>
             <button onClick={onOpenComunicazioni}
@@ -8236,7 +8236,7 @@ function HomeDashboard({docente, classi, classiList, contDB, orario, getSlot, se
         </div>
         {/* Barra filtri */}
         <div style={{padding:"7px 12px",background:"#f0f4f8",borderBottom:"1px solid #dde3ea",display:"flex",gap:8,alignItems:"center",flexShrink:0,flexWrap:"wrap"}}>
-          <button style={{padding:"3px 12px",background:"#4ab8d4",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:11,cursor:"pointer"}}>Att.</button>
+          <button style={{padding:"3px 12px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:11,cursor:"pointer"}}>Att.</button>
           <select style={{border:"1px solid #d1d5db",borderRadius:4,padding:"3px 8px",fontSize:12,fontFamily:FF}}>
             <option>Tutte</option>
           </select>
@@ -9734,7 +9734,7 @@ function Registro({docente,onCambia}) {
       <SubHeader color={TEAL} text="Pagelle / Scrutini" onBack={()=>setActiveTab(null)}/>
 
       {/* Barra periodo + info */}
-      <div style={{padding:"6px 16px",background:"#4ab8d4",display:"flex",gap:16,alignItems:"center",flexShrink:0,borderBottom:"2px solid #2d8faa"}}>
+      <div style={{padding:"6px 16px",background:TEAL_GRAD,display:"flex",gap:16,alignItems:"center",flexShrink:0,borderBottom:"2px solid #134a7c"}}>
         <span style={{color:"#fff",fontWeight:700,fontSize:13}}>Periodo:</span>
         <select value={pgTrim} onChange={e=>setPgTrim(e.target.value)} style={{background:"#fff",color:"#1f2937",padding:"3px 10px",borderRadius:4,fontWeight:700,border:"none",fontSize:13}}>{TRIMESTRI.map(t=><option key={t}>{t}</option>)}</select>
         <span style={{color:"rgba(255,255,255,0.85)",fontSize:12}}>Classe: <b style={{color:"#fff"}}>{classe||"—"}</b></span>
@@ -9754,13 +9754,13 @@ function Registro({docente,onCambia}) {
               <table style={{width:"100%",borderCollapse:"collapse",minWidth:900,fontSize:12}}>
                 <thead>
                   {/* Riga 1: intestazioni principali */}
-                  <tr style={{background:"#4ab8d4",color:"#fff"}}>
-                    <th rowSpan={3} style={{padding:"8px 10px",textAlign:"left",fontWeight:700,fontSize:13,borderRight:"1px solid #2d8faa",whiteSpace:"nowrap",minWidth:160,verticalAlign:"middle"}}>Cognome e Nome</th>
-                    <th colSpan={materieScr.length*3} style={{padding:"6px",textAlign:"center",fontWeight:700,borderRight:"1px solid #2d8faa",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Valutazioni</th>
-                    <th colSpan={2} style={{padding:"6px",textAlign:"center",fontWeight:700,borderRight:"1px solid #2d8faa",background:"#d94040",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Voti Proposti</th>
-                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #2d8faa",verticalAlign:"middle",minWidth:90}}>Assenze</th>
-                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #2d8faa",verticalAlign:"middle",minWidth:160}}>Voto Proposto<br/>Comportamento</th>
-                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #2d8faa",verticalAlign:"middle",minWidth:170}}>Tipo recupero carenza</th>
+                  <tr style={{background:TEAL_GRAD,color:"#fff"}}>
+                    <th rowSpan={3} style={{padding:"8px 10px",textAlign:"left",fontWeight:700,fontSize:13,borderRight:"1px solid #134a7c",whiteSpace:"nowrap",minWidth:160,verticalAlign:"middle"}}>Cognome e Nome</th>
+                    <th colSpan={materieScr.length*3} style={{padding:"6px",textAlign:"center",fontWeight:700,borderRight:"1px solid #134a7c",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Valutazioni</th>
+                    <th colSpan={2} style={{padding:"6px",textAlign:"center",fontWeight:700,borderRight:"1px solid #134a7c",background:"#d94040",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Voti Proposti</th>
+                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #134a7c",verticalAlign:"middle",minWidth:90}}>Assenze</th>
+                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #134a7c",verticalAlign:"middle",minWidth:160}}>Voto Proposto<br/>Comportamento</th>
+                    <th rowSpan={3} style={{padding:"6px 8px",textAlign:"center",fontWeight:700,borderRight:"1px solid #134a7c",verticalAlign:"middle",minWidth:170}}>Tipo recupero carenza</th>
                     <th colSpan={3} style={{padding:"6px",textAlign:"center",fontWeight:700,borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Azioni</th>
                   </tr>
                   {/* Riga 2: materie */}
@@ -9769,13 +9769,13 @@ function Registro({docente,onCambia}) {
                       <th key={m} colSpan={3} style={{padding:"4px 6px",textAlign:"center",fontWeight:700,fontSize:11,borderRight:"1px solid rgba(255,255,255,0.3)",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>{m}</th>
                     ))}
                     <th style={{padding:"4px",textAlign:"center",fontSize:11,borderRight:"1px solid rgba(255,255,255,0.3)",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Scritto</th>
-                    <th style={{padding:"4px",textAlign:"center",fontSize:11,borderRight:"1px solid #2d8faa",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Orale</th>
+                    <th style={{padding:"4px",textAlign:"center",fontSize:11,borderRight:"1px solid #134a7c",borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Orale</th>
                     <th style={{padding:"4px",textAlign:"center",fontSize:11,borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Scheda<br/>carenza/PAI</th>
                     <th style={{padding:"4px",textAlign:"center",fontSize:11,borderBottom:"1px solid rgba(255,255,255,0.3)"}}>Giud.</th>
                     <th style={{padding:"4px",textAlign:"center",fontSize:11}}>Ann.</th>
                   </tr>
                   {/* Riga 3: Scritto/Orale/Media per materia */}
-                  <tr style={{background:"#2d8faa",color:"#fff"}}>
+                  <tr style={{background:"#134a7c",color:"#fff"}}>
                     {materieScr.map(m=>(
                       <React.Fragment key={m}>
                         <th style={{padding:"3px 4px",textAlign:"center",fontSize:10,borderRight:"1px solid rgba(255,255,255,0.2)"}}>Scr.</th>
@@ -9784,7 +9784,7 @@ function Registro({docente,onCambia}) {
                       </React.Fragment>
                     ))}
                     <th style={{padding:"3px",borderRight:"1px solid rgba(255,255,255,0.2)"}}/>
-                    <th style={{padding:"3px",borderRight:"1px solid #2d8faa"}}/>
+                    <th style={{padding:"3px",borderRight:"1px solid #134a7c"}}/>
                     <th style={{padding:"3px"}}/>
                     <th style={{padding:"3px"}}/>
                     <th style={{padding:"3px"}}/>
@@ -9801,7 +9801,7 @@ function Registro({docente,onCambia}) {
                         {/* Nome */}
                         <td style={{padding:"6px 10px",fontWeight:400,fontSize:13,borderRight:"1px solid #e5e7eb",whiteSpace:"nowrap"}}>
                           <div style={{display:"flex",alignItems:"center",gap:6}}>
-                            <span style={{background:"#4ab8d4",color:"#fff",borderRadius:3,padding:"1px 6px",fontSize:11,fontWeight:700}}>{i+1}</span>
+                            <span style={{background:"#12406f",color:"#fff",borderRadius:3,padding:"1px 6px",fontSize:11,fontWeight:700}}>{i+1}</span>
                             {s.cognome} {s.nome}
                           </div>
                         </td>
@@ -9905,7 +9905,7 @@ function Registro({docente,onCambia}) {
       </div>
 
       {/* Modal dettaglio alunno (Scheda/Giudizio/Annotazioni) */}
-      <Modal open={pgOpen&&!!pgSid} onClose={()=>setPgOpen(false)} width={860} headerColor="#4ab8d4"
+      <Modal open={pgOpen&&!!pgSid} onClose={()=>setPgOpen(false)} width={860} headerColor="#12406f"
         title={`Scrutinio — ${students.find(s=>s.id===pgSid)?.cognome||""} ${students.find(s=>s.id===pgSid)?.nome||""}`}
         subtitle={pgTrim+" — Classe "+classe}>
         <div style={{padding:24,fontFamily:FF}}>
@@ -9915,7 +9915,7 @@ function Registro({docente,onCambia}) {
               {/* Tabella voti per materia */}
               <table style={{width:"100%",borderCollapse:"collapse",marginBottom:16,fontSize:13}}>
                 <thead>
-                  <tr style={{background:"#4ab8d4",color:"#fff"}}>
+                  <tr style={{background:TEAL_GRAD,color:"#fff"}}>
                     <th style={{padding:"8px 12px",textAlign:"left",fontWeight:700}}>Materia</th>
                     <th style={{padding:"8px",textAlign:"center",fontWeight:700}}>Media calc.</th>
                     <th style={{padding:"8px",textAlign:"center",fontWeight:700}}>Voto proposto</th>
@@ -10027,13 +10027,13 @@ function Registro({docente,onCambia}) {
               {/* Comportamento + Ammissione */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
                 <div>
-                  <div style={{fontWeight:700,fontSize:13,color:"#4ab8d4",marginBottom:6}}>Voto Comportamento</div>
+                  <div style={{fontWeight:700,fontSize:13,color:"#12406f",marginBottom:6}}>Voto Comportamento</div>
                   <select value={pgBeh} onChange={e=>setPgBeh(e.target.value)} style={{width:"100%",border:"2px solid #4ab8d4",borderRadius:4,padding:"9px 12px",fontWeight:700,fontSize:16,background:"#fff",color:"#1f2937",fontFamily:FF}}>
                     {["10","9","8","7","6","5"].map(v=><option key={v}>{v}</option>)}
                   </select>
                 </div>
                 {TRIMESTRI.indexOf(pgTrim)>0&&<div>
-                  <div style={{fontWeight:700,fontSize:13,color:"#4ab8d4",marginBottom:6}}>Ammissione</div>
+                  <div style={{fontWeight:700,fontSize:13,color:"#12406f",marginBottom:6}}>Ammissione</div>
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={()=>setPgAmmesso(true)} style={{flex:1,padding:"10px",background:pgAmmesso===true?"#5cb85c":"#f3f4f6",color:pgAmmesso===true?"#fff":"#374151",border:"2px solid "+(pgAmmesso===true?"#5cb85c":"#e5e7eb"),borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:13}}>✅ Ammesso</button>
                     <button onClick={()=>setPgAmmesso(false)} style={{flex:1,padding:"10px",background:pgAmmesso===false?"#d94f4f":"#f3f4f6",color:pgAmmesso===false?"#fff":"#374151",border:"2px solid "+(pgAmmesso===false?"#d94f4f":"#e5e7eb"),borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:13}}>❌ Non ammesso</button>
@@ -10043,7 +10043,7 @@ function Registro({docente,onCambia}) {
 
               {/* Giudizio globale / Note */}
               <div style={{marginBottom:16}}>
-                <div style={{fontWeight:700,fontSize:13,color:"#4ab8d4",marginBottom:6}}>Giudizio / Annotazioni</div>
+                <div style={{fontWeight:700,fontSize:13,color:"#12406f",marginBottom:6}}>Giudizio / Annotazioni</div>
                 <textarea value={pgNote} onChange={e=>setPgNote(e.target.value)} rows={3}
                   style={{width:"100%",border:"2px solid #d1d5db",borderRadius:4,padding:"8px",resize:"none",boxSizing:"border-box",fontFamily:FF,fontSize:13}}
                   placeholder="Inserisci giudizio globale o annotazioni riservate..."/>
@@ -10067,19 +10067,19 @@ function Registro({docente,onCambia}) {
       <SubHeader color={TEAL} text="Colloqui con le famiglie" onBack={()=>setActiveTab(null)}/>
       <div style={{flex:1,overflowY:"auto",padding:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontWeight:700,fontSize:15,color:"#0891b2"}}>Ricevimenti programmati — {classe}</div>
-          <button onClick={()=>{setEditColl(null);setCollForm(defColloquio);setCollOpen(true);}} style={{padding:"8px 20px",background:"#0891b2",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>+ Nuovo ricevimento</button>
+          <div style={{fontWeight:700,fontSize:15,color:"#12406f"}}>Ricevimenti programmati — {classe}</div>
+          <button onClick={()=>{setEditColl(null);setCollForm(defColloquio);setCollOpen(true);}} style={{padding:"8px 20px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>+ Nuovo ricevimento</button>
         </div>
         {colloquiDB.length===0
           ?<div style={{background:"#fff",borderRadius:8,border:"1px solid #ddd",padding:"60px 20px",textAlign:"center",color:"#9ca3af"}}>
             <div style={{fontSize:48,marginBottom:12}}>📅</div>
             <div style={{fontWeight:600,fontSize:17,marginBottom:8,color:"#6b7280"}}>Nessun ricevimento programmato</div>
-            <button onClick={()=>{setEditColl(null);setCollForm(defColloquio);setCollOpen(true);}} style={{padding:"8px 24px",background:"#0891b2",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>+ Nuovo ricevimento</button>
+            <button onClick={()=>{setEditColl(null);setCollForm(defColloquio);setCollOpen(true);}} style={{padding:"8px 24px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>+ Nuovo ricevimento</button>
           </div>
           :<div style={{background:"#fff",borderRadius:8,border:"1px solid #ddd",overflow:"hidden"}}>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
-              <thead><tr style={{background:"#f0f9ff",borderBottom:"2px solid #bae6fd"}}>
-                {["Giorno","Orario","Periodo","Max","Modalità","Docente","Stato","Azioni"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",color:"#0891b2",fontWeight:700,fontSize:13}}>{h}</th>)}
+              <thead><tr style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2"}}>
+                {["Giorno","Orario","Periodo","Max","Modalità","Docente","Stato","Azioni"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",color:"#12406f",fontWeight:700,fontSize:13}}>{h}</th>)}
               </tr></thead>
               <tbody>{colloquiDB.map((c,i)=>{
                 const docColloquio=c.docente||docente;
@@ -10089,7 +10089,7 @@ function Registro({docente,onCambia}) {
                   <td style={{padding:"12px 14px",fontWeight:700,fontSize:14}}>{c.giorno}</td>
                   <td style={{padding:"12px 14px",fontSize:13}}>{c.oraInizio} — {c.oraFine}</td>
                   <td style={{padding:"12px 14px",fontSize:13,color:"#6b7280"}}>{c.periodoRipetibilita}</td>
-                  <td style={{padding:"12px 14px",textAlign:"center",fontWeight:700,color:"#0891b2"}}>{c.numeroMax}</td>
+                  <td style={{padding:"12px 14px",textAlign:"center",fontWeight:700,color:"#12406f"}}>{c.numeroMax}</td>
                   <td style={{padding:"12px 14px",fontSize:13}}>{c.modalita}{c.sede&&<span style={{color:"#9ca3af",marginLeft:6,fontSize:12}}>· {c.sede}</span>}</td>
                   <td style={{padding:"12px 14px",fontSize:12}}>
                     <span style={{background:isAltro?"#f59e0b":"#e5e7eb",color:isAltro?"#fff":"#374151",borderRadius:4,padding:"3px 10px",fontWeight:700,display:"inline-flex",alignItems:"center",gap:4}}>
@@ -10098,7 +10098,7 @@ function Registro({docente,onCambia}) {
                   </td>
                   <td style={{padding:"12px 14px"}}><button onClick={()=>setColloquiDB(colloquiDB.map(x=>x.id===c.id?{...x,attivo:!x.attivo}:x))} style={{padding:"4px 14px",background:c.attivo?"#22c55e":"#9ca3af",color:"#fff",border:"none",borderRadius:12,fontWeight:700,fontSize:12,cursor:"pointer"}}>{c.attivo?"Attivo":"Inattivo"}</button></td>
                   <td style={{padding:"12px 14px"}}><div style={{display:"flex",gap:6}}>
-                    <button onClick={()=>{setEditColl(c.id);setCollForm({...c});setCollOpen(true);}} style={{background:"#0891b2",color:"#fff",border:"none",borderRadius:4,padding:"6px 10px",cursor:"pointer",fontSize:12}}>✏️ Modifica</button>
+                    <button onClick={()=>{setEditColl(c.id);setCollForm({...c});setCollOpen(true);}} style={{background:"#12406f",color:"#fff",border:"none",borderRadius:4,padding:"6px 10px",cursor:"pointer",fontSize:12}}>✏️ Modifica</button>
                     <button onClick={()=>{setColloquiDB(colloquiDB.filter(x=>x.id!==c.id));showToast();}} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:4,padding:"6px 10px",cursor:"pointer",fontSize:12}}>🗑️ Elimina</button>
                   </div></td>
                 </tr>
@@ -10283,7 +10283,7 @@ function Registro({docente,onCambia}) {
       <div style={{flex:1,overflowY:"auto",padding:24}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <h2 style={{fontSize:20,fontWeight:700,margin:0}}>Comunicazioni — {classe}</h2>
-          <Btn color="#0891b2" onClick={()=>{
+          <Btn color="#12406f" onClick={()=>{
             setEditComun(null);
             setComunForm({oggetto:"",testo:"",data:todayISO(),destinatariTutti:false,destinatari:[],classiCom:[classe]});
             setComunOpen(true);
@@ -10299,14 +10299,14 @@ function Registro({docente,onCambia}) {
           try{ const h=saved.includes("#rc=")?saved.split("#rc=")[1]:saved.includes("#collega=")?saved.split("#collega=")[1]:saved.trim(); d=JSON.parse(decodeURIComponent(escape(atob(h)))); }catch{}
           if(!d?.comunicazioni?.length) return null;
           return(
-            <div style={{marginBottom:20,background:"#f0f9ff",border:"2px solid #bae6fd",borderRadius:8,overflow:"hidden"}}>
-              <div style={{background:"#0891b2",color:"#fff",padding:"10px 16px",fontWeight:700,fontSize:14}}>
+            <div style={{marginBottom:20,background:"#eef4fb",border:"2px solid #c5d9f2",borderRadius:8,overflow:"hidden"}}>
+              <div style={{background:"#12406f",color:"#fff",padding:"10px 16px",fontWeight:700,fontSize:14}}>
                 📢 Comunicazioni di {d.docente} — {d.classe}
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:8,padding:12}}>
                 {d.comunicazioni.map((c,i)=>(
-                  <div key={i} style={{background:"#fff",borderRadius:6,border:"1px solid #bae6fd",padding:12}}>
-                    <div style={{fontWeight:700,fontSize:14,color:"#0891b2",marginBottom:2}}>{c.oggetto||"(senza oggetto)"}</div>
+                  <div key={i} style={{background:"#fff",borderRadius:6,border:"1px solid #c5d9f2",padding:12}}>
+                    <div style={{fontWeight:700,fontSize:14,color:"#12406f",marginBottom:2}}>{c.oggetto||"(senza oggetto)"}</div>
                     <div style={{fontSize:12,color:"#9ca3af",marginBottom:4}}>{c.data}</div>
                     {c.testo&&<div style={{fontSize:13,color:"#374151",lineHeight:1.5}}>{c.testo}</div>}
                   </div>
@@ -10455,7 +10455,7 @@ function Registro({docente,onCambia}) {
               {classiList.map(cl=>{
                 const sel=(comunForm.classiCom||[]).includes(cl);
                 return(
-                  <div key={cl} style={{display:"grid",gridTemplateColumns:"40px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#f0f9ff":"#fff",cursor:"pointer"}} onClick={()=>setComunForm(f=>({...f,classiCom:sel?(f.classiCom||[]).filter(x=>x!==cl):[...(f.classiCom||[]),cl]}))}>
+                  <div key={cl} style={{display:"grid",gridTemplateColumns:"40px 1fr",borderBottom:"1px solid #f3f4f6",background:sel?"#eef4fb":"#fff",cursor:"pointer"}} onClick={()=>setComunForm(f=>({...f,classiCom:sel?(f.classiCom||[]).filter(x=>x!==cl):[...(f.classiCom||[]),cl]}))}>
                     <div style={{padding:"8px",textAlign:"center",borderRight:"1px solid #eee",display:"flex",alignItems:"center",justifyContent:"center"}}>
                       <input type="checkbox" checked={sel} readOnly style={{cursor:"pointer"}}/>
                     </div>
@@ -10726,7 +10726,7 @@ function Registro({docente,onCambia}) {
                         {/* Info */}
                         <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                           <button onClick={()=>setSchedaStudente(s)}
-                            style={{width:26,height:26,background:"#29b6d8",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
+                            style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
                             <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                               <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
                             </div>
@@ -10994,12 +10994,12 @@ function Registro({docente,onCambia}) {
               {/* Riga 1 */}
               <tr style={{background:"#fff",borderBottom:"1px solid #e5e7eb"}}>
                 <th rowSpan={2} style={{padding:"8px 12px",textAlign:"left",fontWeight:700,color:"#374151",borderRight:"1px solid #e5e7eb",minWidth:160,verticalAlign:"bottom",fontSize:13}}>Cognome e Nome</th>
-                <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#29b6d8",fontSize:12,borderRight:"1px solid #e5e7eb",width:40,verticalAlign:"bottom"}}>Info</th>
+                <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#12406f",fontSize:12,borderRight:"1px solid #e5e7eb",width:40,verticalAlign:"bottom"}}>Info</th>
                 <th colSpan={TIPI_QR.length*3} style={{padding:"6px",textAlign:"center",fontWeight:700,color:"#374151",background:"#e8f5e9",borderRight:"1px solid #e5e7eb",fontSize:13,borderBottom:"1px solid #e5e7eb"}}>Valutazioni</th>
                 <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:TEAL,fontSize:12,borderRight:"1px solid #e5e7eb",minWidth:90,verticalAlign:"bottom"}}>Tutti<br/><span style={{fontWeight:400,fontSize:10,color:"#9ca3af"}}>Data - Media</span></th>
                 <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#22c55e",fontSize:12,borderRight:"1px solid #e5e7eb",minWidth:60,verticalAlign:"bottom"}}>Ore<br/>Lez.</th>
                 <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#ef4444",fontSize:12,borderRight:"1px solid #e5e7eb",minWidth:60,verticalAlign:"bottom"}}>Ore<br/>Ass.</th>
-                <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#0891b2",fontSize:12,minWidth:80,verticalAlign:"bottom"}}>Colloqui<br/><span style={{fontWeight:400,fontSize:10,color:"#9ca3af"}}>Data - Num.</span></th>
+                <th rowSpan={2} style={{padding:"8px 6px",textAlign:"center",fontWeight:700,color:"#12406f",fontSize:12,minWidth:80,verticalAlign:"bottom"}}>Colloqui<br/><span style={{fontWeight:400,fontSize:10,color:"#9ca3af"}}>Data - Num.</span></th>
               </tr>
               {/* Riga 2: nomi tipi */}
               <tr style={{background:"#e8f5e9",borderBottom:"2px solid #c8e6c9"}}>
@@ -11023,7 +11023,7 @@ function Registro({docente,onCambia}) {
                     {/* Info — colonna separata */}
                     <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                       <button onClick={()=>setSchedaStudente(s)}
-                        style={{width:26,height:26,background:"#29b6d8",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
+                        style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
                         <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                           <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
                         </div>
@@ -12326,14 +12326,14 @@ function Registro({docente,onCambia}) {
               {/* MENU VELOCE — subito dopo il bottone Programmazione */}
               <div style={{display:"flex",flexDirection:"column",alignItems:"stretch",width:222,flexShrink:0}}>
               <div style={{
-                background:"linear-gradient(180deg,#4ab8d4 0%,#2d8faa 100%)",
+                background:"linear-gradient(180deg,#4ab8d4 0%,#134a7c 100%)",
                 borderRadius: menuVeloceExpanded ? "6px 6px 0 0" : "6px",
                 padding:"9px 14px",
                 height:44,
                 display:"flex",alignItems:"center",justifyContent:"space-between",
                 cursor:"pointer",
                 boxShadow:"0 3px 8px rgba(0,0,0,0.18)",
-                border:"1px solid #2a7e9a",
+                border:"1px solid #134a7c",
               }} onClick={()=>setMenuVeloceExpanded(v=>!v)}>
                 <div style={{display:"flex",alignItems:"center",gap:7}}>
                   <span style={{fontSize:15,color:"#ffe066"}}>☆</span>
@@ -12347,7 +12347,7 @@ function Registro({docente,onCambia}) {
                   borderRadius:"0 0 6px 6px",
                   overflow:"hidden",
                   boxShadow:"0 4px 16px rgba(0,0,0,0.22)",
-                  border:"1px solid #2a7e9a",
+                  border:"1px solid #134a7c",
                   borderTop:"none",
                   zIndex:50,
                   position:"relative",
