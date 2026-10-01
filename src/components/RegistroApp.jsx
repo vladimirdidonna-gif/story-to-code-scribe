@@ -10028,7 +10028,7 @@ function Registro({docente,onCambia}) {
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
                 <div>
                   <div style={{fontWeight:700,fontSize:13,color:"#12406f",marginBottom:6}}>Voto Comportamento</div>
-                  <select value={pgBeh} onChange={e=>setPgBeh(e.target.value)} style={{width:"100%",border:"2px solid #4ab8d4",borderRadius:4,padding:"9px 12px",fontWeight:700,fontSize:16,background:"#fff",color:"#1f2937",fontFamily:FF}}>
+                  <select value={pgBeh} onChange={e=>setPgBeh(e.target.value)} style={{width:"100%",border:"2px solid #12406f",borderRadius:4,padding:"9px 12px",fontWeight:700,fontSize:16,background:"#fff",color:"#1f2937",fontFamily:FF}}>
                     {["10","9","8","7","6","5"].map(v=><option key={v}>{v}</option>)}
                   </select>
                 </div>
@@ -12326,7 +12326,7 @@ function Registro({docente,onCambia}) {
               {/* MENU VELOCE — subito dopo il bottone Programmazione */}
               <div style={{display:"flex",flexDirection:"column",alignItems:"stretch",width:222,flexShrink:0}}>
               <div style={{
-                background:"linear-gradient(180deg,#4ab8d4 0%,#134a7c 100%)",
+                background:"linear-gradient(180deg,#0a2c52 0%,#134a7c 55%,#7fa8d4 100%)",
                 borderRadius: menuVeloceExpanded ? "6px 6px 0 0" : "6px",
                 padding:"9px 14px",
                 height:44,
