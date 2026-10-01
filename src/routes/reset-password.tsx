@@ -17,7 +17,7 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
 
-const TEAL = "#0d7d7d";
+const TEAL = "#12406f";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ function ResetPassword() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f9f9", padding: 16, fontFamily: "system-ui, sans-serif" }}>
+    <main style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f6fc", padding: 16, fontFamily: "system-ui, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 380, background: "#fff", borderRadius: 12, padding: 26, boxShadow: "0 8px 30px rgba(0,0,0,.12)" }}>
         <h1 style={{ fontSize: 20, fontWeight: 800, color: TEAL, marginBottom: 14 }}>Nuova password</h1>
         <input
