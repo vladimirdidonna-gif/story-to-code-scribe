@@ -141,4 +141,9 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  /* Bottoni più arrotondati (verdi, rossi, blu — ovunque nel registro) */
+  button:not([style*="50%"]) {
+    border-radius: 14px !important;
+  }
 }

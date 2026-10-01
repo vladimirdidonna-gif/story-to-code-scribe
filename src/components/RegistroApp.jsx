@@ -6097,7 +6097,7 @@ function DiarioDocente({docente, classe, materia, students, cGet, cSet, showToas
 
   const stampaDiario = () => {
     const win=window.open("","_blank"); if(!win) return;
-    win.document.write(`<html><head><title>Diario</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px}h2{color:#4e9fa0}table{width:100%;border-collapse:collapse}th{background:#4e9fa0;color:#fff;padding:8px 12px;text-align:left}td{padding:8px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top}tr:nth-child(even)td{background:#f9fafb}</style></head><body><h2>Diario Docente — ${materia} — Classe ${classe}</h2><p>Totali lezioni svolte: <b>${totLezioni}</b> (di cui <b>${totMie}</b> svolte da me.)</p><table><thead><tr><th>Data</th><th>Argomenti</th><th>Compiti</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${fmtDataIT(r.data)}</td><td>${r.argomenti.map(a=>a.testo).join("<br/>")}</td><td>${r.compiti.map(c=>c.testo).join("<br/>")}</td></tr>`).join("")}</tbody></table></body></html>`);
+    win.document.write(`<html><head><title>Diario</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px}h2{color:#12406f}table{width:100%;border-collapse:collapse}th{background:#12406f;color:#fff;padding:8px 12px;text-align:left}td{padding:8px 12px;border-bottom:1px solid #e5e7eb;vertical-align:top}tr:nth-child(even)td{background:#f9fafb}</style></head><body><h2>Diario Docente — ${materia} — Classe ${classe}</h2><p>Totali lezioni svolte: <b>${totLezioni}</b> (di cui <b>${totMie}</b> svolte da me.)</p><table><thead><tr><th>Data</th><th>Argomenti</th><th>Compiti</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${fmtDataIT(r.data)}</td><td>${r.argomenti.map(a=>a.testo).join("<br/>")}</td><td>${r.compiti.map(c=>c.testo).join("<br/>")}</td></tr>`).join("")}</tbody></table></body></html>`);
     win.document.close(); win.print();
   };
 
@@ -10934,8 +10934,8 @@ function Registro({docente,onCambia}) {
       const win=window.open("","_blank"); if(!win) return;
       win.document.write(`<html><head><title>Quadro Riepilogativo</title>
       <style>body{font-family:Helvetica,Arial,sans-serif;font-size:12px;padding:20px}
-      h2{color:#4e9fa0}table{width:100%;border-collapse:collapse}
-      th{background:#4e9fa0;color:#fff;padding:7px 10px;text-align:center;font-size:11px}
+      h2{color:#12406f}table{width:100%;border-collapse:collapse}
+      th{background:#12406f;color:#fff;padding:7px 10px;text-align:center;font-size:11px}
       td{padding:7px 10px;border-bottom:1px solid #e5e7eb;text-align:center;vertical-align:middle}
       tr:nth-child(even)td{background:#f9fafb}.nome{text-align:left;font-weight:700}</style>
       </head><body>
