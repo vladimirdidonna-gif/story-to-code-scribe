@@ -4293,10 +4293,10 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                           </td>
                           <td style={{padding:"6px 10px"}}>
                             <div style={{display:"flex",gap:4}}>
-                              <button onClick={()=>{ setEventoEdit(a); setEventoOpen(true); }}
-                                style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"3px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                              <button onClick={()=>onEliminaAssenza&&onEliminaAssenza(s.id,a.id)}
-                                style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"3px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                              <button onClick={()=>{ setEventoEdit(a); setEventoOpen(true); }} title="Modifica"
+                                style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Pencil size={14}/></button>
+                              <button onClick={()=>onEliminaAssenza&&onEliminaAssenza(s.id,a.id)} title="Elimina"
+                                style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Trash2 size={14}/></button>
                             </div>
                           </td>
                         </tr>
@@ -4357,8 +4357,8 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                           <td style={{padding:"9px 14px",fontSize:13,color:"#374151",wordBreak:"break-word",whiteSpace:"pre-wrap",overflowWrap:"anywhere",borderRight:"1px solid #e5e7eb",lineHeight:1.5}}>{item.argomenti||""}</td>
                           <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
                             <div style={{display:"flex",gap:4}}>
-                              <button onClick={()=>onOpenVerifica&&onOpenVerifica(s.id, item)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                              <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("verifiche", item.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                              <button onClick={()=>onOpenVerifica&&onOpenVerifica(s.id, item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Pencil size={14}/></button>
+                              <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("verifiche", item.id)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Trash2 size={14}/></button>
                             </div>
                           </td>
                         </tr>
@@ -4391,8 +4391,8 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
                         <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>onOpenContenuto&&onOpenContenuto("lezioni", s.id, item)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                      <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("lezioni", item.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                          <button onClick={()=>onOpenContenuto&&onOpenContenuto("lezioni", s.id, item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Pencil size={14}/></button>
+                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("lezioni", item.id)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Trash2 size={14}/></button>
                         </div>
                       </td>
                     </tr>
@@ -4423,8 +4423,8 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
                         <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>onOpenContenuto&&onOpenContenuto("compiti", s.id, item)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("compiti", item.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                          <button onClick={()=>onOpenContenuto&&onOpenContenuto("compiti", s.id, item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Pencil size={14}/></button>
+                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto("compiti", item.id)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Trash2 size={14}/></button>
                         </div>
                       </td>
                     </tr>
@@ -4464,8 +4464,8 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                       </td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
                         <div style={{display:"flex",gap:4}}>
-                          <button onClick={()=>n._tipo==="annotazioni"?onOpenAnnotazione&&onOpenAnnotazione(s.id, n):onOpenNota&&onOpenNota(s.id, n)} style={{background:HDR,color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>✏️ Modifica</button>
-                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto(n._tipo, n.id)} style={{background:"#ef4444",color:"#fff",border:"none",borderRadius:3,padding:"4px 9px",cursor:"pointer",fontSize:11,fontWeight:700}}>🗑️</button>
+                          <button onClick={()=>n._tipo==="annotazioni"?onOpenAnnotazione&&onOpenAnnotazione(s.id, n):onOpenNota&&onOpenNota(s.id, n)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Pencil size={14}/></button>
+                          <button onClick={()=>onDeleteContenuto&&onDeleteContenuto(n._tipo, n.id)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,padding:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Trash2 size={14}/></button>
                         </div>
                       </td>
                     </tr>
