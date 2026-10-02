@@ -536,10 +536,10 @@ function Toast({msg,onDone}) {
   useEffect(()=>{
     // Trigger l'animazione di entrata
     const t1 = setTimeout(()=>setVisible(true), 10);
-    // Dopo 2 secondi esce
-    const t2 = setTimeout(()=>{ setVisible(false); }, 2000);
+    // Dopo 3 secondi esce
+    const t2 = setTimeout(()=>{ setVisible(false); }, 3000);
     // Dopo l'uscita rimuove il componente
-    const t3 = setTimeout(onDone, 2400);
+    const t3 = setTimeout(onDone, 3400);
     return()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   },[]);
   return (
@@ -5299,7 +5299,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
           </div>
           <div style={{padding:isMobile?"8px 10px 6px":"12px 16px 8px",fontWeight:700,fontSize:isMobile?13:15,color:"#12406f"}}>Classi ({list.length})</div>
           <div style={{padding:"0 12px 12px",display:"flex",gap:6}}><Inp value={nuova} onChange={e=>setNuova(e.target.value)} placeholder="es. 4A" style={{flex:1}} onKeyDown={e=>e.key==="Enter"&&addClasse()}/><button onClick={addClasse} style={{padding:isMobile?"6px 10px":"8px 14px",background:"#12406f",color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:isMobile?16:20}}>+</button></div>
-          <div style={{flex:1,overflowY:"auto"}}>{list.map(nome=>{const isCoord=getMeta(nome).coordinatore;const nMat=(getMeta(nome).materie||[]).length;return(<div key={nome} onClick={()=>{setSel(nome);setEditId(null);setForm({nome:"",cognome:""}); }} style={{display:"flex",alignItems:"center",padding:isMobile?"8px 10px":"12px 16px",cursor:"pointer",background:sel===nome?"#ccfbf1":"transparent",borderLeft:sel===nome?"4px solid #0f766e":"4px solid transparent",borderBottom:"1px solid #f3f4f6"}}>
+          <div style={{flex:1,overflowY:"auto"}}>{list.map(nome=>{const isCoord=getMeta(nome).coordinatore;const nMat=(getMeta(nome).materie||[]).length;return(<div key={nome} onClick={()=>{setSel(nome);setEditId(null);setForm({nome:"",cognome:""}); }} style={{display:"flex",alignItems:"center",padding:isMobile?"8px 10px":"12px 16px",cursor:"pointer",background:sel===nome?"#e9f2fb":"transparent",borderLeft:sel===nome?"4px solid #12406f":"4px solid transparent",borderBottom:"1px solid #f3f4f6"}}>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontWeight:700,fontSize:isMobile?13:15}}>{nome}</div>
               <div style={{fontSize:11,color:"#6b7280",display:isMobile?"none":"block"}}>{nMat>0?`${nMat} mater${nMat===1?"ia":"ie"}`:""}{isCoord?` ⭐`:""}</div>
