@@ -4527,7 +4527,7 @@ function StudentRow({s,i,isAssente,ng,onAssenzaChange,selezionato,onSelect,assen
       {/* Bottone ℹ */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderLeft:"1px solid #e5e7eb",marginRight:4}}>
         <button onClick={e=>{e.stopPropagation();onOpenScheda();}}
-          style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,
+          style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,
             cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
             flexShrink:0,boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
           <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",
@@ -4772,8 +4772,8 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
   const ComandiTd = ({sec,item,bg="#fff"}) => (
     <td style={{padding:"4px 6px",textAlign:"center",whiteSpace:"nowrap",verticalAlign:"middle",position:"sticky",right:0,background:bg,boxShadow:"-3px 0 6px rgba(0,0,0,0.06)",zIndex:1,borderBottom:TBL_BORDER}}>
       <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"center"}}>
-        <button onClick={()=>onEdit(sec,item)} title="Modifica" style={{width:28,height:28,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={13}/></button>
-        <button onClick={()=>onDelete(sec,item)} title="Elimina" style={{width:28,height:28,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={13}/></button>
+        <button onClick={()=>onEdit(sec,item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={14}/></button>
+        <button onClick={()=>onDelete(sec,item)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={14}/></button>
       </div>
     </td>
   );
@@ -4870,8 +4870,8 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                 {(item.inseritoDa||docente)===docente&&(
                   <td style={{padding:"4px 6px",textAlign:"center",whiteSpace:"nowrap",verticalAlign:"middle",position:"sticky",right:0,background:i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,boxShadow:"-3px 0 6px rgba(0,0,0,0.06)",zIndex:1,borderBottom:TBL_BORDER}}>
                     <div style={{display:"flex",flexDirection:"row",gap:3,alignItems:"center",justifyContent:"center"}}>
-                      <button onClick={()=>onEdit("lezioni",item)} title="Modifica" style={{width:28,height:28,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={13}/></button>
-                      <button onClick={()=>onDelete("lezioni",item)} title="Elimina" style={{width:28,height:28,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={13}/></button>
+                      <button onClick={()=>onEdit("lezioni",item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={14}/></button>
+                      <button onClick={()=>onDelete("lezioni",item)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={14}/></button>
                     </div>
                   </td>
                 )}
@@ -4975,8 +4975,8 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                             {(item.inseritoDa||docente)===docente ? (
                               <td style={{padding:"4px 6px",textAlign:"center",whiteSpace:"nowrap",verticalAlign:"middle",position:"sticky",right:0,background:i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,boxShadow:"-3px 0 6px rgba(0,0,0,0.06)",zIndex:1,borderBottom:TBL_BORDER}}>
                                 <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"center"}}>
-                                  <button onClick={()=>onEdit("note",item)} title="Modifica" style={{width:28,height:28,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={13}/></button>
-                                  <button onClick={()=>onDelete("note",item)} title="Elimina" style={{width:28,height:28,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={13}/></button>
+                                  <button onClick={()=>onEdit("note",item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={14}/></button>
+                                  <button onClick={()=>onDelete("note",item)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={14}/></button>
                                 </div>
                               </td>
                             ) : (
@@ -5046,8 +5046,8 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                             {(item.inseritoDa||docente)===docente ? (
                               <td style={{padding:"4px 6px",textAlign:"center",whiteSpace:"nowrap",verticalAlign:"middle",position:"sticky",right:0,background:i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,boxShadow:"-3px 0 6px rgba(0,0,0,0.06)",zIndex:1,borderBottom:TBL_BORDER}}>
                                 <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"center"}}>
-                                  <button onClick={()=>onEdit("annotazioni",item)} title="Modifica" style={{width:28,height:28,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={13}/></button>
-                                  <button onClick={()=>onDelete("annotazioni",item)} title="Elimina" style={{width:28,height:28,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={13}/></button>
+                                  <button onClick={()=>onEdit("annotazioni",item)} title="Modifica" style={{width:34,height:34,background:"#5cb85c",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Pencil size={14}/></button>
+                                  <button onClick={()=>onDelete("annotazioni",item)} title="Elimina" style={{width:34,height:34,background:"#d9534f",color:"#fff",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}><Trash2 size={14}/></button>
                                 </div>
                               </td>
                             ) : (
@@ -10726,7 +10726,7 @@ function Registro({docente,onCambia}) {
                         {/* Info */}
                         <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                           <button onClick={()=>setSchedaStudente(s)}
-                            style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
+                            style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
                             <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                               <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
                             </div>
@@ -11023,7 +11023,7 @@ function Registro({docente,onCambia}) {
                     {/* Info — colonna separata */}
                     <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                       <button onClick={()=>setSchedaStudente(s)}
-                        style={{width:26,height:26,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
+                        style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
                         <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
                           <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
                         </div>
@@ -11982,7 +11982,7 @@ function Registro({docente,onCambia}) {
                   {/* Bottone Info (celeste ℹ) */}
                   <td style={{padding:"6px",textAlign:"center",borderRight:"1px solid #ddd"}}>
                     <button onClick={()=>setSchedaStudente(s)}
-                      style={{width:30,height:30,background:"#31b0d5",border:"none",borderRadius:4,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}>
+                      style={{width:34,height:34,background:"#31b0d5",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}>
                       <span style={{color:"#fff",fontWeight:900,fontSize:14}}>ℹ</span>
                     </button>
                   </td>
