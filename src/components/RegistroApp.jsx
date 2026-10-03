@@ -4527,13 +4527,10 @@ function StudentRow({s,i,isAssente,ng,onAssenzaChange,selezionato,onSelect,assen
       {/* Bottone ℹ */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderLeft:"1px solid #e5e7eb",marginRight:4}}>
         <button onClick={e=>{e.stopPropagation();onOpenScheda();}}
-          style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,
+          style={{width:34,height:34,background:"#31b0d5",border:"none",borderRadius:3,
             cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
-            flexShrink:0,boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
-          <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",
-            display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
-          </div>
+            flexShrink:0,boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}>
+          <span style={{color:"#fff",fontWeight:900,fontSize:14}}>ℹ</span>
         </button>
       </div>
 
@@ -10726,10 +10723,8 @@ function Registro({docente,onCambia}) {
                         {/* Info */}
                         <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                           <button onClick={()=>setSchedaStudente(s)}
-                            style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
-                            <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                              <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
-                            </div>
+                            style={{width:34,height:34,background:"#31b0d5",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}>
+                            <span style={{color:"#fff",fontWeight:900,fontSize:14}}>ℹ</span>
                           </button>
                         </td>
                         {/* Media */}
@@ -11023,10 +11018,8 @@ function Registro({docente,onCambia}) {
                     {/* Info — colonna separata */}
                     <td style={{padding:"6px 4px",textAlign:"center",borderRight:"1px solid #e5e7eb"}}>
                       <button onClick={()=>setSchedaStudente(s)}
-                        style={{width:34,height:34,background:"#12406f",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.18)"}}>
-                        <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                          <span style={{color:"#fff",fontWeight:900,fontSize:11,lineHeight:1,fontFamily:"Georgia,serif",fontStyle:"italic"}}>i</span>
-                        </div>
+                        style={{width:34,height:34,background:"#31b0d5",border:"none",borderRadius:3,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto",boxShadow:"0 1px 3px rgba(0,0,0,0.2)"}}>
+                        <span style={{color:"#fff",fontWeight:900,fontSize:14}}>ℹ</span>
                       </button>
                     </td>
                     {/* Colonne per tipo */}
