@@ -26,6 +26,9 @@ const FF = "Helvetica,Arial,sans-serif";
 const VERDE = "#1d9e52";
 const VERDE_LIGHT = "#e6f7ee";
 const VERDE_BORDER = "#7fd4a8";
+// Verde acqua — colore dei voti positivi nelle Info studenti
+const VERDE_ACQUA = "#14b8a6";
+const VERDE_ACQUA_SCURO = "#0d9488";
 const TEAL = "#12406f";
 const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
 const TEAL_LIGHT = "#e9f2fb";
@@ -1479,7 +1482,7 @@ function SchédaVotiStudente({s, votiDB, classe, docente, onClose, pgTrim}) {
 function VotoCerchio({voto, faMedia, peso}) {
   if(!voto || voto === " " || voto === "") return null;
   const s = String(voto).trim();
-  // Stessa logica del registro docente — verde allineato a VERDE (#1d9e52)
+  // Nelle Info studenti i voti positivi sono verde acqua
   let bg;
   if(!faMedia) {
     bg = "#3b82f6"; // blu — non fa media
@@ -1490,7 +1493,7 @@ function VotoCerchio({voto, faMedia, peso}) {
     } else if(n < 6) {
       bg = "#ef4444"; // rosso
     } else {
-      bg = VERDE; // verde ufficiale del registro (#1d9e52)
+      bg = VERDE_ACQUA; // verde acqua
     }
   }
   const fontSize = s.length > 3 ? 18 : s.length === 3 ? 22 : s.length === 2 ? 26 : 32;
@@ -2519,7 +2522,7 @@ function RegistroWebTab({s, contDB, assenzeDB, votiDB, classe, docente}) {
               if(ev.tipo==="voto"){
                 // Stile immagine 2/4: numero colorato (verde/rosso/blu) a sx + titolo + descrizione
                 const n = parseVoto(ev.voto);
-                const col = !ev.faMedia ? "#3b82f6" : (!isNaN(n) && n<6) ? "#ef4444" : "#16a34a";
+                const col = !ev.faMedia ? "#3b82f6" : (!isNaN(n) && n<6) ? "#ef4444" : VERDE_ACQUA_SCURO;
                 return (
                   <div key={ev.id} style={{borderBottom:"1px solid #e5e7eb",padding:"14px 18px",display:"flex",alignItems:"flex-start",gap:14,background:i%2===0?"#fff":"#fafafa"}}>
                     <span style={{color:col,fontWeight:800,fontSize:20,minWidth:28,textAlign:"center",flexShrink:0}}>{votoDisplay(ev.voto)}</span>
@@ -2915,7 +2918,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
           perMediaMat.forEach(v=>{ const w=pesoVal(v.peso); sv+=parseVoto(v.voto)*w; sp+=w; });
           mediaPondMat = sp>0 ? sv/sp : null;
         }
-        const colMedia = m => m===null ? "#9ca3af" : (m<6 ? "#ef4444" : "#16a34a");
+        const colMedia = m => m===null ? "#9ca3af" : (m<6 ? "#ef4444" : VERDE_ACQUA_SCURO);
 
         return (
           <div style={{fontFamily:FF}}>
@@ -3025,7 +3028,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       const votoColor2 = (v) => {
         const n = parseInt(v);
         if(isNaN(n)) return "#1f2937";
-        return n < 6 ? "#e53935" : "#22c55e";
+        return n < 6 ? "#e53935" : VERDE_ACQUA_SCURO;
       };
 
       // Conta carenze totali
