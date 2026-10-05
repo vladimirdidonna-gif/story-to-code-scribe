@@ -11692,7 +11692,6 @@ function Registro({docente,onCambia}) {
 
       {/* DESTINATARI per annotazioni — layout identico all'immagine */}
           {contOpen==="annotazioni"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
-          )}
 
           <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:4}}>
             <button onClick={salvaContenuto} style={{padding:"8px 24px",background:BTN_GREEN,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>💾 Salva</button>
