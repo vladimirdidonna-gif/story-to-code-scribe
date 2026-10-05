@@ -8483,7 +8483,7 @@ function Registro({docente,onCambia}) {
   const [mpSession,setMpSession]   = useState(null);
   const [azzeraMediaOpen,setAzzeraMediaOpen] = useState(false);
   const [azzeraMediaTrim,setAzzeraMediaTrim] = useState("1° Quadrimestre");
-  const defCont={testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:false,destinatari:[]};
+  const defCont={testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:true,destinatari:[]};
   const getDefFirma=()=>{const mat=getMaterieClasse(classe);return getDefFirmaBase(mat.length>0?mat[0]:materia);};
   const defColloquio={periodoRipetibilita:"Ogni settimana",numeroMax:5,modalita:"Misto",tuttiAlunni:true,attivo:true,dataInizio:"",dataFine:"",giorno:"Lunedì",oraInizio:"15:00",oraFine:"17:00",sede:"",nonDispDal:"",nonDispAl:"",note:"",linkVideo:"",classiSel:[]};
   const [contOpen,setContOpen]   = useState(null);
@@ -9293,7 +9293,7 @@ function Registro({docente,onCambia}) {
     });
     showToast();setMpOpen(false);setMpVoti({});setMpSession(null);
   };
-  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:item.destinatariTutti||false,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:false,destinatari:[],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
+  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:!!item.destinatariTutti||!(item.destinatari||[]).length,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:true,destinatari:[],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
   const salvaContenuto=()=>{
     const dataLezione = contForm.data||new Date().toLocaleDateString("it-IT");
     let ore = "";
@@ -11680,7 +11680,6 @@ function Registro({docente,onCambia}) {
           </div>}
 
           {contOpen==="note"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
-          </div>}
 
               {/* LINK per annotazioni — sopra Tutta la classe */}
           {contOpen==="annotazioni"&&<div>
