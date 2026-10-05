@@ -31,7 +31,6 @@ const VERDE_ACQUA = "#14b8a6";
 const VERDE_ACQUA_SCURO = "#0d9488";
 const TEAL = "#12406f";
 const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
-const SEZ_COL = "#1A6D78";
 const TEAL_LIGHT = "#e9f2fb";
 const BTN_GREEN = "#5cb85c";
 const BTN_BLUE = "#337ab7";
@@ -854,20 +853,6 @@ function AxiosDateInput({value, onChange, style, placeholder}) {
 }
 
 // Toggle SÌ/NO globale — usato in tutto il registro
-
-// Tendina destinatari: "Tutta la classe" (default) / "Solo per" + lista alunni
-function DestSelect({tutti, onTutti, sel, onSel, students}) {
-  const lista=[...(students||[])].sort((a,b)=>(a.cognome||"").localeCompare(b.cognome||""));
-  return (<div style={{flex:1,minWidth:200}}>
-    <select value={tutti?"tutti":"solo"} onChange={e=>onTutti(e.target.value==="tutti")} style={{width:"100%",padding:"7px 10px",border:"1px solid #ccc",borderRadius:6,fontSize:13,background:"#fff",cursor:"pointer"}}>
-      <option value="tutti">Tutta la classe</option>
-      <option value="solo">Solo per</option>
-    </select>
-    {!tutti&&<div style={{marginTop:6,border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:160,overflowY:"auto"}}>
-      {lista.map(s=>{const on=(sel||[]).includes(s.id);return(<div key={s.id} onClick={()=>onSel(on?(sel||[]).filter(x=>x!==s.id):[...(sel||[]),s.id])} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:on?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(on?TEAL:"#bbb"),borderRadius:2,background:on?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{on&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}
-    </div>}
-  </div>);
-}
 function ToggleSiNo({value, onChange, label}) {
   return (
     <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -4204,7 +4189,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
   const TBL_BORDER = "1px solid #e8edf2";
 
   const SezioneHdr = ({label, onAdd}) => (
-    <div style={{background:SEZ_COL,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
       <span style={{fontWeight:700,fontSize:13}}>{label}</span>
       {onAdd&&(
         <button onClick={onAdd} style={{padding:"3px 10px",background:"#22c55e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
@@ -4404,7 +4389,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                   ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :argomenti.filter(i=>toISOFast(i.data)===regData).map((item,i)=>(
                     <tr key={item.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
-                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat?<span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat}</span>:""}</td>
+                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat||""}</td>
                       <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</td>
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
@@ -4436,7 +4421,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                   ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :compiti.filter(i=>toISOFast(i.data)===regData).map((item,i)=>(
                     <tr key={item.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
-                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat?<span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat}</span>:""}</td>
+                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat||""}</td>
                       <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</td>
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
@@ -4728,7 +4713,7 @@ function ListaAlunniPanel({students,classe,TEAL,TEAL_LIGHT,isRegToday,regData,se
 
 function RegistroClassePanel({students, materia, getCont, saveCont, deleteContById, openFirma, openVerifica, openContenuto, docente, regData, regDataNav, setRegDataNav, contDB, classe, classiList, showFirmePanel, setShowFirmePanel}) {
 
-  const HDR = SEZ_COL;
+  const HDR = TEAL;
 
   const partTxt = (item) => {
     if(!item.partecipazione || item.partecipazione==="tutti") return null;
@@ -4872,7 +4857,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
             lezioniTutte.length===0 ? [] : lezioniTutte.map((item,i)=>(
               <tr key={item.id} style={{borderBottom:TBL_BORDER,background:item._daCollega?"#fffbeb":i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,verticalAlign:"top"}}>
                 <Td style={{fontWeight:700,textTransform:"uppercase",color:"#1f2937",whiteSpace:"nowrap",minWidth:120,borderRight:TBL_BORDER}}>
-                  <span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item.materiaLezione||materia}</span>
+                  {item.materiaLezione||materia}
                   {item._daCollega&&<div style={{fontSize:9,background:"#f59e0b",color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:700,marginTop:2,display:"inline-block"}}>COLLEGA</div>}
                 </Td>
                 <Td style={{whiteSpace:"nowrap",minWidth:150,borderRight:TBL_BORDER}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</Td>
@@ -4906,7 +4891,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                   <tr key={item.id} style={{borderBottom:TBL_BORDER,background:item._daCollega?"#fffbeb":i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,verticalAlign:"middle"}}>
                     {/* Materia */}
                     <Td style={{fontWeight:700,textTransform:"uppercase",color:"#1f2937",whiteSpace:"nowrap",minWidth:120,borderRight:TBL_BORDER}}>
-                      <span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat||item.materiaLezione||materia}</span>
+                      {item._mat||item.materiaLezione||materia}
                       {item._daCollega&&<div style={{fontSize:9,background:"#f59e0b",color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:700,marginTop:2,display:"inline-block"}}>COLLEGA</div>}
                     </Td>
                     {/* Compiti assegnati */}
@@ -8483,7 +8468,7 @@ function Registro({docente,onCambia}) {
   const [mpSession,setMpSession]   = useState(null);
   const [azzeraMediaOpen,setAzzeraMediaOpen] = useState(false);
   const [azzeraMediaTrim,setAzzeraMediaTrim] = useState("1° Quadrimestre");
-  const defCont={testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:true,destinatari:[]};
+  const defCont={testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:false,destinatari:[]};
   const getDefFirma=()=>{const mat=getMaterieClasse(classe);return getDefFirmaBase(mat.length>0?mat[0]:materia);};
   const defColloquio={periodoRipetibilita:"Ogni settimana",numeroMax:5,modalita:"Misto",tuttiAlunni:true,attivo:true,dataInizio:"",dataFine:"",giorno:"Lunedì",oraInizio:"15:00",oraFine:"17:00",sede:"",nonDispDal:"",nonDispAl:"",note:"",linkVideo:"",classiSel:[]};
   const [contOpen,setContOpen]   = useState(null);
@@ -9293,7 +9278,7 @@ function Registro({docente,onCambia}) {
     });
     showToast();setMpOpen(false);setMpVoti({});setMpSession(null);
   };
-  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:!!item.destinatariTutti||!(item.destinatari||[]).length,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:true,destinatari:[],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
+  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:item.destinatariTutti||false,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:false,destinatari:[],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
   const salvaContenuto=()=>{
     const dataLezione = contForm.data||new Date().toLocaleDateString("it-IT");
     let ore = "";
@@ -11668,6 +11653,8 @@ function Registro({docente,onCambia}) {
           {/* PARTECIPAZIONE per lezioni e compiti */}
           {(contOpen==="lezioni"||contOpen==="compiti")&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
             <div>
+              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
+              <ToggleSiNo value={contForm.partecipazione==="tutti"} onChange={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:[]}))}/>
               {/* CREA SU COLLABORA — sotto il toggle Tutta la classe */}
               {contOpen==="lezioni"&&(
                 <div style={{marginTop:10}}>
@@ -11676,10 +11663,45 @@ function Registro({docente,onCambia}) {
                 </div>
               )}
             </div>
-            <div style={{flex:1}}><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={contForm.partecipazione!=="parziale"} onTutti={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:[]}))} sel={contForm.alunniParz} onSel={a=>setContForm(f=>({...f,alunniParz:a}))} students={students}/></div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
+              {contForm.partecipazione==="tutti"
+                ? /* Tutta la classe attiva: box completamente vuoto */
+                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
+                : /* Parziale: lista alunni selezionabili */
+                  <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>
+                    {[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{
+                      const sel=(contForm.alunniParz||[]).includes(s.id);
+                      return(
+                        <div key={s.id} onClick={()=>setContForm(f=>({...f,alunniParz:sel?(f.alunniParz||[]).filter(x=>x!==s.id):[...(f.alunniParz||[]),s.id]}))}
+                          style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}>
+                          <div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                            {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
+                          </div>
+                          <span style={{fontSize:13}}>{s.cognome} {s.nome}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+              }
+            </div>
           </div>}
 
-          {contOpen==="note"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
+          {/* DESTINATARI per note */}
+          {contOpen==="note"&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
+            <div>
+              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
+              <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
+              {contForm.destinatariTutti
+                ? /* Tutta la classe attiva: box completamente vuoto, come le altre sezioni */
+                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
+                : <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);return(<div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
+              }
+            </div>
+          </div>}
 
               {/* LINK per annotazioni — sopra Tutta la classe */}
           {contOpen==="annotazioni"&&<div>
@@ -11691,7 +11713,51 @@ function Registro({docente,onCambia}) {
           </div>}
 
       {/* DESTINATARI per annotazioni — layout identico all'immagine */}
-          {contOpen==="annotazioni"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
+          {contOpen==="annotazioni"&&(
+            <div>
+              {/* Riga Tutta la classe + Alunni affiancati */}
+              <div style={{display:"grid",gridTemplateColumns:"160px 1fr",gap:16,alignItems:"flex-start"}}>
+                <div>
+                  <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
+                  <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
+                </div>
+                <div>
+                  <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
+                  {/* Box alunni selezionati (tag con ×) */}
+                  <div style={{border:"1px solid #ccc",borderRadius:3,minHeight:34,padding:"4px 6px",background:"#fff",display:"flex",flexWrap:"wrap",gap:4,alignItems:"center",cursor:"text"}}
+                    onClick={()=>{}}>
+                    {(contForm.destinatari||[]).map(id=>{
+                      const s=students.find(x=>x.id===id);
+                      if(!s) return null;
+                      return(
+                        <span key={id} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#f3f4f6",border:"1px solid #d1d5db",borderRadius:3,padding:"2px 8px",fontSize:13,fontWeight:600,color:"#1f2937"}}>
+                          × {s.cognome.toUpperCase()} {s.nome.toUpperCase()}
+                          <span onClick={()=>setContForm(f=>({...f,destinatari:(f.destinatari||[]).filter(x=>x!==id)}))} style={{cursor:"pointer",color:"#6b7280",fontWeight:700,marginLeft:2,fontSize:14,lineHeight:1}}>×</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                  {/* Dropdown alunni — sempre visibile se tutta la classe = NO */}
+                  {!contForm.destinatariTutti&&(
+                    <div style={{border:"1px solid #d1d5db",borderRadius:3,background:"#fff",maxHeight:140,overflowY:"auto",marginTop:4}}>
+                      {[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{
+                        const sel=(contForm.destinatari||[]).includes(s.id);
+                        return(
+                          <div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))}
+                            style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",cursor:"pointer",background:sel?"#e9f2fb":"#fff",borderBottom:"1px solid #f3f4f6",fontSize:13}}>
+                            <div style={{width:14,height:14,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                              {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
+                            </div>
+                            {s.cognome.toUpperCase()} {s.nome.toUpperCase()}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:4}}>
             <button onClick={salvaContenuto} style={{padding:"8px 24px",background:BTN_GREEN,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>💾 Salva</button>
@@ -11830,7 +11896,12 @@ function Registro({docente,onCambia}) {
           <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:4}}>Argomento</div><textarea value={verForm.argomenti} onChange={e=>setVerForm({...verForm,argomenti:e.target.value})} rows={4} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"10px",resize:"vertical",boxSizing:"border-box",fontFamily:FF,fontSize:14}}/></div>
           <div><div style={{fontSize:13,color:"#666",fontWeight:600,marginBottom:4}}>Link:</div><div style={{display:"flex",alignItems:"center",border:"1px solid #ccc",borderRadius:4,overflow:"hidden"}}><span style={{padding:"8px 12px",background:"#f5f5f5",borderRight:"1px solid #ccc",fontSize:14}}>🔗</span><input value={verForm.link||""} onChange={e=>setVerForm({...verForm,link:e.target.value})} placeholder="https://..." style={{border:"none",padding:"8px 10px",flex:1,fontSize:14,outline:"none",fontFamily:FF}}/></div></div>
           {/* Tutta la classe verifica */}
-          <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={verForm.tuttiVer!==false} onTutti={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:[]}))} sel={verForm.alunniVer} onSel={a=>setVerForm(f=>({...f,alunniVer:a}))} students={students}/></div>
+          <div style={{display:"flex",alignItems:"flex-start",gap:20}}>
+            <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
+              <ToggleSiNo value={verForm.tuttiVer!==false} onChange={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:[]}))}/>
+            </div>
+            {verForm.tuttiVer===false&&<div style={{flex:1}}><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div><div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(verForm.alunniVer||[]).includes(s.id);return(<div key={s.id} onClick={()=>setVerForm(f=>({...f,alunniVer:sel?(f.alunniVer||[]).filter(x=>x!==s.id):[...(f.alunniVer||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div></div>}
+          </div>
           <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
             <button onClick={salvaVerifica} style={{padding:"8px 24px",background:BTN_GREEN,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>💾 Salva</button>
             <button onClick={()=>{setVerOpen(false);setEditVer(null);}} style={{padding:"8px 20px",background:BTN_BLUE,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>⊗ Chiudi</button>
