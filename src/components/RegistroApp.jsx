@@ -31,6 +31,7 @@ const VERDE_ACQUA = "#14b8a6";
 const VERDE_ACQUA_SCURO = "#0d9488";
 const TEAL = "#12406f";
 const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
+const SEZ_COL = "#1A6D78";
 const TEAL_LIGHT = "#e9f2fb";
 const BTN_GREEN = "#5cb85c";
 const BTN_BLUE = "#337ab7";
@@ -853,6 +854,20 @@ function AxiosDateInput({value, onChange, style, placeholder}) {
 }
 
 // Toggle SÌ/NO globale — usato in tutto il registro
+
+// Tendina destinatari: "Tutta la classe" (default) / "Solo per" + lista alunni
+function DestSelect({tutti, onTutti, sel, onSel, students}) {
+  const lista=[...(students||[])].sort((a,b)=>(a.cognome||"").localeCompare(b.cognome||""));
+  return (<div style={{flex:1,minWidth:200}}>
+    <select value={tutti?"tutti":"solo"} onChange={e=>onTutti(e.target.value==="tutti")} style={{width:"100%",padding:"7px 10px",border:"1px solid #ccc",borderRadius:6,fontSize:13,background:"#fff",cursor:"pointer"}}>
+      <option value="tutti">Tutta la classe</option>
+      <option value="solo">Solo per</option>
+    </select>
+    {!tutti&&<div style={{marginTop:6,border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:160,overflowY:"auto"}}>
+      {lista.map(s=>{const on=(sel||[]).includes(s.id);return(<div key={s.id} onClick={()=>onSel(on?(sel||[]).filter(x=>x!==s.id):[...(sel||[]),s.id])} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:on?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(on?TEAL:"#bbb"),borderRadius:2,background:on?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{on&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}
+    </div>}
+  </div>);
+}
 function ToggleSiNo({value, onChange, label}) {
   return (
     <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -4189,7 +4204,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
   const TBL_BORDER = "1px solid #e8edf2";
 
   const SezioneHdr = ({label, onAdd}) => (
-    <div style={{background:TEAL_GRAD,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <div style={{background:SEZ_COL,color:"#fff",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
       <span style={{fontWeight:700,fontSize:13}}>{label}</span>
       {onAdd&&(
         <button onClick={onAdd} style={{padding:"3px 10px",background:"#22c55e",color:"#fff",border:"none",borderRadius:4,fontWeight:700,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
@@ -4389,7 +4404,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                   ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :argomenti.filter(i=>toISOFast(i.data)===regData).map((item,i)=>(
                     <tr key={item.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
-                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat||""}</td>
+                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat?<span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat}</span>:""}</td>
                       <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</td>
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
@@ -4421,7 +4436,7 @@ function SchedaAlunnoPanel({s, classe, docente, assenzeDB, contDB, votiDB, onClo
                   ?<tr><td colSpan={4} style={{padding:"14px 16px",color:"#9ca3af",fontSize:13,fontStyle:"italic"}}>Nessun dato presente</td></tr>
                   :compiti.filter(i=>toISOFast(i.data)===regData).map((item,i)=>(
                     <tr key={item.id} style={{borderBottom:"1px solid #e5e7eb",background:i%2===0?"#fff":"#f9fafb"}}>
-                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat||""}</td>
+                      <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{item._mat?<span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat}</span>:""}</td>
                       <td style={{padding:"9px 14px",fontWeight:700,color:"#1f2937",fontSize:13,whiteSpace:"nowrap",borderRight:"1px solid #e5e7eb"}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</td>
                       <td style={{padding:"9px 14px",fontSize:13,color:"#374151",borderRight:"1px solid #e5e7eb",whiteSpace:"pre-wrap"}}>{item.testo}</td>
                       <td style={{padding:"7px 10px",whiteSpace:"nowrap"}}>
@@ -4713,7 +4728,7 @@ function ListaAlunniPanel({students,classe,TEAL,TEAL_LIGHT,isRegToday,regData,se
 
 function RegistroClassePanel({students, materia, getCont, saveCont, deleteContById, openFirma, openVerifica, openContenuto, docente, regData, regDataNav, setRegDataNav, contDB, classe, classiList, showFirmePanel, setShowFirmePanel}) {
 
-  const HDR = TEAL;
+  const HDR = SEZ_COL;
 
   const partTxt = (item) => {
     if(!item.partecipazione || item.partecipazione==="tutti") return null;
@@ -4857,7 +4872,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
             lezioniTutte.length===0 ? [] : lezioniTutte.map((item,i)=>(
               <tr key={item.id} style={{borderBottom:TBL_BORDER,background:item._daCollega?"#fffbeb":i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,verticalAlign:"top"}}>
                 <Td style={{fontWeight:700,textTransform:"uppercase",color:"#1f2937",whiteSpace:"nowrap",minWidth:120,borderRight:TBL_BORDER}}>
-                  {item.materiaLezione||materia}
+                  <span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item.materiaLezione||materia}</span>
                   {item._daCollega&&<div style={{fontSize:9,background:"#f59e0b",color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:700,marginTop:2,display:"inline-block"}}>COLLEGA</div>}
                 </Td>
                 <Td style={{whiteSpace:"nowrap",minWidth:150,borderRight:TBL_BORDER}}>{cognomeNome(item.inseritoDa||docente).toUpperCase()}</Td>
@@ -4891,7 +4906,7 @@ function RegistroClassePanel({students, materia, getCont, saveCont, deleteContBy
                   <tr key={item.id} style={{borderBottom:TBL_BORDER,background:item._daCollega?"#fffbeb":i%2===0?TBL_ROW_EVEN:TBL_ROW_ODD,verticalAlign:"middle"}}>
                     {/* Materia */}
                     <Td style={{fontWeight:700,textTransform:"uppercase",color:"#1f2937",whiteSpace:"nowrap",minWidth:120,borderRight:TBL_BORDER}}>
-                      {item._mat||item.materiaLezione||materia}
+                      <span style={{background:"#facc15",color:"#1f2937",borderRadius:6,padding:"2px 8px",display:"inline-block"}}>{item._mat||item.materiaLezione||materia}</span>
                       {item._daCollega&&<div style={{fontSize:9,background:"#f59e0b",color:"#fff",borderRadius:4,padding:"1px 4px",fontWeight:700,marginTop:2,display:"inline-block"}}>COLLEGA</div>}
                     </Td>
                     {/* Compiti assegnati */}
