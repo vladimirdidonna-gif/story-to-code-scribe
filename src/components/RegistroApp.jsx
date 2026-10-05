@@ -11668,8 +11668,6 @@ function Registro({docente,onCambia}) {
           {/* PARTECIPAZIONE per lezioni e compiti */}
           {(contOpen==="lezioni"||contOpen==="compiti")&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
             <div>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={contForm.partecipazione==="tutti"} onChange={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:[]}))}/>
               {/* CREA SU COLLABORA — sotto il toggle Tutta la classe */}
               {contOpen==="lezioni"&&(
                 <div style={{marginTop:10}}>
@@ -11678,44 +11676,10 @@ function Registro({docente,onCambia}) {
                 </div>
               )}
             </div>
-            <div style={{flex:1}}>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
-              {contForm.partecipazione==="tutti"
-                ? /* Tutta la classe attiva: box completamente vuoto */
-                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
-                : /* Parziale: lista alunni selezionabili */
-                  <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>
-                    {[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{
-                      const sel=(contForm.alunniParz||[]).includes(s.id);
-                      return(
-                        <div key={s.id} onClick={()=>setContForm(f=>({...f,alunniParz:sel?(f.alunniParz||[]).filter(x=>x!==s.id):[...(f.alunniParz||[]),s.id]}))}
-                          style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}>
-                          <div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                            {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
-                          </div>
-                          <span style={{fontSize:13}}>{s.cognome} {s.nome}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-              }
-            </div>
+            <div style={{flex:1}}><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={contForm.partecipazione!=="parziale"} onTutti={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:[]}))} sel={contForm.alunniParz} onSel={a=>setContForm(f=>({...f,alunniParz:a}))} students={students}/></div>
           </div>}
 
-          {/* DESTINATARI per note */}
-          {contOpen==="note"&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
-            <div>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
-            </div>
-            <div style={{flex:1}}>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
-              {contForm.destinatariTutti
-                ? /* Tutta la classe attiva: box completamente vuoto, come le altre sezioni */
-                  <div style={{border:"2px solid #d1d5db",borderRadius:6,background:"#f9fafb",minHeight:42}}/>
-                : <div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(contForm.destinatari||[]).includes(s.id);return(<div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div>
-              }
-            </div>
+          {contOpen==="note"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
           </div>}
 
               {/* LINK per annotazioni — sopra Tutta la classe */}
@@ -11728,50 +11692,7 @@ function Registro({docente,onCambia}) {
           </div>}
 
       {/* DESTINATARI per annotazioni — layout identico all'immagine */}
-          {contOpen==="annotazioni"&&(
-            <div>
-              {/* Riga Tutta la classe + Alunni affiancati */}
-              <div style={{display:"grid",gridTemplateColumns:"160px 1fr",gap:16,alignItems:"flex-start"}}>
-                <div>
-                  <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-                  <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
-                </div>
-                <div>
-                  <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
-                  {/* Box alunni selezionati (tag con ×) */}
-                  <div style={{border:"1px solid #ccc",borderRadius:3,minHeight:34,padding:"4px 6px",background:"#fff",display:"flex",flexWrap:"wrap",gap:4,alignItems:"center",cursor:"text"}}
-                    onClick={()=>{}}>
-                    {(contForm.destinatari||[]).map(id=>{
-                      const s=students.find(x=>x.id===id);
-                      if(!s) return null;
-                      return(
-                        <span key={id} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#f3f4f6",border:"1px solid #d1d5db",borderRadius:3,padding:"2px 8px",fontSize:13,fontWeight:600,color:"#1f2937"}}>
-                          × {s.cognome.toUpperCase()} {s.nome.toUpperCase()}
-                          <span onClick={()=>setContForm(f=>({...f,destinatari:(f.destinatari||[]).filter(x=>x!==id)}))} style={{cursor:"pointer",color:"#6b7280",fontWeight:700,marginLeft:2,fontSize:14,lineHeight:1}}>×</span>
-                        </span>
-                      );
-                    })}
-                  </div>
-                  {/* Dropdown alunni — sempre visibile se tutta la classe = NO */}
-                  {!contForm.destinatariTutti&&(
-                    <div style={{border:"1px solid #d1d5db",borderRadius:3,background:"#fff",maxHeight:140,overflowY:"auto",marginTop:4}}>
-                      {[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{
-                        const sel=(contForm.destinatari||[]).includes(s.id);
-                        return(
-                          <div key={s.id} onClick={()=>setContForm(f=>({...f,destinatari:sel?(f.destinatari||[]).filter(x=>x!==s.id):[...(f.destinatari||[]),s.id]}))}
-                            style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",cursor:"pointer",background:sel?"#e9f2fb":"#fff",borderBottom:"1px solid #f3f4f6",fontSize:13}}>
-                            <div style={{width:14,height:14,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                              {sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}
-                            </div>
-                            {s.cognome.toUpperCase()} {s.nome.toUpperCase()}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          {contOpen==="annotazioni"&&<div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={!!contForm.destinatariTutti} onTutti={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))} sel={contForm.destinatari} onSel={a=>setContForm(f=>({...f,destinatari:a}))} students={students}/></div>}
           )}
 
           <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:4}}>
@@ -11911,12 +11832,7 @@ function Registro({docente,onCambia}) {
           <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:4}}>Argomento</div><textarea value={verForm.argomenti} onChange={e=>setVerForm({...verForm,argomenti:e.target.value})} rows={4} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"10px",resize:"vertical",boxSizing:"border-box",fontFamily:FF,fontSize:14}}/></div>
           <div><div style={{fontSize:13,color:"#666",fontWeight:600,marginBottom:4}}>Link:</div><div style={{display:"flex",alignItems:"center",border:"1px solid #ccc",borderRadius:4,overflow:"hidden"}}><span style={{padding:"8px 12px",background:"#f5f5f5",borderRight:"1px solid #ccc",fontSize:14}}>🔗</span><input value={verForm.link||""} onChange={e=>setVerForm({...verForm,link:e.target.value})} placeholder="https://..." style={{border:"none",padding:"8px 10px",flex:1,fontSize:14,outline:"none",fontFamily:FF}}/></div></div>
           {/* Tutta la classe verifica */}
-          <div style={{display:"flex",alignItems:"flex-start",gap:20}}>
-            <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={verForm.tuttiVer!==false} onChange={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:[]}))}/>
-            </div>
-            {verForm.tuttiVer===false&&<div style={{flex:1}}><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div><div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(verForm.alunniVer||[]).includes(s.id);return(<div key={s.id} onClick={()=>setVerForm(f=>({...f,alunniVer:sel?(f.alunniVer||[]).filter(x=>x!==s.id):[...(f.alunniVer||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div></div>}
-          </div>
+          <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Destinatari</div><DestSelect tutti={verForm.tuttiVer!==false} onTutti={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:[]}))} sel={verForm.alunniVer} onSel={a=>setVerForm(f=>({...f,alunniVer:a}))} students={students}/></div>
           <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
             <button onClick={salvaVerifica} style={{padding:"8px 24px",background:BTN_GREEN,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>💾 Salva</button>
             <button onClick={()=>{setVerOpen(false);setEditVer(null);}} style={{padding:"8px 20px",background:BTN_BLUE,color:"#fff",border:"none",borderRadius:4,fontWeight:700,cursor:"pointer",fontSize:14}}>⊗ Chiudi</button>
