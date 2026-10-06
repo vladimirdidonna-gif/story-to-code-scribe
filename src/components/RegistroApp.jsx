@@ -2683,6 +2683,24 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
   const [matSelCompiti, setMatSelCompiti] = useState(null);
   const [modoLezioni, setModoLezioni] = useState("giorni");
   const [matSelLezioni, setMatSelLezioni] = useState(null);
+  // Evidenziazione dell'elemento premuto nella Home + comunicazioni già lette
+  const [highlightId, setHighlightId] = useState(null);
+  const LETTE_KEY = `reg:${docente}:comunLette:${s.id}`;
+  const [letteComun, setLetteComunRaw] = useState(()=>{
+    try{ return JSON.parse(localStorage.getItem(LETTE_KEY)||"[]"); }catch{ return []; }
+  });
+  const setLetteComun = (list) => {
+    setLetteComunRaw(list);
+    try{ localStorage.setItem(LETTE_KEY, JSON.stringify(list)); }catch{}
+  };
+  const navigaDaHome = (t, evId, evTipo) => {
+    if(evTipo==="comunicazione" && evId){
+      const cid = String(evId).replace(/^com/,"");
+      if(!letteComun.includes(cid)) setLetteComun([...letteComun, cid]);
+    }
+    setHighlightId(evId||null);
+    setTab(t);
+  };
   // ── Curriculum: storico anni scolastici dell'alunno ──
   const CURR_KEY = `curriculum:${docente}:${s.id}`;
   const [curriculum, setCurriculumRaw] = useState(()=>{
@@ -2811,7 +2829,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
 
   const renderContent = () => {
     if(tab==="feed"){
-      return <FeedFamigliaTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente} onNavigateTab={t=>setTab(t)} pgTrim={pgTrim}/>;
+      return <FeedFamigliaTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente} onNavigateTab={navigaDaHome} pgTrim={pgTrim} letteComun={letteComun}/>;
     }
     if(tab==="registroweb"){
       return <RegistroWebTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente}/>;
