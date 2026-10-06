@@ -2130,7 +2130,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   // Comunicazioni del giorno (globali, filtrate per classe)
   (contDB["__comunicazioni__"]?.["comunicazioni"]||[]).forEach(c=>{
     const cVisibile = !c.classiCom || c.classiCom.length===0 || c.classiCom.includes(classe);
-    if(cVisibile && toISO(c.data||"")===giornoSel && c.visibileFamiglie!==false){
+    if(cVisibile && toISO(c.data||"")===giornoSel && c.visibileFamiglie!==false && !(letteComun||[]).includes(String(c.id))){
       eventiGiorno.push({tipo:"comunicazione", testo:c.oggetto||"", sub:c.testo||"", id:"com"+c.id});
     }
   });
@@ -2353,7 +2353,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     : (ev.ore&&/^\d+$/.test(String(ev.ore).trim()) ? ev.ore : "0"))
                 : null;
               return (
-                <div key={ev.id} onClick={()=>targetTab&&onNavigateTab&&onNavigateTab(targetTab)}
+                <div key={ev.id} onClick={()=>targetTab&&onNavigateTab&&onNavigateTab(targetTab, ev.id, ev.tipo)}
                   style={{display:"flex",alignItems:"flex-start",gap:12,padding:"14px 18px",borderBottom:"1px solid #f0ece6",background:i%2===0?"#fdf6f0":"#fff",cursor:targetTab?"pointer":"default"}}
                   onMouseEnter={e=>{if(targetTab)e.currentTarget.style.background="#f5e9df";}}
                   onMouseLeave={e=>{e.currentTarget.style.background=i%2===0?"#fdf6f0":"#fff";}}>
