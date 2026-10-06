@@ -29,6 +29,9 @@ const VERDE_BORDER = "#7fd4a8";
 // Verde acqua — colore dei voti positivi nelle Info studenti
 const VERDE_ACQUA = "#14b8a6";
 const VERDE_ACQUA_SCURO = "#0d9488";
+// Evidenziazione dell'elemento aperto dalla Home della scheda studente
+// (stesso azzurro della riga "Classe" selezionata in Gestione Classi)
+const HL_BG = "#e9f2fb";
 const TEAL = "#12406f";
 const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
 const TEAL_LIGHT = "#e9f2fb";
@@ -2010,7 +2013,7 @@ function GiudizioAccordion({note}) {
 // Voti=nero/grigio scuro, Note disciplinari=rosso, Assenze=teal/arancio
 // Sempre derivato dal registro reale (contDB/votiDB/assenzeDB)
 // ══════════════════════════════════════════════════════
-function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavigateTab, pgTrim}) {
+function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavigateTab, pgTrim, letteComun}) {
   const [giornoSel, setGiornoSel] = useState(todayISO());
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -2127,7 +2130,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
   // Comunicazioni del giorno (globali, filtrate per classe)
   (contDB["__comunicazioni__"]?.["comunicazioni"]||[]).forEach(c=>{
     const cVisibile = !c.classiCom || c.classiCom.length===0 || c.classiCom.includes(classe);
-    if(cVisibile && toISO(c.data||"")===giornoSel && c.visibileFamiglie!==false){
+    if(cVisibile && toISO(c.data||"")===giornoSel && c.visibileFamiglie!==false && !(letteComun||[]).includes(String(c.id))){
       eventiGiorno.push({tipo:"comunicazione", testo:c.oggetto||"", sub:c.testo||"", id:"com"+c.id});
     }
   });
@@ -2350,7 +2353,7 @@ function FeedFamigliaTab({s, contDB, assenzeDB, votiDB, classe, docente, onNavig
                     : (ev.ore&&/^\d+$/.test(String(ev.ore).trim()) ? ev.ore : "0"))
                 : null;
               return (
-                <div key={ev.id} onClick={()=>targetTab&&onNavigateTab&&onNavigateTab(targetTab)}
+                <div key={ev.id} onClick={()=>targetTab&&onNavigateTab&&onNavigateTab(targetTab, ev.id, ev.tipo)}
                   style={{display:"flex",alignItems:"flex-start",gap:12,padding:"14px 18px",borderBottom:"1px solid #f0ece6",background:i%2===0?"#fdf6f0":"#fff",cursor:targetTab?"pointer":"default"}}
                   onMouseEnter={e=>{if(targetTab)e.currentTarget.style.background="#f5e9df";}}
                   onMouseLeave={e=>{e.currentTarget.style.background=i%2===0?"#fdf6f0":"#fff";}}>
@@ -2588,8 +2591,8 @@ function RegistroWebTab({s, contDB, assenzeDB, votiDB, classe, docente}) {
 }
 
 // ── Riga comunicazione espandibile nella scheda alunno, stile app famiglia ──
-function ComunicazioneSchedaRow({item}) {
-  const [open, setOpen] = useState(false);
+function ComunicazioneSchedaRow({item, highlighted}) {
+  const [open, setOpen] = useState(!!highlighted);
   const fmtD = (raw) => {
     if(!raw) return "";
     let iso = raw;
@@ -2604,9 +2607,9 @@ function ComunicazioneSchedaRow({item}) {
   return (
     <div style={{borderBottom:"1px solid #e5e7eb",fontFamily:FF}}>
       <div onClick={()=>hasContent&&setOpen(v=>!v)}
-        style={{padding:"14px 18px",cursor:hasContent?"pointer":"default",background:"#fff"}}
-        onMouseEnter={e=>{if(hasContent)e.currentTarget.style.background="#f9fafb";}}
-        onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+        style={{padding:"14px 18px",cursor:hasContent?"pointer":"default",background:highlighted?HL_BG:"#fff"}}
+        onMouseEnter={e=>{if(hasContent&&!highlighted)e.currentTarget.style.background="#f9fafb";}}
+        onMouseLeave={e=>{e.currentTarget.style.background=highlighted?HL_BG:"#fff";}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
           <span style={{fontSize:13,color:"#6b7280",fontWeight:600}}>{fmtD(item.data)}</span>
           <span style={{background:badgeBg,color:"#fff",borderRadius:4,padding:"3px 12px",fontSize:12,fontWeight:700}}>{badgeTxt}</span>
@@ -2655,10 +2658,10 @@ function ComunicazioneSchedaRow({item}) {
   );
 }
 
-function ComunicazioniSchedaList({items}) {
+function ComunicazioniSchedaList({items, highlightId}) {
   return (
     <div>
-      {items.map(item=><ComunicazioneSchedaRow key={item.id} item={item}/>)}
+      {items.map(item=><ComunicazioneSchedaRow key={item.id} item={item} highlighted={("com"+item.id)===highlightId}/>)}
     </div>
   );
 }
@@ -2680,6 +2683,24 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
   const [matSelCompiti, setMatSelCompiti] = useState(null);
   const [modoLezioni, setModoLezioni] = useState("giorni");
   const [matSelLezioni, setMatSelLezioni] = useState(null);
+  // Evidenziazione dell'elemento premuto nella Home + comunicazioni già lette
+  const [highlightId, setHighlightId] = useState(null);
+  const LETTE_KEY = `reg:${docente}:comunLette:${s.id}`;
+  const [letteComun, setLetteComunRaw] = useState(()=>{
+    try{ return JSON.parse(localStorage.getItem(LETTE_KEY)||"[]"); }catch{ return []; }
+  });
+  const setLetteComun = (list) => {
+    setLetteComunRaw(list);
+    try{ localStorage.setItem(LETTE_KEY, JSON.stringify(list)); }catch{}
+  };
+  const navigaDaHome = (t, evId, evTipo) => {
+    if(evTipo==="comunicazione" && evId){
+      const cid = String(evId).replace(/^com/,"");
+      if(!letteComun.includes(cid)) setLetteComun([...letteComun, cid]);
+    }
+    setHighlightId(evId||null);
+    setTab(t);
+  };
   // ── Curriculum: storico anni scolastici dell'alunno ──
   const CURR_KEY = `curriculum:${docente}:${s.id}`;
   const [curriculum, setCurriculumRaw] = useState(()=>{
@@ -2808,7 +2829,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
 
   const renderContent = () => {
     if(tab==="feed"){
-      return <FeedFamigliaTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente} onNavigateTab={t=>setTab(t)} pgTrim={pgTrim}/>;
+      return <FeedFamigliaTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente} onNavigateTab={navigaDaHome} pgTrim={pgTrim} letteComun={letteComun}/>;
     }
     if(tab==="registroweb"){
       return <RegistroWebTab s={s} contDB={contDB} assenzeDB={assenzeDB} votiDB={votiDB} classe={classe} docente={docente}/>;
@@ -2867,7 +2888,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       };
 
       const RigaVoto = ({v}) => (
-        <div style={{display:"flex",alignItems:"flex-start",gap:14,padding:"14px 18px",borderBottom:"1px solid #f3f4f6",background:"#fff"}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:14,padding:"14px 18px",borderBottom:"1px solid #f3f4f6",background:("v"+v.id)===highlightId?HL_BG:"#fff"}}>
           <VotoCerchio voto={v.voto} faMedia={v.faMedia}/>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontWeight:800,fontSize:17,color:"#1f2937",marginBottom:3,fontFamily:"Helvetica,Arial,sans-serif",letterSpacing:0.2}}>{v._mat||""}</div>
@@ -3098,7 +3119,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       ].sort((a,b)=>toISO(b.data||"").localeCompare(toISO(a.data||"")));
       if(!items.length) return <EmptyMsg msg="Nessuna nota disciplinare"/>;
       return items.map((n,i)=>(
-        <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
+        <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:((n._isAnnot?"a":"n")+n.id)===highlightId?HL_BG:"#fff"}}>
           {/* Riga superiore: data + destinatario */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
             <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif"}}>{fmtD(n.data||"")}</div>
@@ -3127,7 +3148,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         }catch{return iso;}
       };
       const RigaCompito = ({c}) => (
-        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:"#fff",fontFamily:"Helvetica,Arial,sans-serif"}}>
+        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:(("c"+c.id)===highlightId||String(c.id)===highlightId)?HL_BG:"#fff",fontFamily:"Helvetica,Arial,sans-serif"}}>
           <div style={{fontWeight:900,fontSize:16,color:"#1f2937",marginBottom:4,letterSpacing:0.3}}>
             {(c._mat||c.materiaLezione||"").toUpperCase()}
           </div>
@@ -3243,7 +3264,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       };
 
       const RigaLezione = ({l}) => (
-        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
+        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:("l"+l.id)===highlightId?HL_BG:"#fff"}}>
           <div style={{marginBottom:4}}>
             <span style={{fontWeight:700,fontSize:15,color:"#1f2937",textTransform:"uppercase",letterSpacing:0.3}}>{l._mat||l.materiaLezione||""}</span>
             <span style={{fontWeight:400,fontSize:13,color:"#6b7280",marginLeft:8}}>Ora Lezione: {oreLabel(l)}</span>
@@ -3575,7 +3596,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         .filter(c => !c.classiCom || c.classiCom.length===0 || c.classiCom.includes(classe))
         .sort((a,b)=>(b.data||"").localeCompare(a.data||""));
       if(!items.length) return <EmptyMsg msg="Nessuna comunicazione"/>;
-      return <ComunicazioniSchedaList items={items}/>;
+      return <ComunicazioniSchedaList items={items} highlightId={highlightId}/>;
     }
   };
 
