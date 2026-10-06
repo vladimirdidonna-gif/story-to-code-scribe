@@ -2591,8 +2591,8 @@ function RegistroWebTab({s, contDB, assenzeDB, votiDB, classe, docente}) {
 }
 
 // ── Riga comunicazione espandibile nella scheda alunno, stile app famiglia ──
-function ComunicazioneSchedaRow({item}) {
-  const [open, setOpen] = useState(false);
+function ComunicazioneSchedaRow({item, highlighted}) {
+  const [open, setOpen] = useState(!!highlighted);
   const fmtD = (raw) => {
     if(!raw) return "";
     let iso = raw;
@@ -2607,9 +2607,9 @@ function ComunicazioneSchedaRow({item}) {
   return (
     <div style={{borderBottom:"1px solid #e5e7eb",fontFamily:FF}}>
       <div onClick={()=>hasContent&&setOpen(v=>!v)}
-        style={{padding:"14px 18px",cursor:hasContent?"pointer":"default",background:"#fff"}}
-        onMouseEnter={e=>{if(hasContent)e.currentTarget.style.background="#f9fafb";}}
-        onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+        style={{padding:"14px 18px",cursor:hasContent?"pointer":"default",background:highlighted?HL_BG:"#fff"}}
+        onMouseEnter={e=>{if(hasContent&&!highlighted)e.currentTarget.style.background="#f9fafb";}}
+        onMouseLeave={e=>{e.currentTarget.style.background=highlighted?HL_BG:"#fff";}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
           <span style={{fontSize:13,color:"#6b7280",fontWeight:600}}>{fmtD(item.data)}</span>
           <span style={{background:badgeBg,color:"#fff",borderRadius:4,padding:"3px 12px",fontSize:12,fontWeight:700}}>{badgeTxt}</span>
@@ -2658,10 +2658,10 @@ function ComunicazioneSchedaRow({item}) {
   );
 }
 
-function ComunicazioniSchedaList({items}) {
+function ComunicazioniSchedaList({items, highlightId}) {
   return (
     <div>
-      {items.map(item=><ComunicazioneSchedaRow key={item.id} item={item}/>)}
+      {items.map(item=><ComunicazioneSchedaRow key={item.id} item={item} highlighted={("com"+item.id)===highlightId}/>)}
     </div>
   );
 }
@@ -3596,7 +3596,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         .filter(c => !c.classiCom || c.classiCom.length===0 || c.classiCom.includes(classe))
         .sort((a,b)=>(b.data||"").localeCompare(a.data||""));
       if(!items.length) return <EmptyMsg msg="Nessuna comunicazione"/>;
-      return <ComunicazioniSchedaList items={items}/>;
+      return <ComunicazioniSchedaList items={items} highlightId={highlightId}/>;
     }
   };
 
