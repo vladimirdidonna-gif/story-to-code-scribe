@@ -2888,7 +2888,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       };
 
       const RigaVoto = ({v}) => (
-        <div style={{display:"flex",alignItems:"flex-start",gap:14,padding:"14px 18px",borderBottom:"1px solid #f3f4f6",background:"#fff"}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:14,padding:"14px 18px",borderBottom:"1px solid #f3f4f6",background:("v"+v.id)===highlightId?HL_BG:"#fff"}}>
           <VotoCerchio voto={v.voto} faMedia={v.faMedia}/>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontWeight:800,fontSize:17,color:"#1f2937",marginBottom:3,fontFamily:"Helvetica,Arial,sans-serif",letterSpacing:0.2}}>{v._mat||""}</div>
@@ -3119,7 +3119,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       ].sort((a,b)=>toISO(b.data||"").localeCompare(toISO(a.data||"")));
       if(!items.length) return <EmptyMsg msg="Nessuna nota disciplinare"/>;
       return items.map((n,i)=>(
-        <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
+        <div key={n.id} style={{padding:"14px 20px",borderBottom:"1px solid #e5e7eb",background:((n._isAnnot?"a":"n")+n.id)===highlightId?HL_BG:"#fff"}}>
           {/* Riga superiore: data + destinatario */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
             <div style={{fontWeight:700,fontSize:14,color:"#1f2937",fontFamily:"Helvetica,Arial,sans-serif"}}>{fmtD(n.data||"")}</div>
@@ -3148,7 +3148,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
         }catch{return iso;}
       };
       const RigaCompito = ({c}) => (
-        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:"#fff",fontFamily:"Helvetica,Arial,sans-serif"}}>
+        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:(("c"+c.id)===highlightId||String(c.id)===highlightId)?HL_BG:"#fff",fontFamily:"Helvetica,Arial,sans-serif"}}>
           <div style={{fontWeight:900,fontSize:16,color:"#1f2937",marginBottom:4,letterSpacing:0.3}}>
             {(c._mat||c.materiaLezione||"").toUpperCase()}
           </div>
@@ -3264,7 +3264,7 @@ function SchédaStudente({s, contDB, assenzeDB, votiDB, scrutiniDB, classe, doce
       };
 
       const RigaLezione = ({l}) => (
-        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:"#fff"}}>
+        <div style={{padding:"14px 18px",borderBottom:"1px solid #e5e7eb",background:("l"+l.id)===highlightId?HL_BG:"#fff"}}>
           <div style={{marginBottom:4}}>
             <span style={{fontWeight:700,fontSize:15,color:"#1f2937",textTransform:"uppercase",letterSpacing:0.3}}>{l._mat||l.materiaLezione||""}</span>
             <span style={{fontWeight:400,fontSize:13,color:"#6b7280",marginLeft:8}}>Ora Lezione: {oreLabel(l)}</span>
