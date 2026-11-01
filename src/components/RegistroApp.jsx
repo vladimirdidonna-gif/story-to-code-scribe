@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Plus, Trash2, Pencil, Users, BookOpen, Search } from "lucide-react";
+import DocentiCollegati, { useUtenteAuth, useRichiesteInAttesa } from "./DocentiCollegati";
+import { useDocentiCollegati } from "../lib/docenti-collegati";
 
 const MATERIE = ["Arte","Ed. Fisica","Francese","Geografia","Inglese","Italiano","Matematica","Musica","Religione","Scienze","Storia","Tecnologia"];
 const TIPI_VOTI = ["orale","scritto","grafico","pratico","unico"];
@@ -8792,11 +8794,16 @@ function Registro({docente,onCambia}) {
   // Legge i dati pubblicati dai colleghi e li fonde nel contDB locale
   // così le lezioni/compiti del collega appaiono direttamente nel Registro di Classe
   const [datiColleghiCloud, setDatiColleghiCloud] = useState({});
+  // Dati dei "Docenti collegati" (sincronizzazione via account, voti esclusi)
+  const [datiDocenti, setDatiDocenti] = useState({});
+  const utenteAuth = useUtenteAuth();
+  useDocentiCollegati({ docente, email: utenteAuth?.email || "", contDB, assenzeDB, classi, scrutiniDB, colloquiDB, onDati: setDatiDocenti });
 
   const contDBMerged = useMemo(()=>{
-    if(!Object.keys(datiColleghiCloud).length) return contDB;
+    const fonti = {...datiColleghiCloud, ...datiDocenti};
+    if(!Object.keys(fonti).length) return contDB;
     const merged = {...contDB};
-    Object.values(datiColleghiCloud).forEach(collegaData=>{
+    Object.values(fonti).forEach(collegaData=>{
       if(!collegaData || collegaData.classe!==classe) return;
       const sezioni=["lezioni","compiti","annotazioni","verifiche","firme"];
       sezioni.forEach(sec=>{
