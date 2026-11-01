@@ -10,8 +10,10 @@ export type Invito = {
   destinatario_email: string;
   destinatario_id: string | null;
   classe: string;
+  materia: string | null;
+  sync_attiva: boolean;
   studenti: string[];
-  stato: "in_attesa" | "attiva" | "rifiutata";
+  stato: "in_attesa" | "accettata" | "attiva" | "rifiutata";
   created_at: string;
 };
 
@@ -76,16 +78,41 @@ export async function inviaInvito(opts: {
   if (error) throw new Error(error.message);
 }
 
-export async function accettaInvito(inv: Invito, studentiLocali: string[]) {
-  if (!stessiStudenti(inv.studenti || [], studentiLocali))
+/** Cerca un account docente registrato tramite email. */
+export async function cercaDocente(email: string): Promise<{ user_id: string; nome: string | null; email: string } | null> {
+  const { data, error } = await supabase.rpc("cerca_docente", { _email: email.trim().toLowerCase() });
+  if (error || !data || !data.length) return null;
+  return data[0] as { user_id: string; nome: string | null; email: string };
+}
+
+export async function accettaInvito(inv: Invito, studentiLocali?: string[]) {
+  if (studentiLocali && inv.studenti?.length && !stessiStudenti(inv.studenti || [], studentiLocali))
     throw new Error(
       `Gli alunni della classe ${inv.classe} non coincidono con quelli del collega: la condivisione non è possibile.`,
     );
   const { data: u } = await supabase.auth.getUser();
   const { error } = await supabase
     .from("condivisioni")
-    .update({ stato: "attiva", destinatario_id: u.user?.id ?? null, updated_at: new Date().toISOString() })
+    .update({ stato: "accettata", destinatario_id: u.user?.id ?? null, updated_at: new Date().toISOString() })
     .eq("id", inv.id);
+  if (error) throw new Error(error.message);
+}
+
+/** Il mittente conferma classe + materia e attiva la sincronizzazione. */
+export async function attivaSincronizzazione(id: string, classe: string, materia: string) {
+  const { error } = await supabase
+    .from("condivisioni")
+    .update({ stato: "attiva", classe, materia, sync_attiva: true, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Attiva/disattiva la sincronizzazione senza cancellare i dati. */
+export async function setSyncAttiva(id: string, attiva: boolean) {
+  const { error } = await supabase
+    .from("condivisioni")
+    .update({ sync_attiva: attiva, updated_at: new Date().toISOString() })
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 
