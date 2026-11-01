@@ -45,11 +45,13 @@ export type Database = {
           destinatario_email: string
           destinatario_id: string | null
           id: string
+          materia: string | null
           messaggio: string | null
           mittente_email: string
           mittente_id: string
           stato: string
           studenti: Json
+          sync_attiva: boolean
           updated_at: string
         }
         Insert: {
@@ -58,11 +60,13 @@ export type Database = {
           destinatario_email: string
           destinatario_id?: string | null
           id?: string
+          materia?: string | null
           messaggio?: string | null
           mittente_email: string
           mittente_id: string
           stato?: string
           studenti?: Json
+          sync_attiva?: boolean
           updated_at?: string
         }
         Update: {
@@ -71,11 +75,13 @@ export type Database = {
           destinatario_email?: string
           destinatario_id?: string | null
           id?: string
+          materia?: string | null
           messaggio?: string | null
           mittente_email?: string
           mittente_id?: string
           stato?: string
           studenti?: Json
+          sync_attiva?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -145,6 +151,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cerca_docente: {
+        Args: { _email: string }
+        Returns: {
+          email: string
+          nome: string
+          user_id: string
+        }[]
+      }
       ha_condivisione: {
         Args: { _classe: string; _owner: string }
         Returns: boolean
