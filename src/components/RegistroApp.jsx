@@ -31,7 +31,7 @@ const VERDE_ACQUA = "#14b8a6";
 const VERDE_ACQUA_SCURO = "#0d9488";
 // Evidenziazione dell'elemento aperto dalla Home della scheda studente
 // (stesso azzurro della riga "Classe" selezionata in Gestione Classi)
-const HL_BG = "#e9f2fb";
+const HL_BG = "#ffedd5";
 const TEAL = "#12406f";
 const TEAL_GRAD = "linear-gradient(135deg,#0a2c52 0%,#134a7c 40%,#2e6cb0 75%,#cfe2f6 100%)";
 const TEAL_LIGHT = "#e9f2fb";
