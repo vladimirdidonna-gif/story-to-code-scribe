@@ -5254,6 +5254,8 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   const getMeta=nome=>classeMeta[nome]||{coordinatore:false,materie:[]};
   const setMeta=(nome,patch)=>setClasseMeta({...classeMeta,[nome]:{...getMeta(nome),...patch}});
   const isMobile = useIsMobile();
+  const utenteAuthGC = useUtenteAuth();
+  const [docColOpen,setDocColOpen]=useState(false);
   const toggleMateria=(nome,mat)=>{
     const cur=getMeta(nome).materie||[];
     const next=cur.includes(mat)?cur.filter(m=>m!==mat):[...cur,mat];
@@ -5313,6 +5315,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   return (
     <div style={{fontFamily:FF,display:"flex",flexDirection:"column",height:"100vh",background:"#f9fafb"}}>
       {toast&&<Toast msg="Salvato" onDone={()=>setToast(false)}/>}
+      {docColOpen&&sel&&utenteAuthGC?.id&&<DocentiCollegati userId={utenteAuthGC.id} email={utenteAuthGC.email||""} docente={_doc} classe={sel} classiList={list} materieClasse={cl=>{const m=getMeta(cl).materie||[];return m.length?m:tutteMaterie;}} onClose={()=>setDocColOpen(false)}/>}
       <div style={{background:"#12406f",color:"#fff",padding:isMobile?"10px 12px":"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={isMobile?18:22}/><span style={{fontWeight:700,fontSize:isMobile?15:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:isMobile?11:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:isMobile?"6px 12px":"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:isMobile?13:16,cursor:"pointer"}}>Salva e torna</button></div>
       <div style={{flex:1,display:"flex",overflow:"hidden"}}>
         <div style={{width:isMobile?110:260,background:"#fff",borderRight:"2px solid #e5e7eb",display:"flex",flexDirection:"column",flexShrink:0}}>
@@ -5336,6 +5339,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
           {!sel?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#9ca3af",flexDirection:"column",gap:12}}><BookOpen size={48} color="#d1d5db"/><div style={{fontSize:18,fontWeight:600}}>Seleziona una classe</div></div>:(
             <>
               <div style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2",padding:"12px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                <button onClick={()=>setDocColOpen(true)} disabled={!utenteAuthGC?.id} style={{padding:"6px 12px",background:"#12406f",color:"#fff",border:"none",fontWeight:700,fontSize:13,cursor:"pointer"}}>👥 Docenti collegati</button>
                 <span style={{fontWeight:700,fontSize:18,color:"#12406f"}}>Classe {sel}</span>
                 <span style={{background:"#12406f",color:"#fff",borderRadius:12,padding:"2px 14px",fontWeight:700,fontSize:13}}>{alunni.length} alunni</span>
                 <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:10}}>
