@@ -602,7 +602,7 @@ function LoadingOverlay({show}) {
     </div>
   );
 }
-function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subtitle,skipLoading=false}) {
+function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subtitle,skipLoading=false,height}) {
   const [show,setShow]=useState(false);
   const [step,setStep]=useState(0);
   const t=useRef(null);
@@ -632,7 +632,7 @@ function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subt
     {step===1&&<div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",zIndex:60,background:"rgba(255,255,255,0.96)",borderRadius:20,padding:"8px 20px",boxShadow:"0 4px 20px rgba(0,0,0,0.12)",fontSize:13,color:"#6b7280",fontFamily:FF,fontWeight:600,display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}>
       <div style={{width:11,height:11,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:TEAL,animation:"spin 0.7s linear infinite"}}/> Caricamento
     </div>}
-    {(step===2||step===3)&&<div onClick={e=>e.stopPropagation()} style={{position:"fixed",left:"50%",top:"50%",transform:"translateX(-50%) translateY(-50%)",zIndex:50,width,maxWidth:"96vw",maxHeight:"90vh",minHeight:200,display:"flex",flexDirection:"column",borderRadius:6,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.28)",animation:step===3?"slideUp 0.14s ease-in forwards":"slideDown 0.46s cubic-bezier(.2,.9,.25,1) forwards"}}>
+    {(step===2||step===3)&&<div onClick={e=>e.stopPropagation()} style={{position:"fixed",left:"50%",top:"50%",transform:"translateX(-50%) translateY(-50%)",zIndex:50,width,maxWidth:"96vw",maxHeight:height?"94vh":"90vh",minHeight:200,height,display:"flex",flexDirection:"column",borderRadius:6,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.28)",animation:step===3?"slideUp 0.14s ease-in forwards":"slideDown 0.46s cubic-bezier(.2,.9,.25,1) forwards"}}>
       {ti&&<div style={{background:headerColor,color:"#fff",padding:"12px 20px 12px 28px",flexShrink:0,fontFamily:FF,display:"flex",alignItems:"flex-start",gap:12}}><div style={{flex:1}}><div style={{fontWeight:700,fontSize:17}}>{ti}</div>{su&&<div style={{fontSize:12,opacity:0.85,marginTop:2}}>{su}</div>}</div><button onClick={onClose} style={{background:"rgba(0,0,0,0.2)",border:"none",color:"#fff",width:30,height:30,borderRadius:"50%",cursor:"pointer",fontWeight:900,fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>✕</button></div>}
       <div style={{overflowY:"auto",flex:1,background:"#fff",fontFamily:FF}}>{ch}</div>
     </div>}
@@ -5254,6 +5254,8 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   const getMeta=nome=>classeMeta[nome]||{coordinatore:false,materie:[]};
   const setMeta=(nome,patch)=>setClasseMeta({...classeMeta,[nome]:{...getMeta(nome),...patch}});
   const isMobile = useIsMobile();
+  const utenteAuthGC = useUtenteAuth();
+  const [docColOpen,setDocColOpen]=useState(false);
   const toggleMateria=(nome,mat)=>{
     const cur=getMeta(nome).materie||[];
     const next=cur.includes(mat)?cur.filter(m=>m!==mat):[...cur,mat];
@@ -5313,6 +5315,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
   return (
     <div style={{fontFamily:FF,display:"flex",flexDirection:"column",height:"100vh",background:"#f9fafb"}}>
       {toast&&<Toast msg="Salvato" onDone={()=>setToast(false)}/>}
+      {docColOpen&&sel&&utenteAuthGC?.id&&<DocentiCollegati userId={utenteAuthGC.id} email={utenteAuthGC.email||""} docente={_doc} classe={sel} classiList={list} materieClasse={cl=>{const m=getMeta(cl).materie||[];return m.length?m:tutteMaterie;}} onClose={()=>setDocColOpen(false)}/>}
       <div style={{background:"#12406f",color:"#fff",padding:isMobile?"10px 12px":"14px 24px",display:"flex",alignItems:"center",gap:16,flexShrink:0}}><Users size={isMobile?18:22}/><span style={{fontWeight:700,fontSize:isMobile?15:18}}>Gestione Classi e Studenti</span>{nomeScuola&&<span style={{fontSize:isMobile?11:13,opacity:0.8,background:"rgba(255,255,255,0.15)",borderRadius:4,padding:"3px 10px"}}>{nomeScuola}</span>}<button onClick={onTorna} style={{marginLeft:"auto",padding:isMobile?"6px 12px":"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:isMobile?13:16,cursor:"pointer"}}>Salva e torna</button></div>
       <div style={{flex:1,display:"flex",overflow:"hidden"}}>
         <div style={{width:isMobile?110:260,background:"#fff",borderRight:"2px solid #e5e7eb",display:"flex",flexDirection:"column",flexShrink:0}}>
@@ -5336,6 +5339,7 @@ function GestioneClassi({classi,setClassi,onTorna,nomeScuola,setNomeScuola}) {
           {!sel?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"#9ca3af",flexDirection:"column",gap:12}}><BookOpen size={48} color="#d1d5db"/><div style={{fontSize:18,fontWeight:600}}>Seleziona una classe</div></div>:(
             <>
               <div style={{background:"#eef4fb",borderBottom:"2px solid #c5d9f2",padding:"12px 24px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+                <button onClick={()=>setDocColOpen(true)} disabled={!utenteAuthGC?.id} style={{padding:"6px 12px",background:"#12406f",color:"#fff",border:"none",fontWeight:700,fontSize:13,cursor:"pointer"}}>👥 Docenti collegati</button>
                 <span style={{fontWeight:700,fontSize:18,color:"#12406f"}}>Classe {sel}</span>
                 <span style={{background:"#12406f",color:"#fff",borderRadius:12,padding:"2px 14px",fontWeight:700,fontSize:13}}>{alunni.length} alunni</span>
                 <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:10}}>
@@ -12115,18 +12119,25 @@ function Registro({docente,onCambia}) {
         />
       )}
 
-      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={900} headerColor={TEAL}
+      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={"96vw"} height={"92vh"} headerColor={TEAL}
         title={votoModal&&votoModal.editing?"Modifica valutazione":"Inserimento valutazione"}
         subtitle={(students.find(s=>s.id===(votoModal&&votoModal.sid))||{cognome:"",nome:""}).cognome+" "+(students.find(s=>s.id===(votoModal&&votoModal.sid))||{nome:""}).nome+" — "+materia+" — "+classe}>
         <div style={{padding:"24px 24px 16px",display:"flex",flexDirection:"column",gap:14,fontFamily:FF}}>
-          <div style={{display:"grid",gridTemplateColumns:"80px 1.5fr 1fr 1fr 1fr 1fr",gap:10,alignItems:"end"}}>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={votoForm.peso} onChange={e=>{const raw=e.target.value;setVotoForm({...votoForm,peso:raw===""?"":Math.min(100,Math.max(0,Number(raw)))})}} onBlur={()=>{if(votoForm.peso==="")setVotoForm(f=>({...f,peso:100}))}} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,alignItems:"start"}}>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Materia</div><div style={{border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#f3f4f6",color:TEAL,fontWeight:600}}>{materia}</div></div>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={votoForm.peso} onChange={e=>{const raw=e.target.value;setVotoForm({...votoForm,peso:raw===""?"":Math.min(100,Math.max(0,Number(raw)))})}} onBlur={()=>{if(votoForm.peso==="")setVotoForm(f=>({...f,peso:100}))}} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
+              <div style={{display:"flex",gap:16,justifyContent:"flex-end"}}>
+                <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
+                <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
+              </div>
+            </div>
           </div>
+          <div style={{width:120}}><div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div></div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Osservazioni (solo docente)</div><textarea value={votoForm.nota} onChange={e=>setVotoForm({...votoForm,nota:e.target.value})} rows={3} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px",resize:"none",boxSizing:"border-box",fontFamily:FF,fontSize:13}}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Osservazioni (visibili famiglia)</div><textarea value={votoForm.notaFam||""} onChange={e=>setVotoForm({...votoForm,notaFam:e.target.value})} rows={3} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px",resize:"none",boxSizing:"border-box",fontFamily:FF,fontSize:13}}/></div>
