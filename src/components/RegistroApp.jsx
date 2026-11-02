@@ -12115,18 +12115,25 @@ function Registro({docente,onCambia}) {
         />
       )}
 
-      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={900} headerColor={TEAL}
+      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={"96vw"} headerColor={TEAL}
         title={votoModal&&votoModal.editing?"Modifica valutazione":"Inserimento valutazione"}
         subtitle={(students.find(s=>s.id===(votoModal&&votoModal.sid))||{cognome:"",nome:""}).cognome+" "+(students.find(s=>s.id===(votoModal&&votoModal.sid))||{nome:""}).nome+" — "+materia+" — "+classe}>
         <div style={{padding:"24px 24px 16px",display:"flex",flexDirection:"column",gap:14,fontFamily:FF}}>
-          <div style={{display:"grid",gridTemplateColumns:"80px 1.5fr 1fr 1fr 1fr 1fr",gap:10,alignItems:"end"}}>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={votoForm.peso} onChange={e=>{const raw=e.target.value;setVotoForm({...votoForm,peso:raw===""?"":Math.min(100,Math.max(0,Number(raw)))})}} onBlur={()=>{if(votoForm.peso==="")setVotoForm(f=>({...f,peso:100}))}} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis. Fam.</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
-            <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,alignItems:"start"}}>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Data</div><input type="date" value={votoForm.data} onChange={e=>setVotoForm({...votoForm,data:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF}}/></div>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Tipologia</div><select value={votoForm.tipo} onChange={e=>setVotoForm({...votoForm,tipo:e.target.value})} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#fff",fontFamily:FF}}>{TIPI_VOTI.map(t=><option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>)}</select></div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Materia</div><div style={{border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,background:"#f3f4f6",color:TEAL,fontWeight:600}}>{materia}</div></div>
+              <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Peso</div><div style={{display:"flex",alignItems:"center",gap:4}}><input type="number" min="0" max="100" value={votoForm.peso} onChange={e=>{const raw=e.target.value;setVotoForm({...votoForm,peso:raw===""?"":Math.min(100,Math.max(0,Number(raw)))})}} onBlur={()=>{if(votoForm.peso==="")setVotoForm(f=>({...f,peso:100}))}} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"7px 8px",fontSize:13,fontFamily:FF,background:votoForm.peso===100?"#f3f4f6":"#fff"}}/><span style={{fontSize:13,color:"#888",flexShrink:0}}>%</span></div></div>
+              <div style={{display:"flex",gap:16,justifyContent:"flex-end"}}>
+                <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Vis</div><ToggleSiNo value={votoForm.visFam!==false} onChange={v=>setVotoForm(f=>({...f,visFam:v}))}/></div>
+                <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Fa media</div><ToggleSiNo value={votoForm.faMedia} onChange={v=>setVotoForm({...votoForm,faMedia:v})}/></div>
+              </div>
+            </div>
           </div>
+          <div style={{width:120}}><div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Voto</div><VotoAutocomplete value={votoForm.voto}             onChange={v=>setVotoForm(f=>({...f,voto:v,faMedia:v==="💬"?false:f.faMedia}))} onFaMediaChange={v=>setVotoForm(f=>({...f,faMedia:v}))} docente={docente}/></div></div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Osservazioni (solo docente)</div><textarea value={votoForm.nota} onChange={e=>setVotoForm({...votoForm,nota:e.target.value})} rows={3} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px",resize:"none",boxSizing:"border-box",fontFamily:FF,fontSize:13}}/></div>
             <div><div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:3}}>Osservazioni (visibili famiglia)</div><textarea value={votoForm.notaFam||""} onChange={e=>setVotoForm({...votoForm,notaFam:e.target.value})} rows={3} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px",resize:"none",boxSizing:"border-box",fontFamily:FF,fontSize:13}}/></div>
