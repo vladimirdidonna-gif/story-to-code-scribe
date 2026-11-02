@@ -602,7 +602,7 @@ function LoadingOverlay({show}) {
     </div>
   );
 }
-function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subtitle,skipLoading=false}) {
+function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subtitle,skipLoading=false,height}) {
   const [show,setShow]=useState(false);
   const [step,setStep]=useState(0);
   const t=useRef(null);
@@ -632,7 +632,7 @@ function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subt
     {step===1&&<div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",zIndex:60,background:"rgba(255,255,255,0.96)",borderRadius:20,padding:"8px 20px",boxShadow:"0 4px 20px rgba(0,0,0,0.12)",fontSize:13,color:"#6b7280",fontFamily:FF,fontWeight:600,display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}>
       <div style={{width:11,height:11,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:TEAL,animation:"spin 0.7s linear infinite"}}/> Caricamento
     </div>}
-    {(step===2||step===3)&&<div onClick={e=>e.stopPropagation()} style={{position:"fixed",left:"50%",top:"50%",transform:"translateX(-50%) translateY(-50%)",zIndex:50,width,maxWidth:"96vw",maxHeight:"90vh",minHeight:200,display:"flex",flexDirection:"column",borderRadius:6,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.28)",animation:step===3?"slideUp 0.14s ease-in forwards":"slideDown 0.46s cubic-bezier(.2,.9,.25,1) forwards"}}>
+    {(step===2||step===3)&&<div onClick={e=>e.stopPropagation()} style={{position:"fixed",left:"50%",top:"50%",transform:"translateX(-50%) translateY(-50%)",zIndex:50,width,maxWidth:"96vw",maxHeight:height?"94vh":"90vh",minHeight:200,height,display:"flex",flexDirection:"column",borderRadius:6,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.28)",animation:step===3?"slideUp 0.14s ease-in forwards":"slideDown 0.46s cubic-bezier(.2,.9,.25,1) forwards"}}>
       {ti&&<div style={{background:headerColor,color:"#fff",padding:"12px 20px 12px 28px",flexShrink:0,fontFamily:FF,display:"flex",alignItems:"flex-start",gap:12}}><div style={{flex:1}}><div style={{fontWeight:700,fontSize:17}}>{ti}</div>{su&&<div style={{fontSize:12,opacity:0.85,marginTop:2}}>{su}</div>}</div><button onClick={onClose} style={{background:"rgba(0,0,0,0.2)",border:"none",color:"#fff",width:30,height:30,borderRadius:"50%",cursor:"pointer",fontWeight:900,fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>✕</button></div>}
       <div style={{overflowY:"auto",flex:1,background:"#fff",fontFamily:FF}}>{ch}</div>
     </div>}
@@ -12115,7 +12115,7 @@ function Registro({docente,onCambia}) {
         />
       )}
 
-      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={"96vw"} headerColor={TEAL}
+      <Modal open={!!votoModal} onClose={()=>setVotoModal(null)} width={"96vw"} height={"92vh"} headerColor={TEAL}
         title={votoModal&&votoModal.editing?"Modifica valutazione":"Inserimento valutazione"}
         subtitle={(students.find(s=>s.id===(votoModal&&votoModal.sid))||{cognome:"",nome:""}).cognome+" "+(students.find(s=>s.id===(votoModal&&votoModal.sid))||{nome:""}).nome+" — "+materia+" — "+classe}>
         <div style={{padding:"24px 24px 16px",display:"flex",flexDirection:"column",gap:14,fontFamily:FF}}>
