@@ -620,6 +620,7 @@ function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subt
     }
     return()=>clearTimeout(t.current);
   },[open]);
+  useEffect(()=>{if(!show)return;const o=document.body.style.overflow;document.body.style.overflow="hidden";return()=>{document.body.style.overflow=o;};},[show]);
   if(!show) return null;
   const {children:ch,title:ti,subtitle:su}=snap.current;
   return (<>
@@ -628,7 +629,7 @@ function Modal({open,onClose,children,width=640,headerColor="#2563eb",title,subt
       @keyframes slideDown{0%{transform:translate(-50%,-130%)}100%{transform:translate(-50%,-50%)}}
       @keyframes slideUp{0%{transform:translate(-50%,-50%)}100%{transform:translate(-50%,-250%)}}`}
     </style>
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:40,opacity:step>=1&&step<3?1:0,transition:"opacity 0.22s"}}/>
+    <div onClick={e=>e.stopPropagation()} style={{position:"fixed",inset:0,background:"rgba(10,20,40,0.6)",zIndex:40,cursor:"not-allowed",opacity:step>=1&&step<3?1:0,transition:"opacity 0.22s"}}/>
     {step===1&&<div style={{position:"fixed",top:"50%",left:"50%",transform:"translate(-50%,-50%)",zIndex:60,background:"rgba(255,255,255,0.96)",borderRadius:20,padding:"8px 20px",boxShadow:"0 4px 20px rgba(0,0,0,0.12)",fontSize:13,color:"#6b7280",fontFamily:FF,fontWeight:600,display:"flex",alignItems:"center",gap:8,pointerEvents:"none"}}>
       <div style={{width:11,height:11,borderRadius:"50%",border:"2px solid #ddd",borderTopColor:TEAL,animation:"spin 0.7s linear infinite"}}/> Caricamento
     </div>}
