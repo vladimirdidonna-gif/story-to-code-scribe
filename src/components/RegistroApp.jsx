@@ -8839,7 +8839,34 @@ function Registro({docente,onCambia}) {
       });
     });
     return merged;
-  }, [contDB, datiColleghiCloud, classe, materia]);
+  }, [contDB, datiColleghiCloud, datiDocenti, classe, materia]);
+
+  // Assenze/ritardi/uscite dei colleghi collegati (sola lettura, abbinate per nome alunno)
+  const assenzeDBMerged = useMemo(()=>{
+    const fonti = Object.values({...datiColleghiCloud, ...datiDocenti});
+    if(!fonti.length) return assenzeDB;
+    const nrm=x=>String(x??"").toLowerCase().replace(/\s+/g," ").trim();
+    const out={...assenzeDB};
+    fonti.forEach(d=>{
+      if(!d||!d.classe||!d.assenze) return;
+      const cl=d.classe;
+      const locali=classi[cl]||[];
+      const perNome=new Map(locali.map(a=>[nrm(`${a.cognome} ${a.nome}`),a.id]));
+      const idMap=new Map((d.alunni||[]).map(a=>[String(a.id),perNome.get(nrm(`${a.cognome} ${a.nome}`))]));
+      const cur={...(out[cl]||{})};
+      Object.entries(d.assenze).forEach(([sid,arr])=>{
+        if(!Array.isArray(arr)) return;
+        const lid=idMap.has(String(sid))?idMap.get(String(sid)):sid;
+        if(lid===undefined) return;
+        const base=Array.isArray(cur[lid])?cur[lid]:[];
+        const nuovi=arr.filter(a=>!base.some(b=>b.id===a.id||(b.data===a.data&&b.tipo===a.tipo)))
+          .map(a=>({...a,_daCollega:true,inseritoDa:a.inseritoDa||d.docente||"Collega"}));
+        cur[lid]=[...base,...nuovi];
+      });
+      out[cl]=cur;
+    });
+    return out;
+  }, [assenzeDB, datiColleghiCloud, datiDocenti, classi]);
 
   const setClassi=v=>{
     setClassiRaw(v);
@@ -8866,9 +8893,9 @@ function Registro({docente,onCambia}) {
   const classKey=`__class__${classe}`;
   const getDkMat=(mat)=>`${classe}||${mat||materia}`;
   const getVoti=sid=>(votiDB[dk]?.[sid]||[]).filter(v=>(v.trimestre||TRIMESTRI[0])===pgTrim);
-  const getAssenze=sid=>assenzeDB[classe]?.[sid]||[];
+  const getAssenze=sid=>assenzeDBMerged[classe]?.[sid]||[];
   const getCont=sec=>{
-    if(sec==="firme")return contDB[`${classe}||__firme__`]?.[sec]||[];
+    if(sec==="firme")return contDBMerged[`${classe}||__firme__`]?.[sec]||[];
     if(sec==="comunicazioni"){
       // Legge SOLO dalla chiave globale __comunicazioni__
       // Filtra per classe corrente (se classiCom è vuoto = visibile a tutte)
