@@ -4626,8 +4626,22 @@ function StudentRow({s,i,isAssente,ng,onAssenzaChange,selezionato,onSelect,assen
   );
 }
 
-function ListaAlunniPanel({students,classe,TEAL,TEAL_LIGHT,isRegToday,regData,selStudent,setSelStudent,hasAssenzaInData,ngCount,getAssenze,toISOFast,assenzaRapidaInData,saveAssenze,assenzeDB,setGiustModal,setGiustOpen,setSchedaStudente,docente,showToast}) {
+function SelDest({tutti,onChange}) {
+  return (
+    <div>
+      <div style={{fontSize:13,color:"#12406f",fontWeight:600,marginBottom:6}}>Destinatari</div>
+      <select value={tutti?"tutti":"solo"} onChange={e=>onChange(e.target.value==="tutti")}
+        style={{minWidth:160,border:"1px solid #ccc",borderRadius:6,padding:"8px 10px",fontSize:14,background:"#fff",fontWeight:600,color:"#12406f"}}>
+        <option value="tutti">Tutta la classe</option>
+        <option value="solo">Solo per</option>
+      </select>
+    </div>
+  );
+}
+
+function ListaAlunniPanel({students,classe,TEAL,TEAL_LIGHT,isRegToday,regData,selStudent,setSelStudent,hasAssenzaInData,ngCount,getAssenze,toISOFast,assenzaRapidaInData,saveAssenze,assenzeDB,setGiustModal,setGiustOpen,setSchedaStudente,docente,showToast,onMultiSel}) {
   const [multiSel, setMultiSel] = useState([]);
+  useEffect(()=>{ onMultiSel?.(multiSel); },[multiSel]);
   const [eventoMultiOpen, setEventoMultiOpen] = useState(false);
   const allMultiSel = students.length>0 && students.every(s=>multiSel.includes(s.id));
   return (
@@ -6238,7 +6252,7 @@ function DiarioDocente({docente, classe, materia, students, cGet, cSet, showToas
           <div>
             <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:4}}>Materia</div>
             <select value={form.materiaLezione} onChange={e=>setForm(f=>({...f,materiaLezione:e.target.value}))}
-              style={{width:"100%",border:"1px solid #d1d5db",borderRadius:4,padding:"10px 12px",fontSize:15,color:TEAL,fontWeight:700,background:"#fff",fontFamily:FF}}>
+              style={{width:"100%",border:"1px solid #d1d5db",borderRadius:4,padding:"10px 12px",fontSize:15,color:"#eab308",fontWeight:800,background:"#fff",fontFamily:FF}}>
               {MATERIE_OPT.map(m=><option key={m}>{m}</option>)}
             </select>
           </div>
@@ -8484,6 +8498,7 @@ function Registro({docente,onCambia}) {
   const [pgOpen,setPgOpen]         = useState(false);
   const defVoto={tipo:"orale",voto:"",data:"",faMedia:true,nota:"",notaFam:"",peso:100,visFam:true};
   const [selStudents,setSelStudents] = useState([]);
+  const [multiSelReg,setMultiSelReg] = useState([]);
   const [docInnerTab, setDocInnerTab] = useState("registro");
   const [showFirmePanel, setShowFirmePanel] = useState(true);
   const [classeInnerTab, setClasseInnerTab] = useState("registro");
@@ -9338,7 +9353,7 @@ function Registro({docente,onCambia}) {
     });
     showToast();setMpOpen(false);setMpVoti({});setMpSession(null);
   };
-  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:item.destinatariTutti||false,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:"tutti",alunniParz:[],destinatariTutti:false,destinatari:[],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
+  const openContenuto=(sec,item=null,matIniz)=>{const matDef=matIniz||materia;setContOpen(sec);setEditCont(item?item.id:null);setContForm(item?{testo:item.testo||"",oraInizio:item.oraInizio||"1",nOre:item.nOre||"1",gravita:item.gravita||"lieve",data:toISO(item.data||"")||todayISO(),tipoLezione:item.tipoLezione||"Lezione regolare",partecipazione:item.partecipazione||"tutti",alunniParz:item.alunniParz||[],destinatariTutti:item.destinatariTutti||false,destinatari:item.destinatari||[],materiaLezione:item.materiaLezione||matDef,link:item.link||"",argomentoSel:item.argomentoSel||"",minutiSvolti:item.minutiSvolti||60,collabora:item.collabora||false}:{testo:"",oraInizio:"1",nOre:"1",gravita:"lieve",data:todayISO(),tipoLezione:"Lezione regolare",partecipazione:multiSelReg.length?"parziale":"tutti",alunniParz:[...multiSelReg],destinatariTutti:!multiSelReg.length,destinatari:[...multiSelReg],materiaLezione:matDef,link:"",argomentoSel:"",minutiSvolti:60,collabora:false});};
   const salvaContenuto=()=>{
     const dataLezione = contForm.data||new Date().toLocaleDateString("it-IT");
     let ore = "";
@@ -9662,7 +9677,7 @@ function Registro({docente,onCambia}) {
     setTimeout(() => { setSaving(false); setToastMsg("✅ Comunicazione salvata!"); }, 300);
     setComunOpen(false); setEditComun(null);
   };
-  const openVerifica=(item=null)=>{setVerOpen(true);setEditVer(item?item.id:null);setVerForm(item?{tipoVerifica:item.tipoVerifica||"Scritto",argomenti:item.argomenti||"",note:item.note||"",data:item.data||"",visibileFamiglia:item.visibileFamiglia||false,materia:item.materia||item._mat||materia,link:item.link||"",tuttiVer:!(item.partecipazione==="parziale"),alunniVer:item.alunniParz||[]}:{tipoVerifica:"Scritto",argomenti:"",note:"",data:"",visibileFamiglia:true,materia:materia,link:"",tuttiVer:true,alunniVer:[]});};
+  const openVerifica=(item=null)=>{setVerOpen(true);setEditVer(item?item.id:null);setVerForm(item?{tipoVerifica:item.tipoVerifica||"Scritto",argomenti:item.argomenti||"",note:item.note||"",data:item.data||"",visibileFamiglia:item.visibileFamiglia||false,materia:item.materia||item._mat||materia,link:item.link||"",tuttiVer:!(item.partecipazione==="parziale"),alunniVer:item.alunniParz||[]}:{tipoVerifica:"Scritto",argomenti:"",note:"",data:"",visibileFamiglia:true,materia:materia,link:"",tuttiVer:!multiSelReg.length,alunniVer:[...multiSelReg]});};
   const salvaVerifica=()=>{const {tuttiVer,alunniVer,...rest}=verForm;const item={...rest,data:verForm.data||todayISO(),inseritoDa:firmaAttiva,partecipazione:tuttiVer===false?"parziale":"tutti",alunniParz:tuttiVer===false?(alunniVer||[]):[]};if(editVer)saveCont("verifiche",getCont("verifiche").map(c=>c.id===editVer?{...c,...item}:c));else saveCont("verifiche",[...getCont("verifiche"),{id:Date.now(),...item}]);setVerOpen(false);setEditVer(null);};
   const salvaColloquio=()=>{if(editColl)setColloquiDB(colloquiDB.map(c=>c.id===editColl?{...collForm,id:editColl,docente:c.docente||firmaAttiva}:c));else setColloquiDB([...colloquiDB,{...collForm,id:Date.now(),docente:firmaAttiva}]);setCollOpen(false);showToast();};
   const getMaterieScrutinio = () => {
@@ -11229,7 +11244,7 @@ function Registro({docente,onCambia}) {
           </div>
           {(contOpen==="lezioni"||contOpen==="compiti")&&<div>
             <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:4}}>Materia</div>
-            <select value={contForm.materiaLezione||materia} onChange={e=>setContForm(p=>({...p,materiaLezione:e.target.value}))} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px 10px",fontSize:14,color:TEAL,fontWeight:600,background:"#fff",fontFamily:FF}}>
+            <select value={contForm.materiaLezione||materia} onChange={e=>setContForm(p=>({...p,materiaLezione:e.target.value}))} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px 10px",fontSize:14,color:"#eab308",fontWeight:800,background:"#fff",fontFamily:FF}}>
               {getMaterieClasse(classe).length>0?getMaterieClasse(classe).map(m=><option key={m}>{m}</option>):[...MATERIE,...(()=>{try{return JSON.parse(localStorage.getItem("reg:materieExtra")||"[]");}catch{return[];}})()].filter((v,i,a)=>a.indexOf(v)===i).map(m=><option key={m}>{m}</option>)}
             </select>
           </div>}
@@ -11373,6 +11388,7 @@ function Registro({docente,onCambia}) {
           isRegToday={isRegToday}
           regData={regData}
           selStudent={selStudent}
+          onMultiSel={setMultiSelReg}
           setSelStudent={setSelStudent}
           hasAssenzaInData={hasAssenzaInData}
           ngCount={ngCount}
@@ -11665,7 +11681,7 @@ function Registro({docente,onCambia}) {
           {/* MATERIA per lezioni e compiti */}
           {(contOpen==="lezioni"||contOpen==="compiti")&&<div>
             <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:4}}>Materia</div>
-            <select value={contForm.materiaLezione||materia} onChange={e=>setContForm(p=>({...p,materiaLezione:e.target.value}))} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px 10px",fontSize:14,color:TEAL,fontWeight:600,background:"#fff",fontFamily:FF}}>
+            <select value={contForm.materiaLezione||materia} onChange={e=>setContForm(p=>({...p,materiaLezione:e.target.value}))} style={{width:"100%",border:"1px solid #ccc",borderRadius:4,padding:"8px 10px",fontSize:14,color:"#eab308",fontWeight:800,background:"#fff",fontFamily:FF}}>
               {getMaterieClasse(classe).length>0?getMaterieClasse(classe).map(m=><option key={m}>{m}</option>):[...MATERIE,...(()=>{try{return JSON.parse(localStorage.getItem("reg:materieExtra")||"[]");}catch{return[];}})()].filter((v,i,a)=>a.indexOf(v)===i).map(m=><option key={m}>{m}</option>)}
             </select>
           </div>}
@@ -11713,8 +11729,7 @@ function Registro({docente,onCambia}) {
           {/* PARTECIPAZIONE per lezioni e compiti */}
           {(contOpen==="lezioni"||contOpen==="compiti")&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
             <div>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={contForm.partecipazione==="tutti"} onChange={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:[]}))}/>
+              <SelDest tutti={contForm.partecipazione==="tutti"} onChange={v=>setContForm(f=>({...f,partecipazione:v?"tutti":"parziale",alunniParz:v?[]:(multiSelReg.length?[...multiSelReg]:(f.alunniParz||[]))}))}/>
               {/* CREA SU COLLABORA — sotto il toggle Tutta la classe */}
               {contOpen==="lezioni"&&(
                 <div style={{marginTop:10}}>
@@ -11750,8 +11765,7 @@ function Registro({docente,onCambia}) {
           {/* DESTINATARI per note */}
           {contOpen==="note"&&<div style={{display:"flex",alignItems:"flex-start",gap:20}}>
             <div>
-              <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
+              <SelDest tutti={!!contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:v?[]:(multiSelReg.length?[...multiSelReg]:(f.destinatari||[]))}))}/>
             </div>
             <div style={{flex:1}}>
               <div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
@@ -11778,8 +11792,7 @@ function Registro({docente,onCambia}) {
               {/* Riga Tutta la classe + Alunni affiancati */}
               <div style={{display:"grid",gridTemplateColumns:"160px 1fr",gap:16,alignItems:"flex-start"}}>
                 <div>
-                  <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-                  <ToggleSiNo value={contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:[]}))}/>
+                  <SelDest tutti={!!contForm.destinatariTutti} onChange={v=>setContForm(f=>({...f,destinatariTutti:v,destinatari:v?[]:(multiSelReg.length?[...multiSelReg]:(f.destinatari||[]))}))}/>
                 </div>
                 <div>
                   <div style={{fontSize:12,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div>
@@ -11957,8 +11970,7 @@ function Registro({docente,onCambia}) {
           <div><div style={{fontSize:13,color:"#666",fontWeight:600,marginBottom:4}}>Link:</div><div style={{display:"flex",alignItems:"center",border:"1px solid #ccc",borderRadius:4,overflow:"hidden"}}><span style={{padding:"8px 12px",background:"#f5f5f5",borderRight:"1px solid #ccc",fontSize:14}}>🔗</span><input value={verForm.link||""} onChange={e=>setVerForm({...verForm,link:e.target.value})} placeholder="https://..." style={{border:"none",padding:"8px 10px",flex:1,fontSize:14,outline:"none",fontFamily:FF}}/></div></div>
           {/* Tutta la classe verifica */}
           <div style={{display:"flex",alignItems:"flex-start",gap:20}}>
-            <div><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Tutta la classe</div>
-              <ToggleSiNo value={verForm.tuttiVer!==false} onChange={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:[]}))}/>
+            <div><SelDest tutti={verForm.tuttiVer!==false} onChange={v=>setVerForm(f=>({...f,tuttiVer:v,alunniVer:v?[]:(multiSelReg.length?[...multiSelReg]:(f.alunniVer||[]))}))}/>
             </div>
             {verForm.tuttiVer===false&&<div style={{flex:1}}><div style={{fontSize:13,color:TEAL,fontWeight:600,marginBottom:6}}>Alunni</div><div style={{border:"1px solid #ccc",borderRadius:4,background:"#f9f9f9",padding:4,maxHeight:120,overflowY:"auto"}}>{[...students].sort((a,b)=>a.cognome.localeCompare(b.cognome)).map(s=>{const sel=(verForm.alunniVer||[]).includes(s.id);return(<div key={s.id} onClick={()=>setVerForm(f=>({...f,alunniVer:sel?(f.alunniVer||[]).filter(x=>x!==s.id):[...(f.alunniVer||[]),s.id]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 8px",cursor:"pointer",background:sel?TEAL_LIGHT:"transparent",borderRadius:3}}><div style={{width:15,height:15,border:"2px solid "+(sel?TEAL:"#bbb"),borderRadius:2,background:sel?TEAL:"#fff",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<span style={{color:"#fff",fontSize:9,fontWeight:900}}>✓</span>}</div><span style={{fontSize:13}}>{s.cognome} {s.nome}</span></div>);})}</div></div>}
           </div>
