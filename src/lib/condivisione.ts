@@ -117,11 +117,14 @@ export async function setSyncAttiva(id: string, attiva: boolean) {
 }
 
 export async function rifiutaInvito(id: string) {
-  await supabase.from("condivisioni").update({ stato: "rifiutata", updated_at: new Date().toISOString() }).eq("id", id);
+  const { error } = await supabase.from("condivisioni").update({ stato: "rifiutata", updated_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
 }
 
 export async function eliminaCondivisione(id: string) {
-  await supabase.from("condivisioni").delete().eq("id", id);
+  if (!window.confirm("Confermi l’eliminazione di questo collegamento? I dati del registro saranno conservati.")) return;
+  const { error } = await supabase.from("condivisioni").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export async function pubblicaDatiClasse(

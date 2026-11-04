@@ -20,6 +20,7 @@ export default function AuthGate({ children }: Props) {
   const [checking, setChecking] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncKey, setSyncKey] = useState(0);
+  const [syncError, setSyncError] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -40,12 +41,19 @@ export default function AuthGate({ children }: Props) {
       // Il cloud ha sempre la precedenza: si inviano solo le chiavi che il
       // cloud non conosce ancora, così un dispositivo non sovrascrive i dati
       // salvati poco prima da un altro.
-      const cloudKeys = await hydrateFromCloud(uid);
-      await pushLocalToCloud(uid, cloudKeys);
-      startCloudSync(uid, () => setSyncKey((k) => k + 1));
-      if (!alive) return;
-      setSyncing(false);
-      setSyncKey((k) => k + 1);
+      try {
+        const cloudKeys = await hydrateFromCloud(uid);
+        await pushLocalToCloud(uid, cloudKeys);
+        setSyncError("");
+      } catch {
+        setSyncError("Connessione non disponibile: le modifiche resteranno in attesa sul dispositivo.");
+      } finally {
+        if (alive) {
+          startCloudSync(uid, () => setSyncKey((k) => k + 1));
+          setSyncing(false);
+          setSyncKey((k) => k + 1);
+        }
+      }
     })();
 
     return () => {
@@ -69,7 +77,7 @@ export default function AuthGate({ children }: Props) {
 
   if (!session) return <AuthForm />;
 
-  return <>{children({ syncKey, signOut, email: session.user.email ?? "" })}</>;
+  return <>{syncError && <div role="status" className="bg-muted text-foreground p-2 text-sm">{syncError}</div>}{children({ syncKey, signOut, email: session.user.email ?? "" })}</>;
 }
 
 function AuthForm() {

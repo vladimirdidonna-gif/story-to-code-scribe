@@ -4,6 +4,7 @@ import { useIsMobile } from "../hooks/use-mobile";
 import { Plus, Trash2, Pencil, Users, BookOpen, Search } from "lucide-react";
 import DocentiCollegati, { useUtenteAuth, useRichiesteInAttesa } from "./DocentiCollegati";
 import { useDocentiCollegati } from "../lib/docenti-collegati";
+import { flushNow } from "../lib/cloud-sync";
 
 const MATERIE = ["Arte","Ed. Fisica","Francese","Geografia","Inglese","Italiano","Matematica","Musica","Religione","Scienze","Storia","Tecnologia"];
 const TIPI_VOTI = ["orale","scritto","grafico","pratico","unico"];
@@ -273,15 +274,8 @@ const cSet = (k, v) => {
   // L3: localStorage principale
   const _lsSet = (lsKey, val) => {
     try { localStorage.setItem(lsKey, val); return true; } catch {
-      // Quota exceeded: svuota backup vecchi e riprova
-      try {
-        const victims = Object.keys(localStorage)
-          .filter(x => x.includes(':bk') || x.includes('_bk'))
-          .sort(() => Math.random()-0.5)
-          .slice(0, 40);
-        victims.forEach(x => { try{localStorage.removeItem(x);}catch{} });
-        try { localStorage.setItem(lsKey, val); return true; } catch { return false; }
-      } catch { return false; }
+      console.warn('Spazio locale insufficiente: nessun dato esistente è stato eliminato.');
+      return false;
     }
   };
 
@@ -541,14 +535,19 @@ const SavingOverlay = ({show}) => {
 
 function Toast({msg,onDone}) {
   const [visible, setVisible] = useState(false);
+  const [checkedMsg, setCheckedMsg] = useState("Verifica salvataggio…");
   useEffect(()=>{
-    // Trigger l'animazione di entrata
-    const t1 = setTimeout(()=>setVisible(true), 10);
-    // Dopo 3 secondi esce
-    const t2 = setTimeout(()=>{ setVisible(false); }, 3000);
-    // Dopo l'uscita rimuove il componente
-    const t3 = setTimeout(onDone, 3400);
-    return()=>{ clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    let active = true;
+    let t2, t3;
+    setVisible(true);
+    const t1 = setTimeout(async () => {
+      const ok = await flushNow();
+      if (!active) return;
+      setCheckedMsg(ok ? (msg || "Salvataggio verificato.") : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
+      t2 = setTimeout(()=>setVisible(false), 3000);
+      t3 = setTimeout(onDone, 3400);
+    }, 50);
+    return()=>{ active=false; clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   },[]);
   return (
     <>
@@ -585,7 +584,7 @@ function Toast({msg,onDone}) {
         letterSpacing:0.2,
       }}>
         <span style={{fontSize:17}}>ℹ️</span>
-        {msg || "Operazione eseguita correttamente."}
+        {checkedMsg}
       </div>
     </>
   );
@@ -1636,7 +1635,9 @@ function AnagraficaTab({s, docente, classe}) {
     try { localStorage.setItem(aKey, JSON.stringify(d)); } catch {}
     try { sessionStorage.setItem(aKey, JSON.stringify(d)); } catch {}
     setAnag(d);
-    setSaved(true);
+    const confirmed = await flushNow();
+    setSaved(confirmed);
+    if (!confirmed) alert("Salvataggio non confermato: modifiche in attesa sul dispositivo.");
     setTimeout(()=>setSaved(false), 2000);
   };
 
@@ -6111,6 +6112,7 @@ function DiarioDocente({docente, classe, materia, students, cGet, cSet, showToas
   };
 
   const elimina = (item) => {
+    if (!window.confirm("Confermi l’eliminazione di questo elemento del diario?")) return;
     const sec = item._tipo==="compito" ? "compiti" : "lezioni";
     const key = `${classe}||${item._mat||item.materiaLezione||materia}`;
     setContDB(p=>{
@@ -8802,12 +8804,12 @@ function Registro({docente,onCambia}) {
 
   useEffect(()=>{if(!progOpen)return;const h=e=>{if(progRef.current&&!progRef.current.contains(e.target))setProgOpen(false);};window.addEventListener("mousedown",h);return()=>window.removeEventListener("mousedown",h);},[progOpen]);
 
-  const showToast = (_msg) => {
+  const showToast = async (_msg) => {
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      setToastMsg("Operazione eseguita correttamente.");
-    }, 900);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const ok = await flushNow();
+    setSaving(false);
+    setToastMsg(ok ? (_msg || "Salvataggio verificato.") : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
   };
 
   // ── Merge dati colleghi nel contDB (da cloud storage) ──
@@ -9120,12 +9122,7 @@ function Registro({docente,onCambia}) {
     const fuso = _fondi(salvato, db);
     const s = JSON.stringify(fuso);
     const key = `reg:${_doc}:votiDB`;
-    for(let i=0;i<8;i++) try{localStorage.setItem(`${key}_v${i}`,s);}catch(e){
-      try{
-        Object.keys(localStorage).filter(k=>k.includes('_v')&&k.includes('votiDB')&&k!==`${key}_v${i}`).slice(0,10).forEach(k=>{try{localStorage.removeItem(k);}catch{}});
-        localStorage.setItem(`${key}_v${i}`,s);
-      }catch{}
-    }
+    for(let i=0;i<8;i++) try{localStorage.setItem(`${key}_v${i}`,s);}catch(e){ console.warn("Spazio insufficiente: copie esistenti conservate."); }
     try{localStorage.setItem(key,s);}catch{}
     try{localStorage.setItem(key+'_bk1',s);}catch{}
     try{localStorage.setItem(key+'_bk2',s);}catch{}
@@ -9203,7 +9200,7 @@ function Registro({docente,onCambia}) {
       keys.forEach(k=>{
         const suf=k.slice(`reg:${docente}:`.length);
         localStorage.setItem(`reg:${n}:${suf}`,localStorage.getItem(k));
-        localStorage.removeItem(k);
+        // Il cambio nome conserva anche la copia originale.
       });
       localStorage.setItem("reg:lastDocente",n);
     }catch(e){console.warn("rinomina errore",e);}

@@ -1,6 +1,9 @@
 # Roadmap
 
 ## In corso
+- [x] Protezione dati: coda offline persistente, controllo salvataggi e rimozione pulizia automatica.
+- [ ] Protezione dati: verifica completa di tutte le eliminazioni e recupero multi-dispositivo; non ancora verificati.
+- [ ] Backup prima degli aggiornamenti e prova ripristino: richiede esportazione dalla pagina Database dell’utente.
 - [x] Evidenziazione home: cambiare HL_BG da azzurro (#e9f2fb) ad arancione chiaro (#ffedd5) — solo highlight da home, non la riga "Classe" in Gestione Classi
 - [ ] Nuova funzione "Docenti collegati" (da NUOVA_FUNZIONE_DOCENTI_COLLEGATI_pasted.md):
   - [x] Pulsante "👥 Docenti collegati" in alto a sinistra nella classe selezionata (Gestione Classi)

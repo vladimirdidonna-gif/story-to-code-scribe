@@ -1,285 +1,217 @@
-// Sincronizzazione reale multi-dispositivo del registro.
-// Tutti i dati che l'app salva in localStorage (e via window.storage)
-// vengono replicati nella tabella cloud `registro_dati` dell'account
-// e riportati in tempo reale su ogni dispositivo collegato.
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
+import { SyncOutbox, type Change } from './sync-outbox';
 
-const SKIP_PREFIXES = ["sb-", "supabase."];
-const shouldSkip = (k: string) => SKIP_PREFIXES.some((p) => k.startsWith(p));
-
+const shouldSkip = (k: string) => ['sb-', 'supabase.', '__registro_sync:', '__registro_history:'].some(p => k.startsWith(p));
+const rawSet = typeof window !== 'undefined' ? Storage.prototype.setItem : null;
+const rawRemove = typeof window !== 'undefined' ? Storage.prototype.removeItem : null;
+const write = (k: string, v: string) => rawSet?.call(localStorage, k, v);
+let journalReady: Promise<void> = Promise.resolve();
+let journalWrite: Promise<void> = Promise.resolve();
+const journalDb = () => new Promise<IDBDatabase>((resolve, reject) => {
+  const request = indexedDB.open('registro-sync-outbox', 1);
+  request.onupgradeneeded = () => request.result.createObjectStore('pending');
+  request.onsuccess = () => resolve(request.result);
+  request.onerror = () => reject(request.error);
+});
+const persistJournal = (key: string, value: string) => {
+  journalWrite = journalWrite.catch(() => {}).then(async () => {
+    const db = await journalDb();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction('pending', 'readwrite');
+      tx.objectStore('pending').put(value, key);
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+    });
+  });
+};
 let currentUser: string | null = null;
-let applyingRemote = false;
+let outbox: SyncOutbox | null = null;
+let flushing: Promise<boolean> | null = null;
+let timer: ReturnType<typeof setTimeout> | null = null;
 let patched = false;
-let flushTimer: ReturnType<typeof setTimeout> | null = null;
-const pending = new Map<string, string | null>();
-let channel: ReturnType<typeof supabase.channel> | null = null;
-let onRemoteChange: (() => void) | null = null;
-let lifecycleBound = false;
+let cleanup: (() => void) | null = null;
+const known = new Map<string, string | null>();
 
-
-const rawSet = typeof window !== "undefined" ? localStorage.setItem.bind(localStorage) : null;
-const rawRemove =
-  typeof window !== "undefined" ? localStorage.removeItem.bind(localStorage) : null;
-
-function queue(k: string, v: string | null) {
-  if (!currentUser || applyingRemote || shouldSkip(k)) return;
-  pending.set(k, v);
-  if (flushTimer) clearTimeout(flushTimer);
-  flushTimer = setTimeout(flush, 300);
+function activate(userId: string) {
+  if (currentUser === userId && outbox) return;
+  currentUser = userId;
+  known.clear();
+  const key = `__registro_sync:${userId}`;
+  const box = new SyncOutbox({ getItem: k => localStorage.getItem(k), setItem: persistJournal }, key);
+  outbox = box;
+  journalReady = (async () => {
+    const db = await journalDb();
+    const saved = await new Promise<string | undefined>((resolve, reject) => {
+      const request = db.transaction('pending', 'readonly').objectStore('pending').get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    if (saved) for (const [k, change] of JSON.parse(saved) as [string, Change][]) if (!box.entries.has(k)) box.entries.set(k, change);
+  })();
 }
-
-async function flush() {
-  flushTimer = null;
-  if (!currentUser || pending.size === 0) return;
-  const entries = [...pending.entries()];
-  pending.clear();
-
-  const rows = entries
-    .filter(([, v]) => v !== null)
-    .map(([k, v]) => ({ user_id: currentUser!, k, v, updated_at: new Date().toISOString() }));
-  const removed = entries.filter(([, v]) => v === null).map(([k]) => k);
-
-  try {
-    for (let i = 0; i < rows.length; i += 25) {
-      const chunk = rows.slice(i, i + 25);
-      const { error } = await supabase.from("registro_dati").upsert(chunk, { onConflict: "user_id,k" });
-      if (error) {
-        console.warn("[sync] upsert", error.message);
-        // Rimetti in coda: il dato non deve andare perso.
-        for (const r of chunk) if (!pending.has(r.k)) pending.set(r.k, r.v);
-      }
+function queue(k: string, value: string | null, shared = false) {
+  if (!outbox || shouldSkip(k)) return;
+  outbox.put(k, { value, base: known.get(k) ?? null, shared });
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(() => void flushNow(), 300);
+}
+function archive(k: string) {
+  // A revision is a separate row, never an overwrite of the previous copy.
+  return `__registro_history:${currentUser}:${crypto.randomUUID()}:${k}`;
+}
+async function send(k: string, change: Change, userId: string) {
+  const read = change.shared ? supabase.from('registro_condiviso').select('v,updated_at').eq('k', k) : supabase.from('registro_dati').select('v,updated_at').eq('k', k).eq('user_id', userId);
+  const { data, error } = await read.maybeSingle();
+  if (error) throw error;
+  const remote = data?.v ?? null;
+  if (remote !== change.value && remote !== change.base) throw new Error('Conflitto: la copia salvata su un altro dispositivo è stata conservata.');
+  if (remote !== change.value) {
+    if (remote !== null) {
+      const { error: historyError } = await supabase.from('registro_dati').insert({ user_id: userId, k: archive(k), v: remote });
+      if (historyError) throw historyError;
     }
-    if (removed.length) {
-      await supabase.from("registro_dati").delete().eq("user_id", currentUser).in("k", removed);
+    if (data) {
+      const result = change.shared
+        ? change.value === null
+          ? await supabase.from('registro_condiviso').delete().eq('k', k).eq('updated_at', data.updated_at).select('k')
+          : await supabase.from('registro_condiviso').update({ v: change.value, updated_at: new Date().toISOString() }).eq('k', k).eq('updated_at', data.updated_at).select('k')
+        : change.value === null
+          ? await supabase.from('registro_dati').delete().eq('user_id', userId).eq('k', k).eq('updated_at', data.updated_at).select('k')
+          : await supabase.from('registro_dati').update({ v: change.value, updated_at: new Date().toISOString() }).eq('user_id', userId).eq('k', k).eq('updated_at', data.updated_at).select('k');
+      const { data: changed, error: mutationError } = result;
+      if (mutationError) throw mutationError;
+      if (!changed?.length) throw new Error('Dati modificati da un altro dispositivo: modifica conservata in attesa.');
+    } else if (change.value !== null) {
+      const { error: insertError } = change.shared ? await supabase.from('registro_condiviso').insert({ k, v: change.value }) : await supabase.from('registro_dati').insert({ user_id: userId, k, v: change.value });
+      if (insertError) throw insertError;
     }
-  } catch (e) {
-    console.warn("[sync] flush", e);
-    for (const [k, v] of entries) if (!pending.has(k)) pending.set(k, v);
   }
+  const verify = change.shared ? supabase.from('registro_condiviso').select('v').eq('k', k) : supabase.from('registro_dati').select('v').eq('k', k).eq('user_id', userId);
+  const { data: verified, error: verifyError } = await verify.maybeSingle();
+  if (verifyError || (verified?.v ?? null) !== change.value) throw new Error('Salvataggio non verificato.');
+  known.set(k, change.value);
 }
-
-/** Salvataggio immediato (usato alla chiusura/uscita dall'app). */
-export async function flushNow() {
-  if (flushTimer) {
-    clearTimeout(flushTimer);
-    flushTimer = null;
-  }
-  await flush();
+export async function flushNow(): Promise<boolean> {
+  if (timer) { clearTimeout(timer); timer = null; }
+  if (flushing) { const ok = await flushing; return ok && outbox?.entries.size === 0; }
+  try { await journalReady; await journalWrite; } catch { return false; }
+  const box = outbox, userId = currentUser;
+  if (!box || !userId) return false;
+  flushing = (async () => {
+    let ok = true;
+    const entries = [...box.entries];
+    for (let i = 0; i < entries.length; i += 10) {
+      await Promise.all(entries.slice(i, i + 10).map(async ([k, change]) => {
+        try { await send(k, change, userId); box.acknowledge(k, change); }
+        catch { ok = false; }
+      }));
+    }
+    try { await journalWrite; } catch { return false; }
+    return ok && box.entries.size === 0;
+  })();
+  try { return await flushing; } finally { flushing = null; }
 }
-
-/** Scarica tutti i dati dell'account nel dispositivo corrente. Ritorna le chiavi già presenti nel cloud. */
 export async function hydrateFromCloud(userId: string): Promise<Set<string>> {
+  activate(userId);
+  await journalReady;
+  const { data, error } = await supabase.from('registro_dati').select('k,v').eq('user_id', userId);
+  if (error) throw new Error('Connessione non disponibile: i dati locali non sono stati sovrascritti.');
   const keys = new Set<string>();
-  const { data, error } = await supabase
-    .from("registro_dati")
-    .select("k,v")
-    .eq("user_id", userId);
-  if (error) {
-    console.warn("[sync] hydrate", error.message);
-    return keys;
-  }
-  applyingRemote = true;
-  try {
-    for (const row of data ?? []) {
-      keys.add(row.k);
-      if (row.v === null || shouldSkip(row.k)) continue;
-      try {
-        rawSet?.(row.k, row.v);
-      } catch {
-        /* quota */
-      }
-    }
-  } finally {
-    applyingRemote = false;
+  for (const row of data ?? []) {
+    keys.add(row.k);
+    if (shouldSkip(row.k)) continue;
+    known.set(row.k, row.v);
+    if (outbox?.entries.has(row.k) || row.v === null) continue;
+    const previous = localStorage.getItem(row.k);
+    if (previous !== null && previous !== row.v) write(`__registro_history:${userId}:${crypto.randomUUID()}:${row.k}`, previous);
+    write(row.k, row.v);
+    if (row.k.startsWith('ws:')) write(`priv:${row.k.slice(3)}`, row.v);
   }
   return keys;
 }
-
-/**
- * Invia al cloud solo ciò che il cloud non ha ancora.
- * Così i dati salvati da un altro dispositivo non vengono mai sovrascritti
- * da copie vecchie presenti su questo dispositivo.
- */
 export async function pushLocalToCloud(userId: string, cloudKeys?: Set<string>) {
-  currentUser = userId;
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (!k || shouldSkip(k)) continue;
-    if (cloudKeys && cloudKeys.has(k)) continue;
-    pending.set(k, localStorage.getItem(k));
+  activate(userId);
+  const owner = localStorage.getItem('__registro_sync:owner');
+  // Never import a previous account's browser cache into a different account.
+  if (!owner || owner === userId) {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || shouldSkip(k) || cloudKeys?.has(k) || outbox?.entries.has(k)) continue;
+      queue(k, localStorage.getItem(k));
+    }
   }
-  await flush();
+  try { write('__registro_sync:owner', userId); } catch { /* never remove data for space */ }
+  void flushNow();
+  return true;
 }
-
-
-/** Attiva la sincronizzazione continua + realtime. */
 export function startCloudSync(userId: string, onRemote: () => void) {
-  currentUser = userId;
-  onRemoteChange = onRemote;
-
+  activate(userId);
+  cleanup?.();
   if (!patched && rawSet && rawRemove) {
     patched = true;
-    localStorage.setItem = function (k: string, v: string) {
-      rawSet(k, v);
-      queue(k, v);
+    Storage.prototype.setItem = function(k, v) {
+      if (this === localStorage && currentUser && !shouldSkip(String(k))) queue(String(k), String(v));
+      try { rawSet.call(this, k, v); } catch (error) {
+        if (this !== localStorage || !currentUser || shouldSkip(String(k))) throw error;
+        // The durable journal preserves this write; do not evict another value.
+      }
     };
-    localStorage.removeItem = function (k: string) {
-      rawRemove(k);
-      queue(k, null);
+    Storage.prototype.removeItem = function(k) {
+      if (this === localStorage && currentUser && !shouldSkip(String(k))) {
+        if (!window.confirm('Confermi l’eliminazione di questo dato?')) return;
+        queue(String(k), null);
+      }
+      rawRemove.call(this, k);
+    };
+    Storage.prototype.clear = function() {
+      if (this === localStorage) throw new Error('Eliminazione automatica dei dati non consentita.');
+      for (const k of Object.keys(this)) rawRemove.call(this, k);
     };
   }
-
-  let remoteTimer: ReturnType<typeof setTimeout> | null = null;
-
-  const subscribe = () => {
-    if (channel) supabase.removeChannel(channel);
-    channel = supabase
-      .channel(`registro-sync-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "registro_dati", filter: `user_id=eq.${userId}` },
-        (payload) => {
-          const row = (payload.new ?? payload.old) as { k?: string; v?: string | null };
-          if (!row?.k || shouldSkip(row.k)) return;
-          const incoming = payload.eventType === "DELETE" ? null : (row.v ?? null);
-          if (localStorage.getItem(row.k) === incoming) return;
-          applyingRemote = true;
-          try {
-            if (incoming === null) rawRemove?.(row.k);
-            else rawSet?.(row.k, incoming);
-          } catch {
-            /* quota */
-          } finally {
-            applyingRemote = false;
-          }
-          if (remoteTimer) clearTimeout(remoteTimer);
-          remoteTimer = setTimeout(() => {
-            // Aggiornamento "morbido": i componenti rileggono i dati
-            // senza rimontare l'app (nessun ritorno alla Home).
-            window.dispatchEvent(new CustomEvent("registro-cloud-update"));
-            onRemoteChange?.();
-          }, 300);
-        },
-      )
-      .subscribe();
+  const resync = async () => {
+    await flushNow();
+    try { await hydrateFromCloud(userId); window.dispatchEvent(new CustomEvent('registro-cloud-update')); onRemote(); } catch { /* keep local */ }
   };
-
-  subscribe();
-
-  // Riallinea e riconnette quando il dispositivo torna online o l'app
-  // ritorna in primo piano: la sincronizzazione non resta mai bloccata.
-  if (!lifecycleBound) {
-    lifecycleBound = true;
-    const resync = async () => {
-      if (!currentUser) return;
-      await flush();
-      await hydrateFromCloud(currentUser);
-      window.dispatchEvent(new CustomEvent("registro-cloud-update"));
-    };
-    const onVisible = () => {
-      if (!currentUser) return;
-      if (document.visibilityState !== "visible") {
-        // App messa in background (o chiusa sul telefono): salva subito.
-        void flushNow();
-        return;
-      }
-      const state = channel?.state;
-      if (state !== "joined") subscribe();
-      void resync();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("pagehide", () => void flushNow());
-    window.addEventListener("online", () => {
-      if (!currentUser) return;
-      subscribe();
-      void resync();
-    });
-    window.addEventListener("focus", onVisible);
-
-  }
+  const channel = supabase.channel(`registro-sync-${userId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'registro_dati', filter: `user_id=eq.${userId}` }, () => void resync()).subscribe();
+  const onVisible = () => { if (document.visibilityState === 'visible') void resync(); else void flushNow(); };
+  const online = () => void resync();
+  const interval = setInterval(online, 20000);
+  document.addEventListener('visibilitychange', onVisible);
+  window.addEventListener('online', online);
+  window.addEventListener('pagehide', onVisible);
+  cleanup = () => { clearInterval(interval); document.removeEventListener('visibilitychange', onVisible); window.removeEventListener('online', online); window.removeEventListener('pagehide', onVisible); void supabase.removeChannel(channel); };
 }
-
-
 export async function stopCloudSync() {
-  await flush();
-  if (channel) {
-    supabase.removeChannel(channel);
-    channel = null;
-  }
-  currentUser = null;
+  const ok = await flushNow();
+  cleanup?.(); cleanup = null;
+  currentUser = null; outbox = null;
+  return ok;
 }
-
-/** window.storage backed dal cloud (usato internamente dal registro). */
 export function installCloudStorage(userId: string) {
+  activate(userId);
   const w = window as unknown as { storage?: unknown };
-  const cache = (k: string, shared?: boolean) => `${shared ? "shared:" : "priv:"}${k}`;
-
   w.storage = {
-    async get(k: string, shared?: boolean) {
-      try {
-        if (shared) {
-          const { data } = await supabase
-            .from("registro_condiviso")
-            .select("v")
-            .eq("k", k)
-            .maybeSingle();
-          if (data?.v != null) return { value: data.v };
-        } else {
-          const { data } = await supabase
-            .from("registro_dati")
-            .select("v")
-            .eq("user_id", userId)
-            .eq("k", `ws:${k}`)
-            .maybeSingle();
-          if (data?.v != null) return { value: data.v };
-        }
-      } catch {
-        /* offline */
-      }
-      try {
-        return { value: localStorage.getItem(cache(k, shared)) };
-      } catch {
-        return { value: null };
-      }
+    async get(k: string, shared = false) {
+      const cloudKey = shared ? k : `ws:${k}`;
+      const pending = outbox?.entries.get(cloudKey);
+      if (pending) return { value: pending.value };
+      const query = shared ? supabase.from('registro_condiviso').select('v').eq('k', cloudKey) : supabase.from('registro_dati').select('v').eq('k', cloudKey).eq('user_id', userId);
+      const { data, error } = await query.maybeSingle();
+      if (!error) { known.set(cloudKey, data?.v ?? null); if (data?.v != null) return { value: data.v }; }
+      return { value: localStorage.getItem(`${shared ? 'shared:' : 'priv:'}${k}`) };
     },
-    async set(k: string, value: string, shared?: boolean) {
-      try {
-        rawSet?.(cache(k, shared), value);
-      } catch {
-        /* quota */
-      }
-      try {
-        if (shared) {
-          await supabase
-            .from("registro_condiviso")
-            .upsert({ k, v: value, updated_at: new Date().toISOString() }, { onConflict: "k" });
-        } else {
-          await supabase
-            .from("registro_dati")
-            .upsert(
-              { user_id: userId, k: `ws:${k}`, v: value, updated_at: new Date().toISOString() },
-              { onConflict: "user_id,k" },
-            );
-        }
-      } catch {
-        /* offline */
-      }
-      return { ok: true };
+    async set(k: string, value: string, shared = false) {
+      queue(shared ? k : `ws:${k}`, value, shared);
+      try { write(`${shared ? 'shared:' : 'priv:'}${k}`, value); } catch { /* journal retains the write */ }
+      return { ok: await flushNow() };
     },
-    async delete(k: string, shared?: boolean) {
-      try {
-        rawRemove?.(cache(k, shared));
-      } catch {
-        /* noop */
-      }
-      try {
-        if (shared) await supabase.from("registro_condiviso").delete().eq("k", k);
-        else
-          await supabase.from("registro_dati").delete().eq("user_id", userId).eq("k", `ws:${k}`);
-      } catch {
-        /* offline */
-      }
-      return { ok: true };
+    async delete(k: string, shared = false) {
+      if (!window.confirm('Confermi l’eliminazione di questo dato?')) return { ok: false };
+      queue(shared ? k : `ws:${k}`, null, shared);
+      const ok = await flushNow();
+      if (ok) rawRemove?.call(localStorage, `${shared ? 'shared:' : 'priv:'}${k}`);
+      return { ok };
     },
   };
 }
