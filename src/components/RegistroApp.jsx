@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
-import { Plus, Trash2, Pencil, Users, BookOpen, Search } from "lucide-react";
+import { Plus, Trash2, Pencil, Users, User, BookOpen, Search } from "lucide-react";
 import DocentiCollegati, { useUtenteAuth, useRichiesteInAttesa } from "./DocentiCollegati";
 import { useDocentiCollegati } from "../lib/docenti-collegati";
 import { flushNow } from "../lib/cloud-sync";
@@ -22,7 +22,20 @@ const TIPI_ASSENZA = {
   uscita:     {label:"Uscita anticipata",color:"#f97316", contaFlag:false},
   ingresso:   {label:"Ingresso",color:"#8b5cf6", contaFlag:false},
   fuori_aula: {label:"Presente fuori aula",color:"#16a34a", contaFlag:false},
+  rientro:        {label:"Rientro",color:"#f59e0b", contaFlag:false},
+  assenza_oraria: {label:"Assenza oraria",color:"#ef4444", contaFlag:true},
 };
+// ─── Schermata "Inserimento Eventi" (stile Axios) ───
+const PETROL = "#136268";
+const EVENTI_TIPI = [
+  {id:"presente",       lbl:"Presente",                    col:"#12406f"},
+  {id:"assente",        lbl:"Assente",                     col:"#ef4444"},
+  {id:"ritardo",        lbl:"Ritardo",                     col:"#eab308"},
+  {id:"uscita",         lbl:"Uscita anticipata",           col:"#14b8a6"},
+  {id:"rientro",        lbl:"Rientro",                     col:"#f59e0b"},
+  {id:"fuori_aula",     lbl:"Presente fuori dalla classe", col:"#12406f"},
+  {id:"assenza_oraria", lbl:"Assenza oraria",              col:"#ef4444"},
+];
 const PAROLE_SALUTE = ["salute","medic","dottore","mal","febbre","influenza","visita","ospedale","allergia","infortunio"];
 const FF = "Helvetica,Arial,sans-serif";
 
@@ -534,21 +547,30 @@ const SavingOverlay = ({show}) => {
 };
 
 function Toast({msg,onDone}) {
-  const [visible, setVisible] = useState(false);
-  const [checkedMsg, setCheckedMsg] = useState("Salvataggio…");
+  // La striscia verde compare solo quando il salvataggio è stato confermato.
+  // Se la conferma non arriva non compare nessun messaggio: le modifiche
+  // restano in coda sul dispositivo e si salvano da sole appena la
+  // connessione ritorna.
+  const [phase, setPhase] = useState("hidden");
   useEffect(()=>{
     let active = true;
     let t2, t3;
-    setVisible(true);
-    const t1 = setTimeout(async () => {
-      const ok = await flushNow();
+    const wait = (ms) => new Promise(r=>setTimeout(r,ms));
+    (async () => {
+      let ok = false;
+      for (let i = 0; i < 3 && !ok; i++) {
+        ok = await flushNow();
+        if (!ok && i < 2) await wait(300);
+      }
       if (!active) return;
-      setCheckedMsg(ok ? "Operazione eseguita correttamente" : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
-      t2 = setTimeout(()=>setVisible(false), 3000);
-      t3 = setTimeout(onDone, 3400);
-    }, 50);
-    return()=>{ active=false; clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+      if (!ok) { onDone?.(); return; }
+      setPhase("in");
+      t2 = setTimeout(()=>setPhase("out"), 3000);
+      t3 = setTimeout(()=>{ setPhase("hidden"); onDone?.(); }, 3400);
+    })();
+    return()=>{ active=false; clearTimeout(t2); clearTimeout(t3); };
   },[]);
+  if (phase === "hidden") return null;
   return (
     <>
       <style>{`
@@ -577,14 +599,14 @@ function Toast({msg,onDone}) {
         gap:10,
         boxShadow:"0 2px 12px rgba(0,0,0,0.18)",
         borderRadius:"0 0 0 4px",
-        animation: visible
+        animation: phase === "in"
           ? "slideInRight 0.38s cubic-bezier(.2,.9,.25,1) forwards"
           : "slideOutRight 0.38s cubic-bezier(.4,0,.6,1) forwards",
         minWidth:260,
         letterSpacing:0.2,
       }}>
         <span style={{fontSize:17}}>ℹ️</span>
-        {checkedMsg}
+        Operazione eseguita correttamente
       </div>
     </>
   );
@@ -1637,7 +1659,6 @@ function AnagraficaTab({s, docente, classe}) {
     setAnag(d);
     const confirmed = await flushNow();
     setSaved(confirmed);
-    if (!confirmed) alert("Salvataggio non confermato: modifiche in attesa sul dispositivo.");
     setTimeout(()=>setSaved(false), 2000);
   };
 
@@ -3993,7 +4014,96 @@ function AppelloSemplificato({students, classe, docente, assenzeDB, contDB, save
 }
 
 
-function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editAssenza}) {
+function SegSiNo({value, onChange}) {
+  return (
+    <div style={{display:"inline-flex",border:"1px solid #d1d5db",borderRadius:4,overflow:"hidden",flexShrink:0}}>
+      <div onClick={()=>onChange(true)} style={{padding:"5px 20px",fontSize:12,fontWeight:800,cursor:"pointer",background:value?"#16a34a":"#f3f4f6",color:value?"#fff":"#9ca3af",fontFamily:FF,userSelect:"none"}}>SI</div>
+      <div onClick={()=>onChange(false)} style={{padding:"5px 20px",fontSize:12,fontWeight:800,cursor:"pointer",background:value?"#f3f4f6":"#ef4444",color:value?"#9ca3af":"#fff",fontFamily:FF,userSelect:"none",borderLeft:"1px solid #d1d5db"}}>NO</div>
+    </div>
+  );
+}
+
+function EventoLayout({multi, dataISO, setDataISO, sottotitolo, tipo, setTipo, oraLez, setOraLez, orario, setOrario, motivo, setMotivo, giustificato, setGiustificato, concorreCalcolo, setConcorre, daD, setDaD, onSalva, onClose}) {
+  const fmtDay = iso => {
+    try{
+      const d = new Date(iso+"T00:00:00");
+      if(isNaN(d)) return iso||"";
+      const GG=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+      const MM=["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+      return `${GG[d.getDay()]}, ${d.getDate()} ${MM[d.getMonth()]} ${d.getFullYear()}`;
+    }catch{ return iso||""; }
+  };
+  return (
+    <div style={{display:"flex",flexDirection:"column",flex:1,minHeight:0,background:"#fff"}}>
+      {/* Header */}
+      <div style={{background:PETROL,color:"#fff",padding:"12px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
+        <div style={{width:34,height:34,borderRadius:4,background:"rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <User size={19} color="#fff"/>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:700,fontSize:17,lineHeight:1.15}}>{multi?"Inserimento Eventi multipli":"Inserimento Evento"} {fmtDay(dataISO)}</div>
+          <div style={{fontSize:12,opacity:0.92,marginTop:3,fontWeight:600,letterSpacing:0.4}}>{(sottotitolo||"").toUpperCase()}</div>
+        </div>
+        <input type="date" value={dataISO} onChange={e=>setDataISO(e.target.value)} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",color:"#fff",borderRadius:4,padding:"3px 7px",fontSize:11,cursor:"pointer",flexShrink:0}}/>
+        <button onClick={onClose} style={{background:"transparent",border:"none",color:"#fff",cursor:"pointer",fontWeight:900,fontSize:20,lineHeight:1,padding:"0 4px",flexShrink:0}}>✕</button>
+      </div>
+      {/* Corpo */}
+      <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"16px 18px",display:"flex",gap:24,alignItems:"flex-start",flexWrap:"wrap"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:225,flexShrink:0}}>
+          {EVENTI_TIPI.map(t=>(
+            <label key={t.id} style={{display:"flex",alignItems:"center",gap:9,cursor:"pointer"}}>
+              <input type="radio" name={"tipoEv"+(multi?"m":"s")} checked={tipo===t.id} onChange={()=>setTipo(t.id)} style={{accentColor:t.col,width:16,height:16,flexShrink:0}}/>
+              <span style={{fontWeight:700,fontSize:14,color:t.col,fontFamily:FF}}>{t.lbl}</span>
+            </label>
+          ))}
+        </div>
+        <div style={{flex:1,minWidth:280,display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <div>
+              <div style={{fontSize:12,color:"#374151",fontWeight:700,marginBottom:5}}>Ora Lez.</div>
+              <input value={oraLez} onChange={e=>setOraLez(e.target.value)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:6,padding:"8px 11px",fontSize:14,fontFamily:FF,boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <div>
+              <div style={{fontSize:12,color:"#374151",fontWeight:700,marginBottom:5}}>Orario</div>
+              <div style={{display:"flex",alignItems:"center",border:"1px solid #d1d5db",borderRadius:6,overflow:"hidden",background:"#fff"}}>
+                <span style={{padding:"8px 10px",background:"#f3f4f6",borderRight:"1px solid #d1d5db",fontSize:14}}>⏰</span>
+                <input type="time" value={orario} onChange={e=>setOrario(e.target.value)} style={{border:"none",padding:"8px 10px",fontSize:13,outline:"none",fontFamily:FF,flex:1}}/>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style={{fontSize:12,color:"#374151",fontWeight:700,marginBottom:5}}>Motivo</div>
+            <textarea value={motivo} onChange={e=>setMotivo(e.target.value)} rows={3} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:6,padding:"8px 11px",resize:"vertical",fontFamily:FF,fontSize:13,boxSizing:"border-box",outline:"none"}}/>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:11}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#111827",minWidth:140,fontFamily:FF}}>Giustificato</span>
+              <SegSiNo value={giustificato} onChange={setGiustificato}/>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#111827",minWidth:140,fontFamily:FF}}>Concorre al calcolo</span>
+              <SegSiNo value={concorreCalcolo} onChange={setConcorre}/>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#111827",minWidth:140,fontFamily:FF}}>DaD</span>
+              <SegSiNo value={daD} onChange={setDaD}/>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Footer */}
+      <div style={{flexShrink:0,borderTop:"1px solid #e5e7eb",padding:"11px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,background:"#fff"}}>
+        <div style={{fontSize:12,color:"#111827",fontWeight:600,lineHeight:1.4,fontFamily:FF}}>Minuti di tolleranza in entrata: 10<br/>in uscita: 10</div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={onSalva} style={{padding:"9px 24px",background:"#22c55e",color:"#fff",border:"none",borderRadius:20,fontWeight:700,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",gap:7,fontFamily:FF}}>💾 Salva</button>
+          <button onClick={onClose} style={{padding:"9px 24px",background:"#3b82f6",color:"#fff",border:"none",borderRadius:20,fontWeight:700,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",gap:7,fontFamily:FF}}>⊗ Chiudi</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editAssenza, multi}) {
   const [phase, setPhase] = useState("loading"); // loading | open | closing
   const [tipo, setTipo] = useState(editAssenza?.tipo||"presente");
   const [oraLezione, setOraLezione] = useState(editAssenza?.oraLezione||"1");

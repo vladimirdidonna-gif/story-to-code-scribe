@@ -99,16 +99,25 @@ export async function flushNow(): Promise<boolean> {
   const box = outbox, userId = currentUser;
   if (!box || !userId) return false;
   flushing = (async () => {
-    let ok = true;
-    const entries = [...box.entries];
-    for (let i = 0; i < entries.length; i += 10) {
-      await Promise.all(entries.slice(i, i + 10).map(async ([k, change]) => {
-        try { await send(k, change, userId); box.acknowledge(k, change); }
-        catch { ok = false; }
-      }));
+    // Tre tentativi ravvicinati: un calo di connessione o una modifica arrivata
+    // da un altro dispositivo non devono far restare la scrittura in sospeso.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      let ok = true;
+      const entries = [...box.entries];
+      for (let i = 0; i < entries.length; i += 10) {
+        await Promise.all(entries.slice(i, i + 10).map(async ([k, change]) => {
+          try { await send(k, change, userId); box.acknowledge(k, change); }
+          catch { ok = false; }
+        }));
+      }
+      if (ok && box.entries.size === 0) {
+        try { await journalWrite; } catch { return false; }
+        return true;
+      }
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 300));
     }
-    try { await journalWrite; } catch { return false; }
-    return ok && box.entries.size === 0;
+    try { await journalWrite; } catch { /* la coda resta in attesa sul dispositivo */ }
+    return false;
   })();
   try { return await flushing; } finally { flushing = null; }
 }
