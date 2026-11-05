@@ -535,7 +535,7 @@ const SavingOverlay = ({show}) => {
 
 function Toast({msg,onDone}) {
   const [visible, setVisible] = useState(false);
-  const [checkedMsg, setCheckedMsg] = useState("Verifica salvataggio…");
+  const [checkedMsg, setCheckedMsg] = useState("Salvataggio…");
   useEffect(()=>{
     let active = true;
     let t2, t3;
@@ -543,7 +543,7 @@ function Toast({msg,onDone}) {
     const t1 = setTimeout(async () => {
       const ok = await flushNow();
       if (!active) return;
-      setCheckedMsg(ok ? (msg || "Salvataggio verificato.") : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
+      setCheckedMsg(ok ? "Operazione eseguita correttamente" : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
       t2 = setTimeout(()=>setVisible(false), 3000);
       t3 = setTimeout(onDone, 3400);
     }, 50);
@@ -8805,11 +8805,7 @@ function Registro({docente,onCambia}) {
   useEffect(()=>{if(!progOpen)return;const h=e=>{if(progRef.current&&!progRef.current.contains(e.target))setProgOpen(false);};window.addEventListener("mousedown",h);return()=>window.removeEventListener("mousedown",h);},[progOpen]);
 
   const showToast = async (_msg) => {
-    setSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const ok = await flushNow();
-    setSaving(false);
-    setToastMsg(ok ? (_msg || "Salvataggio verificato.") : "Salvataggio non confermato: modifiche in attesa sul dispositivo.");
+    setToastMsg(_msg || "ok");
   };
 
   // ── Merge dati colleghi nel contDB (da cloud storage) ──
