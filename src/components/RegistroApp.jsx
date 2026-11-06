@@ -21,6 +21,8 @@ const TIPI_ASSENZA = {
   uscita:     {label:"Uscita anticipata",color:"#f97316", contaFlag:false},
   ingresso:   {label:"Ingresso",color:"#8b5cf6", contaFlag:false},
   fuori_aula: {label:"Presente fuori aula",color:"#16a34a", contaFlag:false},
+  rientro:    {label:"Rientro",color:"#e0a030", contaFlag:false},
+  assenza_oraria: {label:"Assenza oraria",color:"#d9534f", contaFlag:false},
 };
 const PAROLE_SALUTE = ["salute","medic","dottore","mal","febbre","influenza","visita","ospedale","allergia","infortunio"];
 const FF = "Helvetica,Arial,sans-serif";
@@ -4025,12 +4027,15 @@ function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editA
   };
 
   const TIPI = [
-    {id:"presente",   lbl:"Presente",            col:"#12406f"},
-    {id:"assente",    lbl:"Assente",              col:"#ef4444"},
-    {id:"ritardo",    lbl:"Ritardo/Rientro",      col:"#f97316"},
-    {id:"uscita",     lbl:"Uscita anticipata",    col:"#8b5cf6"},
-    {id:"fuori_aula", lbl:"Presente fuori aula",  col:"#16a34a"},
+    {id:"presente",       lbl:"Presente",                    col:"#337ab7"},
+    {id:"assente",        lbl:"Assente",                     col:"#d9534f"},
+    {id:"ritardo",        lbl:"Ritardo",                     col:"#e0a030"},
+    {id:"uscita",         lbl:"Uscita anticipata",           col:"#20a29a"},
+    {id:"rientro",        lbl:"Rientro",                     col:"#e0a030"},
+    {id:"fuori_aula",     lbl:"Presente fuori dalla classe", col:"#337ab7"},
+    {id:"assenza_oraria", lbl:"Assenza oraria",              col:"#d9534f"},
   ];
+
 
   const isEdit = !!(editAssenza?.id);
 
@@ -4081,84 +4086,70 @@ function EventoAlunnoModal({s, classe, docente, regData, onSalva, onClose, editA
             ?"risaliSu 0.26s cubic-bezier(.4,0,.6,1) forwards"
             :"piombaGiu 0.38s cubic-bezier(.2,.9,.25,1) forwards",
         }}>
-          {/* Header teal — compatto */}
-          <div style={{background:TEAL_GRAD,color:"#fff",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-            <div>
-              <div style={{fontWeight:700,fontSize:15}}>Nuovo evento — {s.cognome} {s.nome}</div>
-              <div style={{fontSize:11,opacity:0.85}}>{fmtDayLabel(dataISO)}</div>
+          <div style={{background:TEAL_GRAD,color:"#fff",padding:"16px 18px",display:"flex",alignItems:"center",gap:16,flexShrink:0,position:"relative"}}>
+            <div style={{width:44,height:44,background:"rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"center",borderRadius:3,flexShrink:0}}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4.5"/><path d="M3 21c0-4.5 4-7.5 9-7.5s9 3 9 7.5z"/></svg>
             </div>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <input type="date" value={dataISO} onChange={e=>setDataISO(e.target.value)}
-                style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",color:"#fff",borderRadius:4,padding:"2px 7px",fontSize:11,cursor:"pointer"}}/>
-              <button onClick={close} style={{background:"rgba(0,0,0,0.2)",border:"none",color:"#fff",borderRadius:"50%",width:26,height:26,cursor:"pointer",fontWeight:900,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button>
+            <div style={{minWidth:0}}>
+              <div style={{fontSize:20,fontWeight:400}}>Inserimento Eventi multipli&nbsp; {fmtDayLabel(dataISO)}</div>
+              <div style={{fontSize:11,opacity:0.9,textTransform:"uppercase",marginTop:2}}>{s.cognome} {s.nome}</div>
             </div>
+            <button onClick={close} aria-label="Chiudi" style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:"rgba(255,255,255,0.7)",fontSize:18,cursor:"pointer"}}>×</button>
           </div>
 
-          {/* Barra colorata tipo corrente */}
-          <div style={{height:3,background:tipoCorrente.col,transition:"background 0.2s",flexShrink:0}}/>
-
-          {/* Corpo SCROLLABILE */}
-          <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"12px 16px",display:"flex",flexDirection:"column",gap:10}}>
-
-            {/* Radio tipologie — riga orizzontale su mobile */}
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"16px 18px",display:"flex",flexWrap:"wrap",gap:20}}>
+            <div style={{display:"flex",flexDirection:"column",gap:12,minWidth:220,flex:"0 0 260px"}}>
               {TIPI.map(t=>(
-                <button key={t.id} onClick={()=>setTipo(t.id)}
-                  style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:20,border:"2px solid "+(tipo===t.id?t.col:"#e5e7eb"),background:tipo===t.id?t.col:"#fff",cursor:"pointer",fontWeight:tipo===t.id?700:400,color:tipo===t.id?"#fff":t.col,fontSize:12,transition:"all 0.15s"}}>
-                  {t.lbl}
-                </button>
+                <label key={t.id} style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer",color:t.col,fontSize:14}}>
+                  <span onClick={()=>setTipo(t.id)} style={{width:18,height:18,borderRadius:"50%",border:"1.5px solid #555",display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    {tipo===t.id&&<span style={{width:6,height:6,borderRadius:"50%",background:"#333"}}/>}
+                  </span>
+                  <span onClick={()=>setTipo(t.id)}>{t.lbl}</span>
+                </label>
               ))}
             </div>
-
-            {/* Ora Lez + Orario */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              <div>
-                <div style={{fontSize:11,color:TEAL,fontWeight:700,marginBottom:3}}>Ora Lez.</div>
-                <input value={oraLezione} onChange={e=>setOraLezione(e.target.value)}
-                  style={{width:"100%",border:"1px solid #d1d5db",borderRadius:4,padding:"7px 8px",fontSize:14,fontFamily:FF,boxSizing:"border-box"}}/>
-              </div>
-              <div>
-                <div style={{fontSize:11,color:TEAL,fontWeight:700,marginBottom:3}}>Orario</div>
-                <div style={{display:"flex",alignItems:"center",border:"1px solid #d1d5db",borderRadius:4,overflow:"hidden"}}>
-                  <span style={{padding:"7px 8px",background:"#f5f5f5",borderRight:"1px solid #d1d5db",fontSize:13}}>⏰</span>
-                  <input type="time" value={oraOrologio} onChange={e=>setOraOrologio(e.target.value)}
-                    style={{border:"none",padding:"7px 8px",fontSize:13,outline:"none",fontFamily:FF,flex:1}}/>
+            <div style={{flex:"1 1 300px",display:"flex",flexDirection:"column",gap:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:28}}>
+                <div>
+                  <div style={{fontSize:13,color:"#337ab7",marginBottom:4}}>Ora Lez.</div>
+                  <input value={oraLezione} onChange={e=>setOraLezione(e.target.value)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:6,padding:"8px 10px",fontSize:14,fontFamily:FF,boxSizing:"border-box",outline:"none"}}/>
+                </div>
+                <div>
+                  <div style={{fontSize:13,color:"#337ab7",marginBottom:4}}>Orario</div>
+                  <div style={{display:"flex",alignItems:"stretch"}}>
+                    <span style={{padding:"0 10px",background:"#e5e5e5",border:"1px solid #d1d5db",borderRight:"none",borderRadius:"6px 0 0 6px",display:"flex",alignItems:"center"}}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                    </span>
+                    <input type="time" value={oraOrologio} onChange={e=>setOraOrologio(e.target.value)} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:6,padding:"8px 10px",fontSize:14,fontFamily:FF,boxSizing:"border-box",outline:"none",borderRadius:"0 6px 6px 0"}}/>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Motivo */}
-            <div>
-              <div style={{fontSize:11,color:TEAL,fontWeight:700,marginBottom:3}}>Motivo</div>
-              <textarea value={motivo} onChange={e=>setMotivo(e.target.value)} rows={2}
-                style={{width:"100%",border:"1px solid #d1d5db",borderRadius:4,padding:"7px 8px",resize:"none",fontFamily:FF,fontSize:13,boxSizing:"border-box"}}/>
-            </div>
-
-            {/* DaD | Giustificato | Concorre */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                              {[
-                {lbl:"DaD", val:daD, set:setDaD},
-                {lbl:"Giustificato", val:giustificato, set:setGiustificato},
-                {lbl:"Concorre", val:concorreCalcolo, set:setConcorreCalcolo},
-              ].map(({lbl,val,set})=>(
-                <div key={lbl}>
-                  <div style={{fontSize:10,color:"#6b7280",fontWeight:600,marginBottom:3}}>{lbl}</div>
-                  <ToggleSiNo value={val} onChange={set}/>
+              <div>
+                <div style={{fontSize:13,color:"#337ab7",marginBottom:4}}>Motivo</div>
+                <textarea value={motivo} onChange={e=>setMotivo(e.target.value)} rows={2} style={{width:"100%",border:"1px solid #d1d5db",borderRadius:6,padding:"8px 10px",fontSize:14,fontFamily:FF,boxSizing:"border-box",outline:"none",resize:"vertical"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:28}}>
+                <div>
+                  <div style={{fontSize:13,color:"#337ab7",marginBottom:4}}>Giustificato</div>
+                  <ToggleSiNo value={giustificato} onChange={setGiustificato}/>
                 </div>
-              ))}
+                <div>
+                  <div style={{fontSize:13,color:"#337ab7",marginBottom:4}}>Concorre al calcolo</div>
+                  <ToggleSiNo value={concorreCalcolo} onChange={setConcorreCalcolo}/>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Footer FISSO in basso — sempre visibile */}
-          <div style={{flexShrink:0,borderTop:"2px solid #e5e7eb",padding:"10px 16px",background:"#f9fafb",display:"flex",alignItems:"center",justifyContent:"flex-end",gap:8}}>
-            <button onClick={salva}
-              style={{padding:"10px 28px",background:"#22c55e",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",gap:6,boxShadow:"0 2px 8px rgba(34,197,94,0.3)"}}>
-              💾 Salva
-            </button>
-            <button onClick={close}
-              style={{padding:"10px 18px",background:"#3b82f6",color:"#fff",border:"none",borderRadius:6,fontWeight:700,fontSize:15,cursor:"pointer"}}>
-              ✕
-            </button>
+          <div style={{flexShrink:0,borderTop:"1px solid #e5e7eb",padding:"12px 18px",background:"#fff",display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
+            <div style={{fontSize:12,fontWeight:700,color:"#222",lineHeight:1.4}}>
+              <div>Minuti di tolleranza in entrata: 10</div>
+              <div style={{paddingLeft:118}}>in uscita: 10</div>
+            </div>
+            <div style={{display:"flex",gap:4}}>
+              <button onClick={salva} style={{padding:"7px 12px",background:"#1f8f4e",color:"#fff",border:"none",borderRadius:6,fontSize:14,cursor:"pointer"}}>💾 Salva</button>
+              <button onClick={close} style={{padding:"7px 12px",background:"#3b82f6",color:"#fff",border:"none",borderRadius:6,fontSize:14,cursor:"pointer"}}>ⓧ Chiudi</button>
+            </div>
           </div>
         </div>
       )}
