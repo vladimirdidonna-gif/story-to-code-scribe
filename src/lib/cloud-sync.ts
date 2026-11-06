@@ -12,6 +12,16 @@ let applyingRemote = false;
 let patched = false;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 const pending = new Map<string, string | null>();
+// Ultima scrittura locale per chiave: i dati del cloud più vecchi non la sovrascrivono mai.
+const localWrites = new Map<string, number>();
+const isLocalNewer = (k: string, remoteIso?: string | null) => {
+  if (pending.has(k)) return true;
+  const t = localWrites.get(k);
+  if (!t) return false;
+  if (Date.now() - t < 15000) return true;
+  const r = remoteIso ? Date.parse(remoteIso) : 0;
+  return t > r;
+};
 let channel: ReturnType<typeof supabase.channel> | null = null;
 let onRemoteChange: (() => void) | null = null;
 let lifecycleBound = false;
@@ -23,6 +33,7 @@ const rawRemove =
 
 function queue(k: string, v: string | null) {
   if (!currentUser || applyingRemote || shouldSkip(k)) return;
+  localWrites.set(k, Date.now());
   pending.set(k, v);
   if (flushTimer) clearTimeout(flushTimer);
   flushTimer = setTimeout(flush, 300);
@@ -72,7 +83,7 @@ export async function hydrateFromCloud(userId: string): Promise<Set<string>> {
   const keys = new Set<string>();
   const { data, error } = await supabase
     .from("registro_dati")
-    .select("k,v")
+    .select("k,v,updated_at")
     .eq("user_id", userId);
   if (error) {
     console.warn("[sync] hydrate", error.message);
@@ -83,6 +94,7 @@ export async function hydrateFromCloud(userId: string): Promise<Set<string>> {
     for (const row of data ?? []) {
       keys.add(row.k);
       if (row.v === null || shouldSkip(row.k)) continue;
+      if (isLocalNewer(row.k, (row as { updated_at?: string }).updated_at)) continue;
       try {
         rawSet?.(row.k, row.v);
       } catch {
@@ -139,8 +151,9 @@ export function startCloudSync(userId: string, onRemote: () => void) {
         "postgres_changes",
         { event: "*", schema: "public", table: "registro_dati", filter: `user_id=eq.${userId}` },
         (payload) => {
-          const row = (payload.new ?? payload.old) as { k?: string; v?: string | null };
+          const row = (payload.new ?? payload.old) as { k?: string; v?: string | null; updated_at?: string };
           if (!row?.k || shouldSkip(row.k)) return;
+          if (isLocalNewer(row.k, row.updated_at)) return;
           const incoming = payload.eventType === "DELETE" ? null : (row.v ?? null);
           if (localStorage.getItem(row.k) === incoming) return;
           applyingRemote = true;
