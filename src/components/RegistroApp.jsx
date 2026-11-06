@@ -8958,22 +8958,21 @@ function Registro({docente,onCambia}) {
   const deleteContById=(sec,id)=>{
     setContDB(p=>{
       const db={...p};
-      if(sec==="lezioni"||sec==="compiti"){
-        // Elimina SOLO dalla chiave esatta della materia corrente
-        const exactKey=`${classe}||${materia}`;
-        if(db[exactKey]?.[sec]){
-          db[exactKey]={...db[exactKey],[sec]:db[exactKey][sec].filter(x=>x.id!==id)};
+      // Elimina l'elemento da TUTTE le chiavi della classe (qualunque materia),
+      // così non può ricomparire da un'altra chiave.
+      const prefix=`${classe}||`;
+      Object.keys(db).filter(k=>k.startsWith(prefix)||k===classKey||k===`__class__${classe}`).forEach(k=>{
+        if(Array.isArray(db[k]?.[sec])){
+          const filtered=db[k][sec].filter(x=>x.id!==id);
+          if(filtered.length!==db[k][sec].length) db[k]={...db[k],[sec]:filtered};
         }
-      } else {
-        const prefix=`${classe}||`;
-        Object.keys(db).filter(k=>k.startsWith(prefix)||k===classKey).forEach(k=>{
-          if(db[k]?.[sec]){
-            const filtered=db[k][sec].filter(x=>x.id!==id);
-            if(filtered.length!==db[k][sec].length) db[k]={...db[k],[sec]:filtered};
-          }
-        });
-      }
+      });
+      const _s=JSON.stringify(db);
       try{ cSet("contDB", db); }catch{}
+      try{localStorage.setItem(`reg:${_doc}:contDB_bk1`,_s);}catch{}
+      try{sessionStorage.setItem(`reg:${_doc}:contDB`,_s);}catch{}
+      try{_idbSet(`reg:${_doc}:contDB`,_s);_idbSet(`reg:${_doc}:contDB_bk`,_s);}catch{}
+      cloudSave(_doc,"contDB",db).catch(()=>{});
       return db;
     });
     showToast();
