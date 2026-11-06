@@ -40,19 +40,12 @@ export default function AuthGate({ children }: Props) {
       // Il cloud ha sempre la precedenza: si inviano solo le chiavi che il
       // cloud non conosce ancora, così un dispositivo non sovrascrive i dati
       // salvati poco prima da un altro.
-      try {
-        const cloudKeys = await hydrateFromCloud(uid);
-        await pushLocalToCloud(uid, cloudKeys);
-      } catch {
-        // Nessun avviso a schermo: i dati locali restano intatti e in coda,
-        // la sincronizzazione riprova da sola in background.
-      } finally {
-        if (alive) {
-          startCloudSync(uid, () => setSyncKey((k) => k + 1));
-          setSyncing(false);
-          setSyncKey((k) => k + 1);
-        }
-      }
+      const cloudKeys = await hydrateFromCloud(uid);
+      await pushLocalToCloud(uid, cloudKeys);
+      startCloudSync(uid, () => setSyncKey((k) => k + 1));
+      if (!alive) return;
+      setSyncing(false);
+      setSyncKey((k) => k + 1);
     })();
 
     return () => {

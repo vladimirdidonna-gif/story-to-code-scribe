@@ -1,3 +1,0 @@
-# Regole richieste dal proprietario
-
-Conservare dati, testi, immagini, documenti e impostazioni dopo chiusura, logout, cambio dispositivo e aggiornamenti. Nessuna eliminazione automatica né pulizia per liberare spazio. Eliminare solo lo specifico dato richiesto dal proprietario, dopo conferma. Il logout non autorizza eliminazioni. Nessuna sovrascrittura non autorizzata. Non dichiarare un salvataggio riuscito se non verificato. Conservare modifiche offline e ritentare al ritorno della connessione, evitando duplicati. Richiesti backup periodici, copie prima degli aggiornamenti e ripristino verificato. I backup Cloud sono giornalieri, solo database; storage escluso. Nessuna promessa di protezione assoluta o sincronizzazione iCloud.
